@@ -21,4 +21,4 @@ VOLUME $OODT_HOME/cas-crawler
 
 # keep container running 
 # so workflow manager container can access crawler configuration
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
