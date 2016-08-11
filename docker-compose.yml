@@ -9,8 +9,6 @@ oodt_filemgr_app:
   ports:
     - "8983:8983"
     - "9000:9000"
-  volumes_from:
-    - oodt_test_workflow_app
 
 oodt_crawler_app:
   image: oodthub/oodt-crawler
@@ -29,7 +27,6 @@ oodt_wmgr_app1:
     - oodt_filemgr_app:filemgr.oodt.net
   volumes_from:
     - oodt_crawler_app
-    - oodt_test_workflow_app
 
 oodt_wmgr_app2:
   image: oodthub/oodt-wmgr
@@ -42,8 +39,3 @@ oodt_wmgr_app2:
     - oodt_filemgr_app:filemgr.oodt.net
   volumes_from:
     - oodt_crawler_app
-    - oodt_test_workflow_app
-
-oodt_test_workflow_app:
-  image: oodthub/oodt-test-workflow
-  container_name: oodt_test_workflow
