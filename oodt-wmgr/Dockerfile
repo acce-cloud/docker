@@ -8,7 +8,7 @@ MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 ENV OODT_VERSION 1.0
 ENV OODT_HOME /usr/local/oodt
 ENV WORKFLOW_URL http://localhost:9001/
-ENV FILEMGR_URL http://filemgr.oodt.net:9000/
+ENV FILEMGR_URL http://filemgr.oodt.host:9000/
 ENV OODT_SITE_DIR ${OODT_SITE_DIR:-${OODT_HOME}/mysite}
 ENV PGE_ROOT $OODT_SITE_DIR/pges
 
@@ -19,7 +19,8 @@ RUN cd /tmp && mvn install
 
 # create symbolic links
 RUN cd $OODT_HOME && \
-    ln -s ./cas-workflow-${OODT_VERSION} ./cas-workflow
+    ln -s ./cas-workflow-${OODT_VERSION} ./cas-workflow && \
+    ln -s ./cas-crawler-${OODT_VERSION} ./cas-crawler
 
 # create directories that don't exist
 RUN mkdir ${OODT_HOME}/run

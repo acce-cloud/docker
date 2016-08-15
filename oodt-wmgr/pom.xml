@@ -126,6 +126,35 @@ Required env variables (set by calling client):
         </executions>
       </plugin>
 
+      <!-- install OODT crawler -->
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <!-- unpack OODT modules into installation directories -->
+          <execution>
+            <id>install-oodt</id>
+            <phase>install</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-crawler</artifactId>
+                  <version>${oodt.version}</version>
+                  <classifier>dist</classifier>
+                  <type>tar.gz</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${oodt.dir}</outputDirectory>
+              <overWrite>true</overWrite>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
     </plugins>
   </build>
 
