@@ -12,12 +12,6 @@ oodt_filemgr_app:
   volumes_from:
     - oodt_test_workflow_app
 
-oodt_crawler_app:
-  image: oodthub/oodt-crawler
-  container_name: oodt_crawler
-  volumes:
-    - /usr/local/oodt/cas-crawler
-  
 oodt_wmgr_app:
   image: oodthub/oodt-wmgr
   container_name: oodt_wmgr
@@ -28,7 +22,6 @@ oodt_wmgr_app:
   links:
     - oodt_filemgr_app:filemgr.oodt.host
   volumes_from:
-    - oodt_crawler_app
     - oodt_test_workflow_app
 
 oodt_test_workflow_app:

@@ -10,12 +10,6 @@ oodt_filemgr_app:
     - "8983:8983"
     - "9000:9000"
 
-oodt_crawler_app:
-  image: oodthub/oodt-crawler
-  container_name: oodt_crawler
-  volumes:
-    - /usr/local/oodt/cas-crawler
-  
 oodt_wmgr_app1:
   image: oodthub/oodt-wmgr
   container_name: oodt_wmgr1
@@ -25,8 +19,6 @@ oodt_wmgr_app1:
     - "9001:9001"
   links:
     - oodt_filemgr_app:filemgr.oodt.host
-  volumes_from:
-    - oodt_crawler_app
 
 oodt_wmgr_app2:
   image: oodthub/oodt-wmgr
@@ -37,5 +29,3 @@ oodt_wmgr_app2:
     - "8001:9001"
   links:
     - oodt_filemgr_app:filemgr.oodt.host
-  volumes_from:
-    - oodt_crawler_app
