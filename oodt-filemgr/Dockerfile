@@ -42,9 +42,8 @@ COPY filemgr.properties $OODT_HOME/cas-filemgr/etc/filemgr.properties
 EXPOSE 9000
 
 # Solr
-# FIXME
-#RUN wget -O /tmp/solr-${SOLR_VERSION}.tgz http://archive.apache.org/dist/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz
-COPY solr-${SOLR_VERSION}.tgz /tmp/solr-${SOLR_VERSION}.tgz
+RUN wget -O /tmp/solr-${SOLR_VERSION}.tgz http://archive.apache.org/dist/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz
+#COPY solr-${SOLR_VERSION}.tgz /tmp/solr-${SOLR_VERSION}.tgz
 RUN cd ${OODT_HOME} && \
     tar xzf /tmp/solr-${SOLR_VERSION}.tgz && \
     rm /tmp/solr-${SOLR_VERSION}.tgz && \
