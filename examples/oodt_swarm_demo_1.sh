@@ -58,9 +58,9 @@
 # run OODT FM container on swarm-node-01:
 #docker run -itd --name oodt.filemgr.host -p 8983:8983 -p 9000:9000 -e constraint:oodt_type==filemgr --network=swarm-network oodthub/oodt-filemgr
 
-# run N instances of WM on swrm-node-02,03
-#docker pull oodthub/oodt-wmgr
-#for i in `seq 1 4`; do docker run -itd --name oodt.wmgr$i.host -P -e constraint:oodt_type==wmgr --network=swarm-network oodthub/oodt-wmgr; done
+# run N instances of WM + test-workflow on swrm-node-02,03
+#docker pull oodthub/oodt-test-workflow
+#for i in `seq 1 4`; do docker run -itd --name oodt.wmgr$i.host -P -e constraint:oodt_type==wmgr --network=swarm-network oodthub/oodt-test-workflow; done
 
 # list running containers
 docker ps
