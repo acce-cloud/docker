@@ -54,7 +54,7 @@ Required env variables (set by calling client):
         <executions>
           <!-- unpack OODT modules into installation directories -->
           <execution>
-            <id>install-oodt</id>
+            <id>install-oodt-wmgr</id>
             <phase>install</phase>
             <goals>
               <goal>unpack</goal>
@@ -132,7 +132,7 @@ Required env variables (set by calling client):
         <executions>
           <!-- unpack OODT modules into installation directories -->
           <execution>
-            <id>install-oodt</id>
+            <id>install-oodt-crawler</id>
             <phase>install</phase>
             <goals>
               <goal>unpack</goal>
