@@ -8,7 +8,7 @@ MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 ENV OODT_VERSION 1.0
 ENV OODT_HOME /usr/local/oodt
 ENV WORKFLOW_URL http://localhost:9001/
-ENV FILEMGR_URL http://filemgr.oodt.host:9000/
+ENV FILEMGR_URL http://oodt.filemgr.host:9000/
 ENV OODT_SITE_DIR ${OODT_SITE_DIR:-${OODT_HOME}/mysite}
 ENV PGE_ROOT $OODT_SITE_DIR/pges
 

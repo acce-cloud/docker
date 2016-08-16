@@ -18,7 +18,7 @@ oodt_wmgr_app1:
   ports:
     - "9001:9001"
   links:
-    - oodt_filemgr_app:filemgr.oodt.host
+    - oodt_filemgr_app:oodt.filemgr.host
 
 oodt_wmgr_app2:
   image: oodthub/oodt-wmgr
@@ -28,4 +28,4 @@ oodt_wmgr_app2:
   ports:
     - "8001:9001"
   links:
-    - oodt_filemgr_app:filemgr.oodt.host
+    - oodt_filemgr_app:oodt.filemgr.host
