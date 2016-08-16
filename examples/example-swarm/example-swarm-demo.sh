@@ -63,9 +63,9 @@ echo "\nRUNNING OODT FILE MANAGER CONTAINER: 'oodthub/oodt-filemgr' ON SWARM NOD
 docker run -itd --name oodt.filemgr.host -p 8983:8983 -p 9000:9000 -e constraint:oodt_type==filemgr --network=swarm-network oodthub/oodt-filemgr
 
 # run N instances of WM + test-workflow on swarm-node-02,03
-echo "\nRUNNING MULTIPLE OODT WORKFLOW MANAGER CONTAINERS: 'oodt-test-workflow' ON SWARM NODES: swarm-node-02,03"
-docker pull oodthub/oodt-test-workflow
-for i in `seq 1 4`; do docker run -itd --name oodt.wmgr$i.host -P -e constraint:oodt_type==wmgr --network=swarm-network oodthub/oodt-test-workflow; done
+echo "\nRUNNING MULTIPLE OODT WORKFLOW MANAGER CONTAINERS: 'oodt-example-swarm' ON SWARM NODES: swarm-node-02,03"
+docker pull oodthub/oodt-example-swarm
+for i in `seq 1 4`; do docker run -itd --name oodt.wmgr$i.host -P -e constraint:oodt_type==wmgr --network=swarm-network oodthub/oodt-example-swarm; done
 
 # list running containers
 docker ps
