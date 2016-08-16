@@ -1,4 +1,4 @@
-# Docker image for OODT Workflow Manager
+# Docker image for OODT Workflow Manager and Crawler
 
 FROM oodthub/oodt-node
 
@@ -12,7 +12,7 @@ ENV FILEMGR_URL http://oodt.filemgr.host:9000/
 ENV OODT_SITE_DIR ${OODT_SITE_DIR:-${OODT_HOME}/mysite}
 ENV PGE_ROOT $OODT_SITE_DIR/pges
 
-# install OODT Workflow Manager
+# install OODT Workflow Manager service and Crawler executable
 RUN mkdir -p $OODT_HOME
 COPY pom.xml /tmp/pom.xml
 RUN cd /tmp && mvn install
