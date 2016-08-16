@@ -1,6 +1,6 @@
 # Docker image that contains the configuration for an OODT example workflow
 
-FROM oodthub/oodt-node
+FROM oodthub/oodt-wmgr
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
@@ -22,3 +22,5 @@ RUN mkdir -p $OODT_SITE_DIR/pges/test-workflow
 COPY pges/ $OODT_SITE_DIR/pges/test-workflow/
 
 VOLUME $OODT_SITE_DIR
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord-workflow.conf"]

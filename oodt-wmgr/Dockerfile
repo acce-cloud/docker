@@ -36,6 +36,4 @@ COPY supervisord.conf /etc/supervisor/supervisord-workflow.conf
 
 EXPOSE 9001
 
-# FIXME
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord-workflow.conf"]
-#ENTRYPOINT ["/usr/local/bin/start-wmgr.sh"]
