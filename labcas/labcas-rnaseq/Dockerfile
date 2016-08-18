@@ -1,15 +1,8 @@
-# LabCAS 'rnaseq' workflow
+# Image containing configuration for LabCAS 'rnaseq' workflow
 
-FROM oodthub/oodt-node
+FROM oodthub/labcas-node
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
-
-ENV LABCAS_HOME /usr/local/oodt
-ENV LABCAS_ARCHIVE /usr/local/oodt/archive
-
-# install python utilities
-RUN yum -y update && \
-    yum install -y python-argparse
 
 # checkout LabCAS source 
 ENV LABCAS_SRC /tmp
@@ -37,10 +30,6 @@ RUN mkdir -p $RNASEQ_INSTALL_DIR/samtools_install/bin && \
     cp $LABCAS_SRC/labcas-backend/workflows/src/main/resources/rnaseq/pges-test/samtools $RNASEQ_INSTALL_DIR/samtools_install/bin/.
 ENV PATH $PATH:$RNASEQ_INSTALL_DIR/samtools_install/bin
 
-
-#RUN mkdir -p $LABCAS_HOME/workflows/labcas-test
-#COPY workflows/labcas-test/ $LABCAS_HOME/workflows/labcas-test/
-#RUN mkdir -p $LABCAS_ARCHIVE/labcas-test
-
-#VOLUME $LABCAS_HOME/workflows/labcas-test
-#VOLUME $LABCAS_ARCHIVE/labcas-test
+VOLUME $LABCAS_HOME/workflows/rnaseq
+#VOLUME $LABCAS_ARCHIVE
+VOLUME $PGE_ROOT/rnaseq

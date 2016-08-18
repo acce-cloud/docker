@@ -11,13 +11,9 @@ RUN cd $LABCAS_SRC && \
     cd labcas-backend && \
     git checkout -b devel origin/devel
 
-# install rnaseq configuration into $LABCAS_HOME/workflows/rnaseq
+# install labcas-test configuration into $LABCAS_HOME/workflows/labcas-test
 RUN cd $LABCAS_SRC/labcas-backend && \
     mvn install -Dworkflow=labcas-test
-
-#RUN mkdir -p $LABCAS_HOME/workflows/labcas-test
-#COPY workflows/labcas-test/ $LABCAS_HOME/workflows/labcas-test/
-#RUN mkdir -p $LABCAS_ARCHIVE/labcas-test
 
 VOLUME $LABCAS_HOME/workflows/labcas-test
 VOLUME $LABCAS_ARCHIVE/labcas-test

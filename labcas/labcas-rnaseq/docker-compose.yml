@@ -15,11 +15,13 @@ oodt_filemgr_app:
     - $PWD/filemgr/etc/filemgr.properties:/usr/local/oodt/cas-filemgr/etc/filemgr.properties
     - $PWD/common/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-filemgr/lib/labcas-backend-common-0.7.jar
   volumes_from:
-    - labcas_test_workflow_app
+    - labcas_rnaseq_app
 
 # OODT Workflow Manager + LabCAS configuration
 oodt_wmgr_app:
   env_file: labcas.env
+  environment:
+    - RNASEQ_DATA_DIR=/data/EDRN
   image: oodthub/oodt-wmgr
   container_name: oodt_wmgr
   expose:
@@ -31,8 +33,10 @@ oodt_wmgr_app:
   volumes:
     - $PWD/wmgr/etc/workflow.properties:/usr/local/oodt/cas-workflow/etc/workflow.properties
     - $PWD/common/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-workflow/lib/labcas-backend-common-0.7.jar
+    - $PWD/data/EDRN:/data/EDRN
   volumes_from:
-    - labcas_test_workflow_app
+    - labcas_rnaseq_app
+    - oodt_filemgr_app
 
 # OODT Product Server
 oodt_fmprod_app:
@@ -46,10 +50,10 @@ oodt_fmprod_app:
   links:
     - oodt_filemgr_app:oodt.filemgr.host
   volumes_from:
-    - labcas_test_workflow_app
+    - labcas_rnaseq_app
 
-# LabCAS labcas-test workflow
+# LabCAS rnaseq workflow
 # provides workflow+product configuration to the FM, WM services
-labcas_test_workflow_app:
-  build: .
-  container_name: labcas_test_workflow
+labcas_rnaseq_app:
+  image: oodthub/labcas-rnaseq
+  container_name: labcas_rnaseq

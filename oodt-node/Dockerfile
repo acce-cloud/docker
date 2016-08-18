@@ -13,7 +13,7 @@ RUN yum -y update; yum clean all
 
 # install system utilities
 RUN yum -y update && \
-    yum -y install git lsof unzip python-setuptools tar wget zip && \
+    yum -y install git lsof unzip python-argparse python-setuptools tar wget zip && \
     yum clean all
 
 # Java 8
@@ -52,10 +52,12 @@ ENV RESMGR_URL http://localhost:9002/
 ENV OODT_CONFIG ${OODT_HOME}/workflows
 ENV PGE_ROOT $OODT_HOME/pges
 ENV OODT_ARCHIVE ${OODT_HOME}/archive
+ENV OODT_STAGING ${OODT_HOME}/staging
 
 # create directories
 RUN mkdir -p $OODT_HOME
 RUN mkdir -p $OODT_CONFIG
 RUN mkdir -p $PGE_ROOT
 RUN mkdir -p $OODT_ARCHIVE
+RUN mkdir -p $OODT_STAGING
 RUN mkdir -p $OODT_HOME/run
