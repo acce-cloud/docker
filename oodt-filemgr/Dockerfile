@@ -7,8 +7,8 @@ MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 # OODT env
 ENV OODT_VERSION 1.0
 ENV OODT_HOME /usr/local/oodt
-ENV OODT_ARCHIVE_DIR ${OODT_ARCHIVE_DIR:-${OODT_HOME}/archive}
-ENV OODT_SITE_DIR ${OODT_SITE_DIR:-${OODT_HOME}/mysite}
+ENV OODT_ARCHIVE_DIR ${OODT_HOME}/archive
+ENV OODT_SITE_DIR ${OODT_HOME}/mysite
 
 # Solr env
 ENV SOLR_VERSION 5.3.1
