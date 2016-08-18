@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!-- 
+Author: Luca Cinquini 
+Description: Maven descriptor that installs the OODT Product Manager into $OODT_DIR/apache-tomcat/webapps
+Required env variables (set by calling client):
+- OODT_VERSION
+- OODT_DIR
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>gov.nasa.jpl</groupId>
+  <artifactId>oodt-cloud</artifactId>
+  <name>OODT Cloud</name>
+  <version>${oodt-cloud.version}</version>
+  <packaging>pom</packaging>
+  
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <properties>
+  
+    <!-- global project version -->
+    <oodt-cloud.version>0.1</oodt-cloud.version>
+
+    <!-- OODT version and location -->
+    <oodt.version>${env.OODT_VERSION}</oodt.version>
+    <oodt.dir>${env.OODT_HOME}</oodt.dir>
+    
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    
+   </properties>
+
+  <build>
+    <plugins>
+
+      <!-- install OODT Product Server -->
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <!-- copy fmprod war into Tomcat directory -->
+          <execution>
+            <id>install-fmprod</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-product</artifactId>
+                  <version>${oodt.version}</version>
+                  <type>war</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${oodt.dir}/apache-tomcat/webapps</outputDirectory>
+                  <destFileName>fmprod.war</destFileName>
+                </artifactItem>
+          	</artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

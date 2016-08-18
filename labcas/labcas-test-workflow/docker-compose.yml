@@ -34,8 +34,22 @@ oodt_wmgr_app:
   volumes_from:
     - labcas_test_workflow_app
 
+# OODT Product Server
+oodt_fmprod_app:
+  env_file: labcas.env
+  image: oodthub/oodt-fmprod
+  container_name: oodt_fmprod
+  expose:
+    - "8080"
+  ports:
+    - "8080:8080"
+  links:
+    - oodt_filemgr_app:oodt.filemgr.host
+  volumes_from:
+    - labcas_test_workflow_app
+
 # LabCAS labcas-test workflow
 # provides workflow+product configuration to the FM, WM services
 labcas_test_workflow_app:
   build: .
-  container_name: labcas_test
+  container_name: labcas_test_workflow
