@@ -13,7 +13,7 @@ oodt_filemgr_app:
     - "9000:9000"
   volumes:
     - $PWD/filemgr/etc/filemgr.properties:/usr/local/oodt/cas-filemgr/etc/filemgr.properties
-    - $PWD/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-filemgr/lib/labcas-backend-common-0.7.jar
+    - $PWD/common/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-filemgr/lib/labcas-backend-common-0.7.jar
   volumes_from:
     - labcas_test_workflow_app
 
@@ -30,7 +30,7 @@ oodt_wmgr_app:
     - oodt_filemgr_app:oodt.filemgr.host
   volumes:
     - $PWD/wmgr/etc/workflow.properties:/usr/local/oodt/cas-workflow/etc/workflow.properties
-    - $PWD/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-workflow/lib/labcas-backend-common-0.7.jar
+    - $PWD/common/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-workflow/lib/labcas-backend-common-0.7.jar
   volumes_from:
     - labcas_test_workflow_app
 
