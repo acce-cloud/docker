@@ -4,17 +4,9 @@ FROM oodthub/oodt-node
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
-# OODT env
-ENV OODT_VERSION 1.0
-ENV OODT_HOME /usr/local/oodt
-
 # install OODT Resource Manager
-RUN mkdir -p $OODT_HOME
 COPY pom.xml /tmp/pom.xml
 RUN cd /tmp && mvn install
-
-# create directories that don't exist
-RUN mkdir ${OODT_HOME}/run
 
 # create symbolic links
 RUN cd $OODT_HOME && \

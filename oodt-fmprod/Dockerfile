@@ -4,16 +4,9 @@ FROM oodthub/oodt-node
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
-# OODT env
-ENV OODT_VERSION 1.0
-ENV OODT_HOME /usr/local/oodt
-ENV CATALINA_HOME $OODT_HOME/apache-tomcat
-
-# default File Manager to connect to
-ENV FILEMGR_URL http://localhost:9000
-
-# Tomcat 8
+# Tomcat env
 ENV TOMCAT_VERSION 8.5.4
+ENV CATALINA_HOME $OODT_HOME/apache-tomcat
 
 RUN wget -O /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz http://mirror.reverse.net/pub/apache/tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
     mkdir -p $OODT_HOME && \
@@ -36,4 +29,3 @@ EXPOSE 8080
 
 # start Tomcat: 'run' will keep it running in foreground
 ENTRYPOINT ["/usr/local/oodt/apache-tomcat/bin/catalina.sh", "run"]
-

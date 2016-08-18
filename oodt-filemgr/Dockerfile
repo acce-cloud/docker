@@ -4,12 +4,6 @@ FROM oodthub/oodt-node
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
-# OODT env
-ENV OODT_VERSION 1.0
-ENV OODT_HOME /usr/local/oodt
-ENV OODT_ARCHIVE_DIR ${OODT_HOME}/archive
-ENV OODT_SITE_DIR ${OODT_HOME}/mysite
-
 # Solr env
 ENV SOLR_VERSION 5.3.1
 ENV SOLR_INSTALL_DIR ${OODT_HOME}/solr
@@ -17,7 +11,6 @@ ENV SOLR_HOME ${OODT_HOME}/solr-home
 ENV SOLR_DATA_DIR ${OODT_HOME}/solr-index
 
 # install OODT File Manager
-RUN mkdir -p $OODT_HOME
 COPY pom.xml /tmp/pom.xml
 RUN cd /tmp && mvn install
 
@@ -26,14 +19,7 @@ RUN cd $OODT_HOME && \
     ln -s ./cas-filemgr-${OODT_VERSION} ./cas-filemgr
 
 # create directories that don't exist
-RUN mkdir -p ${OODT_HOME}/run
 RUN mkdir -p ${OODT_HOME}/cas-filemgr/logs
-
-# final location or published products
-RUN mkdir -p $OODT_ARCHIVE_DIR
-
-# location of custom policy files
-RUN mkdir -p $OODT_SITE_DIR/products
 
 # customize filemgr.properties
 COPY filemgr.properties $OODT_HOME/cas-filemgr/etc/filemgr.properties

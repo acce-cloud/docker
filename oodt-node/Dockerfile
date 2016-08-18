@@ -39,3 +39,23 @@ VOLUME /root/.m2
 # install Supervisor
 RUN easy_install supervisor
 RUN mkdir -p /var/log/supervisor
+
+# default OODT environment (inherited by all child images)
+ENV OODT_VERSION 1.0
+ENV OODT_HOME /usr/local/oodt
+
+ENV FILEMGR_URL http://localhost:9000/
+#ENV FILEMGR_URL http://oodt.filemgr.host:9000/
+ENV WORKFLOW_URL http://localhost:9001/
+ENV RESMGR_URL http://localhost:9002/
+
+ENV OODT_CONFIG ${OODT_HOME}/workflows
+ENV PGE_ROOT $OODT_HOME/pges
+ENV OODT_ARCHIVE ${OODT_HOME}/archive
+
+# create directories
+RUN mkdir -p $OODT_HOME
+RUN mkdir -p $OODT_CONFIG
+RUN mkdir -p $PGE_ROOT
+RUN mkdir -p $OODT_ARCHIVE
+RUN mkdir -p $OODT_HOME/run

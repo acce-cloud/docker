@@ -4,12 +4,7 @@ FROM oodthub/oodt-node
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
-# OODT env
-ENV OODT_VERSION 1.0
-ENV OODT_HOME /usr/local/oodt
-
 # install OODT crawler
-RUN mkdir -p $OODT_HOME
 COPY pom.xml /tmp/pom.xml
 RUN cd /tmp && mvn install
 
