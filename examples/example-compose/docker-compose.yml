@@ -18,7 +18,7 @@ services:
 
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
-    container_name: oodt_wmgr
+    #container_name: oodt_wmgr
     expose:
       - "9001"
     ports:
