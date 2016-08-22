@@ -30,13 +30,13 @@ oodt_wmgr_app:
     - "9001:9001"
   links:
     - oodt_filemgr_app:oodt.filemgr.host
+    - oodt_fmprod_app:oodt.fmprod.host
   volumes:
     - $PWD/wmgr/etc/workflow.properties:/usr/local/oodt/cas-workflow/etc/workflow.properties
     - $PWD/common/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-workflow/lib/labcas-backend-common-0.7.jar
     - $PWD/data/EDRN:/data/EDRN
   volumes_from:
     - labcas_rnaseq_app
-    - oodt_filemgr_app
 
 # OODT Product Server
 oodt_fmprod_app:

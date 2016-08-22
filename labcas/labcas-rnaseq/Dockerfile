@@ -30,6 +30,6 @@ RUN mkdir -p $RNASEQ_INSTALL_DIR/samtools_install/bin && \
     cp $LABCAS_SRC/labcas-backend/workflows/src/main/resources/rnaseq/pges-test/samtools $RNASEQ_INSTALL_DIR/samtools_install/bin/.
 ENV PATH $PATH:$RNASEQ_INSTALL_DIR/samtools_install/bin
 
-VOLUME $LABCAS_HOME/workflows/rnaseq
-#VOLUME $LABCAS_ARCHIVE
+VOLUME $LABCAS_CONFIG/rnaseq
+VOLUME $LABCAS_ARCHIVE
 VOLUME $PGE_ROOT/rnaseq
