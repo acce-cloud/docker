@@ -14,6 +14,8 @@ services:
   #  ports:
   #    - "8983:8983"
   #    - "9000:9000"
+    environment:
+      - "constraint:oodt_type==filemgr"
 
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
@@ -24,6 +26,8 @@ services:
     #  - "9001:9001"
     #links:
     #  - oodt_filemgr_app:oodt.filemgr.host
+    environment:
+      - "constraint:oodt_type==wmgr"
 
 networks:
   default:
