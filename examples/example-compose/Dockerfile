@@ -8,21 +8,21 @@ FROM oodthub/oodt-node
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
-# OODT env
-ENV OODT_HOME /usr/local/oodt
-ENV OODT_SITE_DIR ${OODT_SITE_DIR:-${OODT_HOME}/mysite}
-
 # install custom OODT File Manager configuration
-RUN mkdir -p $OODT_SITE_DIR/products/test-workflow
-COPY filemgr_config/policy/ $OODT_SITE_DIR/products/test-workflow/policy/
+RUN mkdir -p $OODT_CONFIG/test-workflow
+COPY filemgr_config/policy/ $OODT_CONFIG/test-workflow/policy/
+
+# create final OODT archive directory
+RUN mkdir -p  $OODT_ARCHIVE/test-workflow
 
 # install custom OODT Workflow Manager configuration
-RUN mkdir -p $OODT_SITE_DIR/workflows/test-workflow
-COPY wmgr_config/policy/ $OODT_SITE_DIR/workflows/test-workflow/policy/
-COPY wmgr_config/pge-configs/ $OODT_SITE_DIR/workflows/test-workflow/pge-configs/
+COPY wmgr_config/policy/ $OODT_CONFIG/test-workflow/policy/
+COPY wmgr_config/pge-configs/ $OODT_CONFIG/test-workflow/pge-configs/
 
 # install custom PGEs
-RUN mkdir -p $OODT_SITE_DIR/pges/test-workflow
-COPY pges/ $OODT_SITE_DIR/pges/test-workflow/
+RUN mkdir -p $PGE_ROOT/test-workflow
+COPY pges/ $PGE_ROOT/test-workflow/
 
-VOLUME $OODT_SITE_DIR
+VOLUME $OODT_CONFIG
+VOLUME $PGE_ROOT
+VOLUME $OODT_ARCHIVE
