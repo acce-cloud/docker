@@ -1,4 +1,9 @@
-# OODT-in-the-cloud system
+# Docker compose file for running (and scaling) a set of OODT services on a single Docker host
+# Example usage:
+# docker-compose up -d
+# docker-compose scale oodt_wmgr=4
+# 
+# NOTE: this compose file is NOT suitable for running multiple OODT containers on a Docker swarm
 
 version: '2'
 
@@ -7,29 +12,28 @@ services:
   oodt_filemgr_app:
     image: oodthub/oodt-filemgr
     container_name: oodt.filemgr.host
-    #container_name: oodt_filemgr
     expose:
       - "9000"
       - "8983"
-  #  ports:
-  #    - "8983:8983"
-  #    - "9000:9000"
-    environment:
-      - "constraint:oodt_type==filemgr"
+    ports:
+      - "8983:8983"
+      - "9000:9000"
+    volumes_from:
+      - oodt_wmgr_app
 
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
     #container_name: oodt_wmgr
     expose:
       - "9001"
-    #ports:
-    #  - "9001:9001"
-    #links:
-    #  - oodt_filemgr_app:oodt.filemgr.host
-    environment:
-      - "constraint:oodt_type==wmgr"
+    ports:
+      - "9001"
 
-networks:
-  default:
-    external:
-      name: swarm-network
+  oodt_fmprod_app:
+    image: oodthub/oodt-fmprod
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    volumes_from:
+      - oodt_wmgr_app
