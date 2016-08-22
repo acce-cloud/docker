@@ -4,7 +4,7 @@
 	<!-- PGE commands -->
 	<exe dir="[JobDir]" shell="/bin/bash">
 		<cmd>cd [JobDir]</cmd>
-		<cmd>python [OODT_SITE_DIR]/pges/test-workflow/writeBin.py</cmd>
+		<cmd>python [PGE_ROOT]/test-workflow/writeBin.py</cmd>
 	</exe>
 
 	<customMetadata>
@@ -18,7 +18,7 @@
 	  <dir path="[JobDir]" createBeforeExe="false">
             <files regExp=".*\.out" 
                    metFileWriterClass="org.apache.oodt.cas.pge.writers.metlist.MetadataListPcsMetFileWriter" 
-                   args="[OODT_SITE_DIR]/workflows/test-workflow/pge-configs/metout.xml" />
+                   args="[OODT_CONFIG]/test-workflow/pge-configs/metout.xml" />
         </dir>
 	</output>
 
