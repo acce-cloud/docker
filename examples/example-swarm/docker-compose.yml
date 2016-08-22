@@ -1,0 +1,32 @@
+# OODT docker swarm + compose example
+
+version: '2'
+
+services:
+
+  oodt_filemgr_app:
+    image: oodthub/oodt-filemgr
+    container_name: oodt.filemgr.host
+    expose:
+      - "9000"
+      - "8983"
+    ports:
+      - "8983:8983"
+      - "9000:9000"
+    environment:
+      - "constraint:oodt_type==filemgr"
+
+  oodt_example_app:
+    image: oodthub/oodt-example-swarm
+    expose:
+      - "9001"
+    ports:
+      - "9001"
+    environment:
+      - "constraint:oodt_type==wmgr"
+      - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+
+networks:
+  default:
+    external:
+      name: swarm-network
