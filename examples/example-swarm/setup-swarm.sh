@@ -55,6 +55,7 @@ docker-machine ls
 
 # create overlay network to connect all containers in the swarm
 # must connect to any node in the swarm, for example to the swarm master
+# the network will span all nodes in the swarm
 echo "\nCREATING OVERLAY NETWORK: 'swarm-network'"
 eval $(docker-machine env --swarm swarm-master)
 docker network create --driver overlay --subnet=10.0.9.0/24 swarm-network
