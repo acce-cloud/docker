@@ -1,6 +1,13 @@
 # docker-compose file for executing an OODT test workflow
+# NOTE: this file assumes the pre-existence of an external network called 'mynetwork' (on a single host):
+# docker network create mynetwork
 
 version: '2'
+
+networks:
+  mynet:
+    external:
+      name: mynetwork
 
 services:
 
@@ -29,6 +36,11 @@ services:
       - oodt_test_workflow_app
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+    networks:
+      default: {}
+      mynet:
+        aliases:
+          - oodt.wmgr.host
 
   oodt_fmprod_app:
     image: oodthub/oodt-fmprod
