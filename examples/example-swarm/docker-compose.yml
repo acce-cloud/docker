@@ -2,6 +2,12 @@
 
 version: '2'
 
+networks:
+
+  default:
+    external:
+      name: swarm-network
+
 services:
 
   oodt_filemgr_app:
@@ -25,8 +31,7 @@ services:
     environment:
       - "constraint:oodt_type==wmgr"
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
-
-networks:
-  default:
-    external:
-      name: swarm-network
+    networks:
+      default:
+        aliases:
+          - oodt.wmgr.host
