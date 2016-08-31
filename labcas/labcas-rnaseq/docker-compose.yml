@@ -1,4 +1,13 @@
 # docker-compose configuration for running the labcas-test workflow
+# requires the following env variables to be set to local directories:
+# RNASEQ_DATA_DIR: location of input RNAseq data
+# LABCAS_STAGING: location of temporary output products before publishing
+# LABCAS_ARCHIVE: final location of published files
+# example:
+# export RNASEQ_DATA_DIR=/usr/local/edrn/data/RNAseq
+# export LABCAS_ARCHIVE=/usr/local/edrn/data/archive
+# export LABCAS_STAGING=/usr/local/edrn/data/staging
+
 
 # OODT File Manager + LabCAS configuration
 oodt_filemgr_app:
@@ -35,6 +44,8 @@ oodt_wmgr_app:
     - $PWD/wmgr/etc/workflow.properties:/usr/local/oodt/cas-workflow/etc/workflow.properties
     - $PWD/common/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-workflow/lib/labcas-backend-common-0.7.jar
     - $RNASEQ_DATA_DIR:/data/EDRN/RNAseq
+    - $LABCAS_STAGING:/usr/local/oodt/staging
+    - $LABCAS_ARCHIVE:/usr/local/oodt/archive
   volumes_from:
     - labcas_rnaseq_app
 
