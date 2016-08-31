@@ -45,7 +45,6 @@ ENV OODT_VERSION 1.0
 ENV OODT_HOME /usr/local/oodt
 
 ENV FILEMGR_URL http://localhost:9000/
-#ENV FILEMGR_URL http://oodt.filemgr.host:9000/
 ENV WORKFLOW_URL http://localhost:9001/
 ENV RESMGR_URL http://localhost:9002/
 

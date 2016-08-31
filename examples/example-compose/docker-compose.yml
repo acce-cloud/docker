@@ -22,6 +22,11 @@ services:
       - "9000:9000"
     volumes_from:
       - oodt_test_workflow_app
+    networks:
+      default: {}
+      mynet:
+        aliases:
+          - oodt.filemgr.host
 
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
@@ -30,8 +35,8 @@ services:
       - "9001"
     ports:
       - "9001"
-    links:
-      - oodt_filemgr_app:oodt.filemgr.host
+    #links:
+    #  - oodt_filemgr_app:oodt.filemgr.host
     volumes_from:
       - oodt_test_workflow_app
     environment:
@@ -49,12 +54,17 @@ services:
       - "8080"
     ports:
       - "8080:8080"
-    links:
-      - oodt_filemgr_app:oodt.filemgr.host
+    #links:
+    #  - oodt_filemgr_app:oodt.filemgr.host
     volumes_from:
       - oodt_test_workflow_app
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+    networks:
+      default: {}
+      mynet:
+        aliases:
+          - oodt.fmprod.host
 
   oodt_test_workflow_app:
     image: oodthub/oodt-example-compose
