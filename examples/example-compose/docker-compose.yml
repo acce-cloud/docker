@@ -11,6 +11,7 @@ networks:
 
 services:
 
+  # OODT file manager
   oodt_filemgr_app:
     image: oodthub/oodt-filemgr
     container_name: oodt_filemgr
@@ -28,6 +29,7 @@ services:
         aliases:
           - oodt.filemgr.host
 
+  # OODT workflow manager
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
     #container_name: oodt_wmgr
@@ -47,6 +49,19 @@ services:
         aliases:
           - oodt.wmgr.host
 
+  # workflow manager container used as client to workflow manager server instances
+  oodt_wmgr_client_app:
+    image: oodthub/oodt-wmgr
+    container_name: oodt_wmgr_client
+    environment:
+      - "WORKFLOW_URL=http://oodt.wmgr.host:9001"
+    # keep container running
+    entrypoint: ["tail", "-f", "/dev/null"]
+    networks:
+      default: {}
+      mynet:
+
+  # OODT product server
   oodt_fmprod_app:
     image: oodthub/oodt-fmprod
     container_name: oodt_fmprod
