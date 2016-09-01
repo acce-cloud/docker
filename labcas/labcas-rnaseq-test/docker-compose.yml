@@ -20,6 +20,10 @@ services:
       - $PWD/common/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-filemgr/lib/labcas-backend-common-0.7.jar
     volumes_from:
       - labcas_rnaseq_app
+    networks:
+      default:
+        aliases:
+          - oodt.filemgr.host
 
   # OODT Workflow Manager + LabCAS configuration
   oodt_wmgr_app:
@@ -32,15 +36,16 @@ services:
       - "9001"
     ports:
       - "9001:9001"
-    links:
-      - oodt_filemgr_app:oodt.filemgr.host
-      - oodt_fmprod_app:oodt.fmprod.host
     volumes:
       - $PWD/wmgr/etc/workflow.properties:/usr/local/oodt/cas-workflow/etc/workflow.properties
       - $PWD/common/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-workflow/lib/labcas-backend-common-0.7.jar
-      - PWD/data/EDRN:/data/EDRN
+      - $PWD/data/EDRN:/data/EDRN
     volumes_from:
       - labcas_rnaseq_app
+    networks:
+      default:
+        aliases:
+          - oodt.wmgr.host
 
   # OODT Product Server
   oodt_fmprod_app:
@@ -51,17 +56,15 @@ services:
       - "8080"
     ports:
       - "8080:8080"
-    links:
-      - oodt_filemgr_app:oodt.filemgr.host
     volumes_from:
       - labcas_rnaseq_app
+    networks:
+      default:
+        aliases:
+          - oodt.fmprod.host
 
   # LabCAS rnaseq workflow
   # provides workflow+product configuration to the FM, WM services
   labcas_rnaseq_app:
     image: oodthub/labcas-rnaseq-test
     container_name: labcas_rnaseq
-
-volumes:
-  
-
