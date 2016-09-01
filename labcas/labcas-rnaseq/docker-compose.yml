@@ -16,21 +16,21 @@ services:
   oodt_filemgr_app:
     env_file: labcas.env
     image: oodthub/oodt-filemgr
-   container_name: oodt_filemgr
-   expose:
-     - "9000"
-     - "8983"
-   ports:
-     - "8983:8983"
-     - "9000:9000"
-   volumes:
-     - $PWD/filemgr/etc/filemgr.properties:/usr/local/oodt/cas-filemgr/etc/filemgr.properties
-     - $PWD/common/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-filemgr/lib/labcas-backend-common-0.7.jar
-     - $LABCAS_STAGING:/usr/local/oodt/staging
-     - $LABCAS_ARCHIVE:/usr/local/oodt/archive
-   volumes_from:
-     - labcas_rnaseq_app
-   networks:
+    container_name: oodt_filemgr
+    expose:
+      - "9000"
+      - "8983"
+    ports:
+      - "8983:8983"
+      - "9000:9000"
+    volumes:
+      - $PWD/filemgr/etc/filemgr.properties:/usr/local/oodt/cas-filemgr/etc/filemgr.properties
+      - $PWD/common/labcas-backend-common-0.7.jar:/usr/local/oodt/cas-filemgr/lib/labcas-backend-common-0.7.jar
+      - $LABCAS_STAGING:/usr/local/oodt/staging
+      - $LABCAS_ARCHIVE:/usr/local/oodt/archive
+    volumes_from:
+      - labcas_rnaseq_app
+    networks:
       default:
         aliases:
           - oodt.filemgr.host
