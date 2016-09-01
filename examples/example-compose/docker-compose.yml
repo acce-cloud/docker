@@ -11,6 +11,7 @@ networks:
 
 services:
 
+  # OODT file manager
   oodt_filemgr_app:
     image: oodthub/oodt-filemgr
     container_name: oodt_filemgr
@@ -22,7 +23,13 @@ services:
       - "9000:9000"
     volumes_from:
       - oodt_test_workflow_app
+    networks:
+      default: {}
+      mynet:
+        aliases:
+          - oodt.filemgr.host
 
+  # OODT workflow manager
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
     #container_name: oodt_wmgr
@@ -30,8 +37,8 @@ services:
       - "9001"
     ports:
       - "9001"
-    links:
-      - oodt_filemgr_app:oodt.filemgr.host
+    #links:
+    #  - oodt_filemgr_app:oodt.filemgr.host
     volumes_from:
       - oodt_test_workflow_app
     environment:
@@ -42,6 +49,19 @@ services:
         aliases:
           - oodt.wmgr.host
 
+  # workflow manager container used as client to workflow manager server instances
+  oodt_wmgr_client_app:
+    image: oodthub/oodt-wmgr
+    container_name: oodt_wmgr_client
+    environment:
+      - "WORKFLOW_URL=http://oodt.wmgr.host:9001"
+    # keep container running
+    entrypoint: ["tail", "-f", "/dev/null"]
+    networks:
+      default: {}
+      mynet:
+
+  # OODT product server
   oodt_fmprod_app:
     image: oodthub/oodt-fmprod
     container_name: oodt_fmprod
@@ -49,12 +69,17 @@ services:
       - "8080"
     ports:
       - "8080:8080"
-    links:
-      - oodt_filemgr_app:oodt.filemgr.host
+    #links:
+    #  - oodt_filemgr_app:oodt.filemgr.host
     volumes_from:
       - oodt_test_workflow_app
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+    networks:
+      default: {}
+      mynet:
+        aliases:
+          - oodt.fmprod.host
 
   oodt_test_workflow_app:
     image: oodthub/oodt-example-compose
