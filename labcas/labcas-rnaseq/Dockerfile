@@ -1,8 +1,17 @@
 # Image containing configuration for LabCAS 'rnaseq' workflow
+# This image must extend oodthub/oodt-wmgr because the 'htseq-count' executable
+# can only be installed in a system-wide location, not in a separate $PGE_ROOT location
+# the Workflow manager needs to have access to htseq-count
 
-FROM oodthub/labcas-node
+FROM oodthub/oodt-wmgr
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
+
+# must steup LABCAS environment to use when deploying LabCAS workflows
+ENV LABCAS_HOME $OODT_HOME
+ENV LABCAS_ARCHIVE $OODT_ARCHIVE
+ENV LABCAS_STAGING $OODT_STAGING
+ENV LABCAS_CONFIG $OODT_CONFIG
 
 # update libraries
 RUN yum -y update && yum clean all
