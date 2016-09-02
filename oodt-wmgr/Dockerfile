@@ -22,5 +22,7 @@ COPY stop.sh /usr/local/bin/stop-wmgr.sh
 COPY supervisord.conf /etc/supervisor/supervisord-workflow.conf
 
 EXPOSE 9001
+VOLUME $OODT_STAGING
+VOLUME $OODT_ARCHIVE
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord-workflow.conf"]
