@@ -11,7 +11,7 @@ services:
   # OODT file manager
   oodt_filemgr_app:
     image: oodthub/oodt-filemgr
-    container_name: oodt_filemgr
+    container_name: myfilemgr
     expose:
       - "9000"
       - "8983"
@@ -29,13 +29,11 @@ services:
   # OODT workflow manager
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
-    #container_name: oodt_wmgr
+    #container_name: mywmgr
     expose:
       - "9001"
     ports:
       - "9001"
-    #links:
-    #  - oodt_filemgr_app:oodt.filemgr.host
     volumes_from:
       - oodt_test_workflow_app
     environment:
@@ -49,7 +47,7 @@ services:
   # workflow manager container used as client to workflow manager server instances
   oodt_wmgr_client_app:
     image: oodthub/oodt-wmgr
-    container_name: oodt_wmgr_client
+    container_name: mywmgr_client
     environment:
       - "WORKFLOW_URL=http://oodt.wmgr.host:9001"
     # keep container running
@@ -61,13 +59,11 @@ services:
   # OODT product server
   oodt_fmprod_app:
     image: oodthub/oodt-fmprod
-    container_name: oodt_fmprod
+    container_name: myfmprod
     expose:
       - "8080"
     ports:
       - "8080:8080"
-    #links:
-    #  - oodt_filemgr_app:oodt.filemgr.host
     volumes_from:
       - oodt_test_workflow_app
     environment:
@@ -80,4 +76,4 @@ services:
 
   oodt_test_workflow_app:
     image: oodthub/oodt-example-compose
-    container_name: oodt_example_compose
+    container_name: myapp
