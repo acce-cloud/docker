@@ -54,7 +54,7 @@ services:
     entrypoint: ["tail", "-f", "/dev/null"]
     networks:
       default: {}
-      mynetwork:
+      mynetwork: {}
 
   # OODT product server
   oodt_fmprod_app:
