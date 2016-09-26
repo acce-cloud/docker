@@ -12,7 +12,8 @@ function build_and_push() {
 
   # build the module
   cd $img
-  docker build -t oodthub/$img .
+  docker build --no-cache -t oodthub/$img .
+  cd ..
 
   # optionally push the module to Docker Hub
   if [ $pushit == '--push' ]; then
