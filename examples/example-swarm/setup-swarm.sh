@@ -1,6 +1,8 @@
 #!/bin/sh
 # OODT SWARM DEMO
-# script to setup a Docker Swarm composed of:
+# Example script to setup a Docker Swaem cluster on a set of local VMs created with Docker Machine
+
+# The swarm is composed of:
 # - 'swarm-keystore' node running a consul key/value service
 # - 'swarm-master' node
 # - 3 'swarm-node-oX' worker nodes, configured to run an OODT file manager or an OODT workflow manager
