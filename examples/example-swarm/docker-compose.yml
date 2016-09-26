@@ -12,7 +12,7 @@ services:
 
   oodt_filemgr_app:
     image: oodthub/oodt-filemgr
-    container_name: oodt.filemgr.host
+    container_name: oodt_filemgr
     expose:
       - "9000"
       - "8983"
@@ -21,9 +21,14 @@ services:
       - "9000:9000"
     environment:
       - "constraint:oodt_type==filemgr"
+    networks:
+      default:
+        aliases:
+          - oodt.filemgr.host
 
-  oodt_example_app:
-    image: oodthub/oodt-example-swarm
+  oodt_wmgr_app:
+    image: oodthub/oodt-wmgr
+    container_name: oodt.wmgr.host
     expose:
       - "9001"
     ports:

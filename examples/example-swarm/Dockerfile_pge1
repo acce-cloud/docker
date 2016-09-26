@@ -1,0 +1,31 @@
+# Docker image for running test PGE #1
+#
+
+FROM centos:centos6.7
+
+MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
+
+# Update to last version
+#RUN yum -y update; yum clean all
+
+# define directory structure
+ENV INPUT_DIR /data/input
+RUN mkdir -p $INPUT_DIR
+VOLUME $INPUT_DIR
+
+ENV OUTPUT_DIR /data/output
+RUN mkdir -p $OUTPUT_DIR
+VOLUME $OUTPUT_DIR
+
+ENV PGE_DIR /data/pges
+RUN mkdir -p $PGE_DIR
+VOLUME $PGE_DIR
+ENV PATH=$PATH:$PGE_DIR
+
+# install PGEs
+COPY pges/  $PGE_DIR/
+
+# execute PGE at startup, override arguments
+ENTRYPOINT ["run_pge1.sh"]
+CMD ["o1", "s1"]
+#CMD ["tail", "-f", "/dev/null"]
