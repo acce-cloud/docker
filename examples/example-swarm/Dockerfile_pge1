@@ -25,7 +25,5 @@ ENV PATH=$PATH:$PGE_DIR
 # install PGEs
 COPY pges/  $PGE_DIR/
 
-# execute PGE at startup, override arguments
-ENTRYPOINT ["run_pge1.sh"]
-CMD ["o1", "s1"]
-#CMD ["tail", "-f", "/dev/null"]
+# once started, keep container running
+CMD ["tail", "-f", "/dev/null"]
