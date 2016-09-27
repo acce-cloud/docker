@@ -21,14 +21,21 @@ services:
       - "9000"
     environment:
       - "constraint:oodt_type==filemgr"
-    #volumes_from:
-    #  - oodt_test_workflow_app
+    volumes_from:
+      - oodt_filemgr_config
     #volumes:
     #  - $OODT_ARCHIVE/:/usr/local/oodt/archive
     networks:
       default:
         aliases:
           - oodt.filemgr.host
+
+  # custom configuration of file manager
+  # must run on the same swarm node as the file manager
+  oodt_filemgr_config:
+    image: oodthub/oodt-example-swarm
+    environment:
+      - "constraint:oodt_type==filemgr"
 
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
@@ -38,7 +45,7 @@ services:
     ports:
       - "9001"
     volumes_from:
-      - oodt_test_workflow_app
+      - oodt_wmgr_config
     volumes:
       - $OODT_ARCHIVE/:/usr/local/oodt/archive
     environment:
@@ -49,9 +56,8 @@ services:
         aliases:
           - oodt.wmgr.host
 
-  oodt_test_workflow_app:
+  oodt_wmgr_config:
     image: oodthub/oodt-example-swarm
-    container_name: myapp
 
   # workflow manager container used as client to workflow manager server instances
   oodt_wmgr_client_app:
