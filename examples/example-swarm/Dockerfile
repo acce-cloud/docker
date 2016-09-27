@@ -6,8 +6,8 @@ FROM oodthub/oodt-node
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
 # install custom OODT File Manager configuration
-RUN mkdir -p $OODT_CONFIG/test-workflow
-COPY filemgr_config/policy/ $OODT_CONFIG/test-workflow/policy/
+#RUN mkdir -p $OODT_CONFIG/test-workflow
+#COPY filemgr_config/policy/ $OODT_CONFIG/test-workflow/policy/
 
 # create final OODT archive directory
 RUN mkdir -p  $OODT_ARCHIVE/test-workflow
