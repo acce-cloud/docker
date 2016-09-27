@@ -1,9 +1,6 @@
 # Docker image that contains the specific configuration and executables
 # for running the OODT test workflow.
 
-# Note: this workflow produces products of type 'GenericFile' 
-# so no custom File Manager policy is installed.
-
 FROM oodthub/oodt-node
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
