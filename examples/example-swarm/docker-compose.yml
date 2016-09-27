@@ -14,15 +14,17 @@ services:
     image: oodthub/oodt-filemgr
     container_name: oodt_filemgr
     expose:
-      - "9000"
       - "8983"
+      - "9000"
     ports:
-      - "8983:8983"
-      - "9000:9000"
+      - "8983"
+      - "9000"
     environment:
       - "constraint:oodt_type==filemgr"
-    volumes_from:
-      - oodt_test_workflow_app
+    #volumes_from:
+    #  - oodt_test_workflow_app
+    #volumes:
+    #  - $OODT_ARCHIVE/:/usr/local/oodt/archive
     networks:
       default:
         aliases:
@@ -37,6 +39,8 @@ services:
       - "9001"
     volumes_from:
       - oodt_test_workflow_app
+    volumes:
+      - $OODT_ARCHIVE/:/usr/local/oodt/archive
     environment:
       - "constraint:oodt_type==wmgr"
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
