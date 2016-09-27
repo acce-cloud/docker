@@ -30,16 +30,16 @@ services:
           - oodt.filemgr.host
 
   oodt_wmgr_app:
-    image: oodthub/oodt-wmgr
+    image: oodthub/oodt-swarm-example
     #container_name: oodt.wmgr.host
     expose:
       - "9001"
     ports:
       - "9001"
-    volumes_from:
-      - oodt_wmgr_config
-    volumes:
-      - $OODT_ARCHIVE/:/usr/local/oodt/archive
+    #volumes_from:
+    #  - oodt_wmgr_config
+    #volumes:
+    #  - $OODT_ARCHIVE/:/usr/local/oodt/archive
     environment:
       - "constraint:oodt_type==wmgr"
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
@@ -48,8 +48,8 @@ services:
         aliases:
           - oodt.wmgr.host
 
-  oodt_wmgr_config:
-    image: oodthub/oodt-example-swarm
+  #oodt_wmgr_config:
+  #  image: oodthub/oodt-example-swarm
 
   # workflow manager container used as client to workflow manager server instances
   oodt_wmgr_client_app:

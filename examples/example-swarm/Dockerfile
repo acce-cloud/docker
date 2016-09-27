@@ -1,7 +1,8 @@
 # Docker image that contains the specific configuration and executables
 # for running the OODT test workflow.
+# For now, this image extends oodthub.oodt-wmgr so it can be deployed standalone on different hosts
 
-FROM oodthub/oodt-node
+FROM oodthub/oodt-wmgr
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
