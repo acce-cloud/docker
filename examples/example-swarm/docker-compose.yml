@@ -46,7 +46,7 @@ services:
           - oodt.wmgr.host
 
   oodt_test_workflow_app:
-    build: .
+    image: oodthub/oodt-example-swarm
     container_name: myapp
 
   # workflow manager container used as client to workflow manager server instances

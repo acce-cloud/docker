@@ -75,8 +75,10 @@ docker pull oodthub/oodt-filemgr
 # download OODT WM onto swarm-node-02,03
 eval "$(docker-machine env swarm-node-02)"
 docker pull oodthub/oodt-wmgr
+docker pull oodthub/oodt-example-swarm 
 eval "$(docker-machine env swarm-node-03)"
 docker pull oodthub/oodt-wmgr
+docker pull oodthub/oodt-example-swarm 
 
 # run N instances of WM + test-workflow on swarm-node-02,03
 #echo "\nRUNNING MULTIPLE OODT WORKFLOW MANAGER CONTAINERS: 'oodt-example-swarm' ON SWARM NODES: swarm-node-02,03"
