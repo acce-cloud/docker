@@ -21,6 +21,8 @@ services:
       - "9000:9000"
     environment:
       - "constraint:oodt_type==filemgr"
+    volumes_from:
+      - oodt_test_workflow_app
     networks:
       default:
         aliases:
@@ -28,11 +30,13 @@ services:
 
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
-    container_name: oodt.wmgr.host
+    #container_name: oodt.wmgr.host
     expose:
       - "9001"
     ports:
       - "9001"
+    volumes_from:
+      - oodt_test_workflow_app
     environment:
       - "constraint:oodt_type==wmgr"
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
@@ -40,3 +44,16 @@ services:
       default:
         aliases:
           - oodt.wmgr.host
+
+  oodt_test_workflow_app:
+    build: .
+    container_name: myapp
+
+  # workflow manager container used as client to workflow manager server instances
+  oodt_wmgr_client_app:
+    image: oodthub/oodt-wmgr
+    container_name: mywmgr_client
+    environment:
+      - "WORKFLOW_URL=http://oodt.wmgr.host:9001"
+    # keep container running
+    entrypoint: ["tail", "-f", "/dev/null"]
