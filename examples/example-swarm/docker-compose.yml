@@ -30,7 +30,7 @@ services:
           - oodt.filemgr.host
 
   oodt_wmgr_app:
-    image: oodthub/oodt-swarm-example
+    image: oodthub/oodt-example-swarm
     #container_name: oodt.wmgr.host
     expose:
       - "9001"
