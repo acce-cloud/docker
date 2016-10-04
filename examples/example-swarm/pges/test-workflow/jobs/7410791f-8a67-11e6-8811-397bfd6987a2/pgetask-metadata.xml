@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cas:metadata xmlns:cas="http://oodt.jpl.nasa.gov/1.0/cas">
+<keyval type="vector">
+<key>WorkflowManagerUrl</key>
+<val>http%3A%2F%2F306af77132ed%3A9001</val>
+</keyval>
+<keyval type="vector">
+<key>TaskId</key>
+<val>urn%3Aoodt%3ATestWorkflowTask2</val>
+</keyval>
+<keyval type="vector">
+<key>WorkflowInstId</key>
+<val>7410791f-8a67-11e6-8811-397bfd6987a2</val>
+</keyval>
+<keyval type="vector">
+<key>JobId</key>
+<val>7410791f-8a67-11e6-8811-397bfd6987a2</val>
+</keyval>
+<keyval type="vector">
+<key>PGETask_DumpMetadata</key>
+<val>true</val>
+</keyval>
+<keyval type="vector">
+<key>PCS_MetFileExtension</key>
+<val>met</val>
+</keyval>
+<keyval type="vector">
+<key>WorkflowId</key>
+<val>urn%3Aoodt%3ATestWorkflow</val>
+</keyval>
+<keyval type="vector">
+<key>PCS_WorkflowManagerUrl</key>
+<val>http%3A%2F%2Flocalhost%3A9001%2F</val>
+</keyval>
+<keyval type="vector">
+<key>ProductionDateTime</key>
+<val>2016-10-04T19%3A19%3A23.980Z</val>
+</keyval>
+<keyval type="vector">
+<key>PGETask_ConfigFilePath</key>
+<val>%2Fusr%2Flocal%2Foodt%2Fworkflows%2Ftest-workflow%2Fpge-configs%2Ftest-workflow-task2-config.pgeconfig.xml</val>
+</keyval>
+<keyval type="vector">
+<key>PGETask_Name</key>
+<val>TestWorkflowTask2</val>
+</keyval>
+<keyval type="vector">
+<key>WorkflowName</key>
+<val>Test+Workflow</val>
+</keyval>
+<keyval type="vector">
+<key>Project</key>
+<val>123</val>
+</keyval>
+<keyval type="vector">
+<key>PCS_ActionRepoFile</key>
+<val>file%3A%2Fusr%2Flocal%2Foodt%2Fcas-crawler%2Fpolicy%2Fcrawler-config.xml</val>
+</keyval>
+<keyval type="vector">
+<key>ProcessingNode</key>
+<val>306af77132ed</val>
+</keyval>
+<keyval type="vector">
+<key>PCS_ClientTransferServiceFactory</key>
+<val>org.apache.oodt.cas.filemgr.datatransfer.LocalDataTransferFactory</val>
+</keyval>
+<keyval type="vector">
+<key>PCS_FileManagerUrl</key>
+<val>http%3A%2F%2Foodt.filemgr.host%3A9000</val>
+</keyval>
+<keyval type="vector">
+<key>JobDir</key>
+<val>%2Fusr%2Flocal%2Foodt%2Fpges%2Ftest-workflow%2Fjobs%2F7410791f-8a67-11e6-8811-397bfd6987a2</val>
+</keyval>
+<keyval type="vector">
+<key>Dataset</key>
+<val>abc</val>
+</keyval>
+</cas:metadata>

@@ -38,7 +38,10 @@ services:
       - "9001"
     #volumes_from:
     #  - oodt_wmgr_config
-    #volumes:
+    # FIXME
+    volumes:
+       - $PWD/wmgr_config/test-workflow/:/usr/local/oodt/workflows/test-workflow/  
+       - $PWD/pges/test-workflow/:/usr/local/oodt/pges/test-workflow/  
     #  - $OODT_ARCHIVE/:/usr/local/oodt/archive
     environment:
       - "constraint:oodt_type==wmgr"

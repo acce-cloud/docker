@@ -1,0 +1,4 @@
+#!sh
+cd /usr/local/oodt/pges/test-workflow/jobs/db3c0602-8a66-11e6-86ac-a35557d22913
+python /usr/local/oodt/pges/test-workflow/pge.py --out output1.txt --size 10
+

@@ -15,11 +15,11 @@ RUN mkdir -p  $OODT_ARCHIVE/test-workflow
 
 # install custom OODT Workflow Manager configuration
 RUN mkdir -p $OODT_CONFIG/test-workflow
-COPY wmgr_config/ $OODT_CONFIG/test-workflow/
+COPY wmgr_config/test-workflow/ $OODT_CONFIG/test-workflow/
 
 # install custom PGEs
 RUN mkdir -p $PGE_ROOT/test-workflow
-COPY pges/ $PGE_ROOT/test-workflow/
+COPY pges/test-workflow/ $PGE_ROOT/test-workflow/
 
 VOLUME $OODT_CONFIG
 VOLUME $PGE_ROOT
