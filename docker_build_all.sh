@@ -11,9 +11,7 @@ function build_and_push() {
   echo "\nBUILDING MODULE=$img PUSH=$pushit\n"
 
   # build the module
-  cd $img
   docker build --no-cache -t oodthub/$img .
-  cd ..
 
   # optionally push the module to Docker Hub
   if [ $pushit == '--push' ]; then
@@ -24,10 +22,14 @@ function build_and_push() {
 
 # optional 'push' argument
 pushit=${1:-false}
+ 
+# this directory
+wrkdir=`pwd`
 
 # loop over ordered list of OODT images
 images=('oodt-node' 'oodt-filemgr' 'oodt-wmgr' 'oodt-resmgr' 'oodt-fmprod' 'oodt-crawler')
 
 for img in ${images[*]}; do
+   cd "$wrkdir/$img"
    build_and_push $img $pushit
 done
