@@ -1,26 +1,25 @@
-# Python program that writes a binary file of N number of MB
+# Python program that writes a binary file of given name and given size.
 # The output file is written to the directory $OUTPUT_DIR if defined,
 # otherwise in the current directory where the program is executed.
 #
 # Usage:
-# python writeBin.py day# orbit# scene#
+# python writeBin.py filename size_in_mb
+#
+# Example:
+# python writeBin.py output.txt 100
 
 import sys
 import os
 from array import array
 
-size_in_mb = 10
-
 # parse command line arguments
-day   = sys.argv[1]
-orbit = sys.argv[2]
-scene = sys.argv[3]
+file_name   = sys.argv[1]
+size_in_mb = int(sys.argv[2])
 
 # output directory, defaults to current directory
 output_dir = os.environ.get("OUTPUT_DIR", os.environ["PWD"])
 
 # output file
-file_name = "output_d%s_o%s_s%s.out" % (day, orbit, scene)
 output_file = open(os.path.join(output_dir, file_name), 'wb')
 
 # each loop iteration will write out 1 KB of data
