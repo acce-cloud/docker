@@ -4,7 +4,7 @@
 	<!-- PGE commands -->
 	<exe dir="[JobDir]" shell="/bin/bash">
 		<cmd>cd [JobDir]</cmd>
-		<cmd>python [PGE_ROOT]/test-workflow/pge.py --in output1.out --out output2.out --size 10</cmd>
+		<cmd>python [PGE_ROOT]/test-workflow/multi_pges.py 2</cmd>
 	</exe>
 
 	<customMetadata>

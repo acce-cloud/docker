@@ -1,4 +1,0 @@
-#!sh
-cd /usr/local/oodt/pges/test-workflow/jobs/7410791f-8a67-11e6-8811-397bfd6987a2
-python /usr/local/oodt/pges/test-workflow/pge.py --in output1.out --out output2.out --size 10
-
