@@ -5,6 +5,7 @@
   <tasks>
   	
     <task id="urn:oodt:TestWorkflowTask1" />
+    <task id="urn:oodt:TestWorkflowTask2" />
     
   </tasks>
 

@@ -4,7 +4,7 @@
 	<!-- PGE commands -->
 	<exe dir="[JobDir]" shell="/bin/bash">
 		<cmd>cd [JobDir]</cmd>
-		<cmd>python [PGE_ROOT]/test-workflow/writeBin.py 1 2 3</cmd>
+		<cmd>python [PGE_ROOT]/test-workflow/writeBin.py output.txt 10</cmd>
 	</exe>
 
 	<customMetadata>
