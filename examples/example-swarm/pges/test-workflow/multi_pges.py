@@ -1,22 +1,32 @@
-# Python script that submits multiple PGEs
+# Python script that submits multiple PGEs as independent parallel threads.
+# The main program waits for all PGE to terminate before exiting.
+#
 # Usage:
-# python multi_pges.py <task_number>
+# python multi_pges.py --task <task_number> --pges <number_of_pges>
+#
 # Example:
-# python multi_pges.py 1
-# python multi_pges.py 2
+# python multi_pges.py
+# python multi_pges.py --task 1 --pges 10
+# python multi_pges.py --task 2 --pges 10
+#
+# Note: if task_number>1: it is assumed that as many input files already exist from the previous task,
+# to be read at the beginning of this task
 
 import os
 import sys
+import argparse
 import multiprocessing
 
 SIZE_IN_MB = 10
+HEAP_IN_MB = 100
+EXEC_TIME = 5
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 def worker(output_file_name=None, input_file_name=None):
     """thread worker function"""
 
     pge_file_path = os.path.join(DIR_PATH, "pge.py")
-    command = "python %s" % pge_file_path
+    command = "python %s --heap %s --time %s" % (pge_file_path, HEAP_IN_MB, EXEC_TIME)
 
     if input_file_name is not None:
        command += " --in %s" % input_file_name
@@ -30,11 +40,16 @@ def worker(output_file_name=None, input_file_name=None):
 
 if __name__ == '__main__':
 
-    # parse command line argument
-    task_number = int(sys.argv[1])
+    # parse command line arguments
+    parser = argparse.ArgumentParser(description="Python Script that submits multiple simulated PGEs")
+    parser.add_argument('--task', type=int, help="Task number (optional, default: 1)",  default=1)
+    parser.add_argument('--pges', type=int, help="Number of PGEs (optional, default: 1)",  default=1)
+    args_dict = vars( parser.parse_args() )
+    task_number = int(args_dict['task'])
+    number_pges = int(args_dict['pges'])
 
     jobs = []
-    for i in range(1, 6):
+    for i in range(1, number_pges+1):
         
         # default arguments
         output_file_name = 'output%s_%s.out' % (task_number, i)
