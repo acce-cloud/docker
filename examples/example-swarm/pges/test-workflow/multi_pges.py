@@ -2,12 +2,12 @@
 # The main program waits for all PGE to terminate before exiting.
 #
 # Usage:
-# python multi_pges.py --task <task_number> --pges <number_of_pges>
+# python multi_pges.py --run <run_number> --task <task_number> --pges <number_of_pges>
 #
 # Example:
 # python multi_pges.py
-# python multi_pges.py --task 1 --pges 10
-# python multi_pges.py --task 2 --pges 10
+# python multi_pges.py --run 1 --task 1 --pges 10
+# python multi_pges.py --run 1 --task 2 --pges 10
 #
 # Note: if task_number>1: it is assumed that as many input files already exist from the previous task,
 # to be read at the beginning of this task
@@ -44,7 +44,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Python Script that submits multiple simulated PGEs")
     parser.add_argument('--task', type=int, help="Task number (optional, default: 1)",  default=1)
     parser.add_argument('--pges', type=int, help="Number of PGEs (optional, default: 1)",  default=1)
+    parser.add_argument('--run', type=int, help="Number number (optional, default: 1)",  default=1)
     args_dict = vars( parser.parse_args() )
+    run_number = int(args_dict['run'])
     task_number = int(args_dict['task'])
     number_pges = int(args_dict['pges'])
 
@@ -52,10 +54,10 @@ if __name__ == '__main__':
     for i in range(1, number_pges+1):
         
         # default arguments
-        output_file_name = 'output%s_%s.out' % (task_number, i)
+        output_file_name = 'output_run%s_task%s_pge%s.out' % (run_number, task_number, i)
         input_file_name = None
         if task_number>1:
-           input_file_name = 'output%s_%s.out' % (task_number-1, i)
+           input_file_name = 'output_run%s_task%s_pge%s.out' % (run_number, task_number-1, i)
 
         p = multiprocessing.Process(target=worker, args=(output_file_name, input_file_name))
         jobs.append(p)

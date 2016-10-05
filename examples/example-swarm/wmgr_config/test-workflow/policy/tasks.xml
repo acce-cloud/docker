@@ -40,6 +40,7 @@
     <requiredMetFields>
       <metfield name="Dataset" />
       <metfield name="Project" />
+      <metfield name="Run" />
     </requiredMetFields>
     
   </task>
@@ -65,6 +66,7 @@
     <requiredMetFields>
       <metfield name="Dataset" />
       <metfield name="Project" />
+      <metfield name="Run" />
     </requiredMetFields>
 
   </task>
