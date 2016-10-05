@@ -4,7 +4,7 @@
 	<!-- PGE commands -->
 	<exe dir="[JobDir]" shell="/bin/bash">
 		<cmd>cd [JobDir]</cmd>
-		<cmd>python [PGE_ROOT]/test-workflow/multi_pges.py 2</cmd>
+		<cmd>python [PGE_ROOT]/test-workflow/multi_pges.py --task 2 --pges 2</cmd>
 	</exe>
 
 	<customMetadata>
@@ -15,7 +15,7 @@
 	<!-- CAS Crawler directives -->
 	<output>
 	  <dir path="[JobDir]" createBeforeExe="false">
-            <files regExp=".*\.out" 
+            <files regExp="output.*\.out" 
                    metFileWriterClass="org.apache.oodt.cas.pge.writers.metlist.MetadataListPcsMetFileWriter" 
                    args="[OODT_CONFIG]/test-workflow/pge-configs/metout.xml" />
         </dir>
