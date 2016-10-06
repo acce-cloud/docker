@@ -1,4 +1,4 @@
-# Python script that submits multiple PGEs as independent parallel threads.
+# Python script that submits multiple PGEs as independent parallel sub-processes.
 # The main program waits for all PGE to terminate before exiting.
 #
 # Usage:
@@ -30,7 +30,7 @@ logging.basicConfig(level=logging.DEBUG,
 
 
 def worker(output_file_name, input_file_name):
-    """thread worker function"""
+    """sub-process worker function"""
 
     logging.info("Starting process: %s" % multiprocessing.current_process().name)
 
@@ -64,6 +64,8 @@ if __name__ == '__main__':
     number_pges = int(args_dict['pges'])
 
     jobs = []
+    # start all sub-processes
+    # main program will wait for all sub-processes to end before exiting itself
     for i in range(1, number_pges+1):
         
         # default arguments
@@ -74,5 +76,6 @@ if __name__ == '__main__':
 
         pname = "Process_run%s_task%s_pge%s" % (run_number, task_number, i)
         p = multiprocessing.Process(target=worker, args=(output_file_name, input_file_name), name=pname)
+        #p.daemon = True # run as daemon, main program may exit before sub-process is over
         jobs.append(p)
         p.start()
