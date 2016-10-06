@@ -27,8 +27,9 @@ docker-machine create \
                swarm-master
 
 # create swarm workwers, assign label based on services they will host:
+# use more memory for workers
 echo "\nCREATING SWARM WORKER NODE: 'swarm-node-01'"
-docker-machine create -d virtualbox \
+docker-machine create -d virtualbox --virtualbox-memory 4096 \
     --swarm \
     --swarm-discovery="consul://$(docker-machine ip swarm-keystore):8500" \
     --engine-opt="cluster-store=consul://$(docker-machine ip swarm-keystore):8500" \
@@ -36,7 +37,7 @@ docker-machine create -d virtualbox \
     --engine-label oodt_type=filemgr \
     swarm-node-01
 echo "\nCREATING SWARM WORKER NODE: 'swarm-node-02'"
-docker-machine create -d virtualbox \
+docker-machine create -d virtualbox --virtualbox-memory 4096 \
     --swarm \
     --swarm-discovery="consul://$(docker-machine ip swarm-keystore):8500" \
     --engine-opt="cluster-store=consul://$(docker-machine ip swarm-keystore):8500" \
@@ -44,7 +45,7 @@ docker-machine create -d virtualbox \
     --engine-label oodt_type=wmgr \
     swarm-node-02
 echo "\nCREATING SWARM WORKER NODE: 'swarm-node-03'"
-docker-machine create -d virtualbox \
+docker-machine create -d virtualbox --virtualbox-memory 4096 \
     --swarm \
     --swarm-discovery="consul://$(docker-machine ip swarm-keystore):8500" \
     --engine-opt="cluster-store=consul://$(docker-machine ip swarm-keystore):8500" \
