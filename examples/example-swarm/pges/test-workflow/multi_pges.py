@@ -15,6 +15,7 @@
 import os
 import sys
 import argparse
+import logging
 import multiprocessing
 
 SIZE_IN_MB = 10
@@ -22,8 +23,16 @@ HEAP_IN_MB = 1
 EXEC_TIME = 5
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
+# set log level
+logging.basicConfig(level=logging.DEBUG,
+                    format='[%(levelname)s] (%(threadName)-10s) %(message)s',
+                    )
+
+
 def worker(output_file_name, input_file_name):
     """thread worker function"""
+
+    logging.info("Starting process: %s" % multiprocessing.current_process().name)
 
     pge_file_path = os.path.join(DIR_PATH, "pge.py")
     command = "python %s --heap %s --time %s" % (pge_file_path, HEAP_IN_MB, EXEC_TIME)
@@ -34,8 +43,11 @@ def worker(output_file_name, input_file_name):
     if output_file_name is not None:
        command += " --out %s --size %s" % (output_file_name, SIZE_IN_MB)
  
-    print command
+    logging.info("Executing command: %s" % command)
     os.system(command)
+
+    logging.info("Stopping process: %s" % multiprocessing.current_process().name)
+
     return
 
 if __name__ == '__main__':
@@ -59,6 +71,7 @@ if __name__ == '__main__':
         if task_number>1:
            input_file_name = 'output_run%s_task%s_pge%s.out' % (run_number, task_number-1, i)
 
-        p = multiprocessing.Process(target=worker, args=(output_file_name, input_file_name))
+        pname = "Process_run%s_task%s_pge%s" % (run_number, task_number, i)
+        p = multiprocessing.Process(target=worker, args=(output_file_name, input_file_name), name=pname)
         jobs.append(p)
         p.start()
