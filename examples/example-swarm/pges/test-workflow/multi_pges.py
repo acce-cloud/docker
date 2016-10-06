@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.DEBUG,
 def worker(output_file_name, input_file_name):
     """sub-process worker function"""
 
-    logging.info("Starting process: %s" % multiprocessing.current_process().name)
+    logging.info("Starting worker: %s" % multiprocessing.current_process().name)
 
     pge_file_path = os.path.join(DIR_PATH, "pge.py")
     command = "python %s --heap %s --time %s" % (pge_file_path, HEAP_IN_MB, EXEC_TIME)
@@ -44,10 +44,10 @@ def worker(output_file_name, input_file_name):
        command += " --out %s --size %s" % (output_file_name, SIZE_IN_MB)
  
     # execute command in a subshell, wait for command return status
-    logging.info("Executing command: %s" % command)
+    logging.info("Executing system command: %s" % command)
     status = os.system(command)
 
-    logging.info("Process: %s ended, return status: %s" % (multiprocessing.current_process().name, status))
+    logging.info("Worker: %s ended, return status: %s" % (multiprocessing.current_process().name, status))
 
     return
 
@@ -84,3 +84,4 @@ if __name__ == '__main__':
     # (not strictly necessary as it happens anyway for non-daemon sub-processes)
     for p in jobs:
         p.join()
+        logging.debug("Sub-process: %s exit code=%s" % (p.name, p.exitcode))
