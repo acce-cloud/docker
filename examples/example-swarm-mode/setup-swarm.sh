@@ -8,36 +8,37 @@
 # - 2 'swarm-worker2,3' worker nodes, configured to run a customized OODT workflow manager
 
 # create all VMs
-#docker-machine create -d virtualbox swarm-manager
-#docker-machine create -d virtualbox swarm-worker1
-#docker-machine create -d virtualbox --virtualbox-memory 2048 swarm-worker2
-#docker-machine create -d virtualbox --virtualbox-memory 2048 swarm-worker3
+docker-machine create -d virtualbox swarm-manager
+docker-machine create -d virtualbox swarm-worker1
+docker-machine create -d virtualbox --virtualbox-memory 2048 swarm-worker2
+docker-machine create -d virtualbox --virtualbox-memory 2048 swarm-worker3
 
 # start the swarm
 eval $(docker-machine env swarm-manager)
 export MANAGER_IP=`docker-machine ip swarm-manager`
-#docker swarm init --advertise-addr $MANAGER_IP
+docker swarm init --advertise-addr $MANAGER_IP
 token_worker=`docker swarm join-token --quiet worker`
 token_manager=`docker swarm join-token --quiet manager`
 
 # join the swarm
-#eval $(docker-machine env swarm-worker1)
-#docker swarm join --token $token_worker $MANAGER_IP:2377
+eval $(docker-machine env swarm-worker1)
+docker swarm join --token $token_worker $MANAGER_IP:2377
 
-#eval $(docker-machine env swarm-worker2)
-#docker swarm join --token $token_worker $MANAGER_IP:2377
-#eval $(docker-machine env swarm-worker3)
-#docker swarm join --token $token_worker $MANAGER_IP:2377
+eval $(docker-machine env swarm-worker2)
+docker swarm join --token $token_worker $MANAGER_IP:2377
+
+eval $(docker-machine env swarm-worker3)
+docker swarm join --token $token_worker $MANAGER_IP:2377
 
 # create overlay network
-#eval $(docker-machine env swarm-manager)
-#docker network create -d overlay swarm-network
+eval $(docker-machine env swarm-manager)
+docker network create -d overlay swarm-network
 
 # assign functional labels to nodes
-#eval $(docker-machine env swarm-manager)
-#docker node update --label-add oodt_type=filemgr swarm-worker1
-#docker node update --label-add oodt_type=wmgr swarm-worker2
-#docker node update --label-add oodt_type=wmgr swarm-worker3
+eval $(docker-machine env swarm-manager)
+docker node update --label-add oodt_type=filemgr swarm-worker1
+docker node update --label-add oodt_type=wmgr swarm-worker2
+docker node update --label-add oodt_type=wmgr swarm-worker3
 
 # start OODT File Manager on swarm-worker1
 eval $(docker-machine env swarm-manager)
@@ -49,4 +50,4 @@ docker service create --replicas 1 --name wmgr -p 9001:9001 --network swarm-netw
 docker service scale wmgr=2
 
 # start OODT Worklow Manager client on swarm-master
-docker service create --replicas 1 --name wmgr_client --network swarm-network  --constraint 'node==swarm-manager' oodthub/oodt-wmgr
+#docker service create --replicas 1 --name wmgr_client --network swarm-network  --constraint 'node==swarm-manager' oodthub/oodt-wmgr
