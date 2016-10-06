@@ -43,10 +43,11 @@ def worker(output_file_name, input_file_name):
     if output_file_name is not None:
        command += " --out %s --size %s" % (output_file_name, SIZE_IN_MB)
  
+    # execute command in a subshell, wait for command return status
     logging.info("Executing command: %s" % command)
-    os.system(command)
+    status = os.system(command)
 
-    logging.info("Stopping process: %s" % multiprocessing.current_process().name)
+    logging.info("Process: %s ended, return status: %s" % (multiprocessing.current_process().name, status))
 
     return
 
