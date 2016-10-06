@@ -22,7 +22,7 @@ HEAP_IN_MB = 1
 EXEC_TIME = 5
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
-def worker(output_file_name=None, input_file_name=None):
+def worker(output_file_name, input_file_name):
     """thread worker function"""
 
     pge_file_path = os.path.join(DIR_PATH, "pge.py")
