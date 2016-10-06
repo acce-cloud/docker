@@ -51,3 +51,6 @@ docker service scale wmgr=2
 
 # start OODT Worklow Manager client on swarm-master
 #docker service create --replicas 1 --name wmgr_client --network swarm-network  --constraint 'node==swarm-manager' oodthub/oodt-wmgr
+
+# start swarm visualizer on swarm manager
+docker run -it -d -p 5000:5000 -e HOST=$MANAGER_IP -e PORT=5000 -v /var/run/docker.sock:/var/run/docker.sock manomarks/visualizer
