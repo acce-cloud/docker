@@ -79,3 +79,8 @@ if __name__ == '__main__':
         #p.daemon = True # run as daemon, main program may exit before sub-process is over
         jobs.append(p)
         p.start()
+
+    # wait for sub-processes to terminate
+    # (not strictly necessary as it happens anyway for non-daemon sub-processes)
+    for p in jobs:
+        p.join()
