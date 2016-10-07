@@ -23,6 +23,9 @@ token_manager=`docker swarm join-token --quiet manager`
 # drain the swarm manager to prevent assigment of tasks
 docker node update --availability drain swarm-manager
 
+# start swarm visualizer on swarm manager
+docker run -it -d -p 5000:5000 -e HOST=$MANAGER_IP -e PORT=5000 -v /var/run/docker.sock:/var/run/docker.sock manomarks/visualizer
+
 # join the swarm
 eval $(docker-machine env swarm-worker1)
 docker swarm join --token $token_worker $MANAGER_IP:2377
@@ -52,8 +55,6 @@ eval $(docker-machine env swarm-manager)
 docker service create --replicas 1 --name wmgr -p 9001:9001 --network swarm-network --constraint 'node.labels.oodt_type==wmgr' -e 'FILEMGR_URL=http://filemgr:9000/' oodthub/test-wmgr
 docker service scale wmgr=2
 
-# start OODT Worklow Manager client on swarm-master
-#docker service create --replicas 1 --name wmgr_client --network swarm-network  --constraint 'node==swarm-manager' oodthub/oodt-wmgr
-
-# start swarm visualizer on swarm manager
-docker run -it -d -p 5000:5000 -e HOST=$MANAGER_IP -e PORT=5000 -v /var/run/docker.sock:/var/run/docker.sock manomarks/visualizer
+# start OODT Worklow Manager client on swarm-worker1
+eval $(docker-machine env swarm-manager)
+docker service create --replicas 1 --name wmgr-client --network swarm-network  --constraint 'node.labels.oodt_type==wmgr' oodthub/test-wmgr-client
