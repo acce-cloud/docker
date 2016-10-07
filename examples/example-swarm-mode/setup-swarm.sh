@@ -20,6 +20,9 @@ docker swarm init --advertise-addr $MANAGER_IP
 token_worker=`docker swarm join-token --quiet worker`
 token_manager=`docker swarm join-token --quiet manager`
 
+# drain the swarm manager to prevent assigment of tasks
+docker node update --availability drain swarm-manager
+
 # join the swarm
 eval $(docker-machine env swarm-worker1)
 docker swarm join --token $token_worker $MANAGER_IP:2377
