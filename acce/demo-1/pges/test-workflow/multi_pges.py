@@ -21,7 +21,7 @@ import multiprocessing
 
 SIZE_IN_MB = 10
 HEAP_IN_MB = 1
-EXEC_TIME = 10
+EXEC_TIME = 5
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # set log level
