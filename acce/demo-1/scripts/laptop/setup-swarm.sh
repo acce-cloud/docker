@@ -76,15 +76,3 @@ docker service scale wmgr=2
 # use the Workflow Manager image with overridden command so not to run another server
 eval $(docker-machine env swarm-manager)
 docker service create --replicas 1 --name wmgr-client --network swarm-network  --constraint 'node.labels.oodt_type==filemgr' oodthub/oodt-wmgr tail -f /dev/null
-
-# execute test-workflow (twice)
-eval $(docker-machine env swarm-worker1)
-wmgr_client_id=`docker ps | grep wmgr-client | awk '{print $1}'`
-docker exec -it ${wmgr_client_id} sh -c "cd /usr/local/oodt/cas-workflow/bin; ./wmgr-client --url http://wmgr:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123 --key Run 1"
-sleep 5
-docker exec -it ${wmgr_client_id} sh -c "cd /usr/local/oodt/cas-workflow/bin; ./wmgr-client --url http://wmgr:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123 --key Run 2"
-sleep 5
-
-# query Solr
-eval $(docker-machine env swarm-manager)
-wget -O select.json "http://${MANAGER_IP}:8983/solr/oodt-fm/select?q=*%3A*&wt=json&indent=true&rows=0" 
