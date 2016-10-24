@@ -5,3 +5,5 @@
 **/*.swp
 **/target
 **/logs
+**/.met
+**/.out
