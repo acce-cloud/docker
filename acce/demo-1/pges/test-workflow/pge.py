@@ -8,7 +8,7 @@
 # All arguments are optional, some have defaults.
 #
 # Usage:
-# python pge.py [--in <input_file_name> [--out <output_file_name>] [--size <output_file_name_size_in_mb>] [--heap <heap_size_in_mb>] [--time <exec_time_in_secs>]
+# python pge.py [--in <input_file_name> [--out <output_file_name>] [--size <output_file_size_in_mb>] [--heap <heap_size_in_mb>] [--time <exec_time_in_secs>]
 #
 # Example:
 # python pge.py --in input.txt --out output.txt --size 100 --heap 10 --time 5
