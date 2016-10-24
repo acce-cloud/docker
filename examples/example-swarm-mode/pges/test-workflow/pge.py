@@ -79,17 +79,18 @@ def execute(input_file_name=None, output_file_name=None, output_size_in_mb=1, he
   if output_file_name is not None:
      output_file_path = os.path.join(data_dir, output_file_name)
      logging.info("Writing output file: %s" % output_file_path)
-     output_file = open(output_file_path, 'wb')
+
+     # use Unix utility to write file of given size
+     os.system("dd if=/dev/urandom of=%s bs=1m count=%s" % (output_file_path, output_size_in_mb))
 
      # each loop iteration will write out 1 KB of data
-     for i in range(output_size_in_mb*1024): # loop over KB
-
-        # array of 128 doubles = 128x8 bytes = 1024 bytes = 1 KB
-        data = range(1024/8)
-        float_array = array('d', data) # array of 'double' - each double is 8 bytes
-        float_array.tofile(output_file)
-
-     output_file.close()
+     #output_file = open(output_file_path, 'wb')
+     #for i in range(output_size_in_mb*1024): # loop over KB
+     #   # array of 128 doubles = 128x8 bytes = 1024 bytes = 1 KB
+     #   data = range(1024/8)
+     #   float_array = array('d', data) # array of 'double' - each double is 8 bytes
+     #   float_array.tofile(output_file)
+     #output_file.close()
 
 if __name__ == '__main__':
     
