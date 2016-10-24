@@ -1,4 +1,5 @@
 # Python script that submits multiple PGEs as independent parallel sub-processes.
+# Each PGE is executed within a separate Python interpreter.
 # The main program waits for all PGE to terminate before exiting.
 #
 # Usage:
@@ -20,7 +21,7 @@ import multiprocessing
 
 SIZE_IN_MB = 10
 HEAP_IN_MB = 1
-EXEC_TIME = 5
+EXEC_TIME = 10
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # set log level
@@ -55,9 +56,9 @@ if __name__ == '__main__':
 
     # parse command line arguments
     parser = argparse.ArgumentParser(description="Python Script that submits multiple simulated PGEs")
-    parser.add_argument('--task', type=int, help="Task number (optional, default: 1)",  default=1)
     parser.add_argument('--pges', type=int, help="Number of PGEs (optional, default: 1)",  default=1)
     parser.add_argument('--run', type=int, help="Number number (optional, default: 1)",  default=1)
+    parser.add_argument('--task', type=int, help="Task number (optional, default: 1)",  default=1)
     args_dict = vars( parser.parse_args() )
     run_number = int(args_dict['run'])
     task_number = int(args_dict['task'])

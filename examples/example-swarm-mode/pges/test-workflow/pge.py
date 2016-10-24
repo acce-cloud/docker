@@ -72,6 +72,7 @@ def execute(input_file_name=None, output_file_name=None, output_size_in_mb=1, he
         if heap_size_in_mb > 0:
            for idx, val in enumerate(heap_array):
                heap_array[idx] += 1
+        time.sleep(1) # sleep 1 second each time
         logging.debug("Working... slept: %s secs" % i)
 
   # optional output
