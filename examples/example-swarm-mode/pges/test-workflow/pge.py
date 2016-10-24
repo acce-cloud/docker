@@ -4,7 +4,7 @@
 # - does some computation
 # - writes one file
 
-# Input/output files are located in the directory $DATA_DIR, or the current directory if $DATADIR is not set.
+# Input/output files are located in the directory $DATA_DIR, or the current directory if $DATA_DIR is not set.
 # All arguments are optional, some have defaults.
 #
 # Usage:
@@ -59,7 +59,7 @@ def execute(input_file_name=None, output_file_name=None, output_size_in_mb=1, he
   # optional (additional) heap allocation
   if heap_size_in_mb > 0:
      num_bytes = heap_size_in_mb*1024*1024
-     num_doubles = num_bytes/8 # each doubnle is 8 bytes
+     num_doubles = num_bytes/8 # each double is 8 bytes
      logging.info("Allocating heap array of: %s doubles" % num_doubles)
      heap_array = array('d', range(num_doubles) ) # array of doubles with total size = num_bytes
      #print h.heap()
