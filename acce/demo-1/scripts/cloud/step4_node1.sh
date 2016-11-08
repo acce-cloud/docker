@@ -23,10 +23,12 @@ docker service create --replicas 1 --name wmgr -p 9001:9001 --network swarm-netw
                       --mount type=bind,src=/usr/local/adeploy/workflows,dst=/usr/local/oodt/workflows\
                       --mount type=bind,src=/usr/local/adeploy/archive,dst=/usr/local/oodt/archive\
                       -e 'FILEMGR_URL=http://filemgr:9000/' oodthub/oodt-wmgr
-docker service scale wmgr=2
 
 # start a wmgr container without starting the Workflow Manager - to be used as client container
 docker service create --replicas 1 --name wmgr-client --network swarm-network  --constraint 'node.labels.oodt_type==filemgr' oodthub/oodt-wmgr tail -f /dev/null
+
+# scale the workflow manager service
+docker service scale wmgr=2
 
 docker service ls
 docker service ps filemgr
