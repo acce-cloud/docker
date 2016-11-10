@@ -4,7 +4,6 @@ FROM centos:centos6.7
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
-
 # install yum dependencies
 RUN yum -y update && \
     yum install -y libcurl \
@@ -24,3 +23,8 @@ RUN mkdir -p /usr/share/doc/R-3.3.1/html
 COPY packages.R /tmp/packages.R
 RUN cd /tmp && \
     R CMD BATCH packages.R
+
+# create working directory including rabbit scripts
+ENV WORKING_DIR /usr/local/rabbit
+RUN mkdir -p $WORKING_DIR
+COPY scripts/ $WORKING_DIR/

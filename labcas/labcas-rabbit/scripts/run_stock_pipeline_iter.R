@@ -1,3 +1,5 @@
+# R script to run a single iteration of the Stock Pipeline for biomarker discovery
+
 # load the rabbit package and stock pipeline
 library(multtest)
 data(golub)
