@@ -1,5 +1,5 @@
-# Docker image for LabCAS installation server
-# This image super-impose the LabCAS environment on top of the existing OODT environment
+# Docker image containing basic LabCAS environment.
+# The LabCAS environment is superimposed onto the OODT environment
 
 FROM oodthub/oodt-node
 
