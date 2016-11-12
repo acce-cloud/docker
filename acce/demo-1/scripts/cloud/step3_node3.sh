@@ -1,6 +1,6 @@
 #!/bin/sh
 # node: acce-build3.dyndns.org
-# Makes this ndoe join the swarm. It needs the swarm worker token as input.
+# Makes this node join the swarm. It needs the swarm worker token as input.
 
 token_worker=$1
 if [ $token_worker = '' ]; then
