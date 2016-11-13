@@ -13,8 +13,9 @@ RUN cd $OODT_HOME && \
     ln -s ./cas-workflow-${OODT_VERSION} ./cas-workflow && \
     ln -s ./cas-crawler-${OODT_VERSION} ./cas-crawler
 
-# customize workflow.properties
+# customize properties
 COPY workflow.properties $OODT_HOME/cas-workflow/etc/workflow.properties
+COPY logging.properties $OODT_HOME/cas-workflow/etc/logging.properties
 
 # install scripts
 COPY start.sh /usr/local/bin/start-wmgr.sh

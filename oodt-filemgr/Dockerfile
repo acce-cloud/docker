@@ -21,8 +21,9 @@ RUN cd $OODT_HOME && \
 # create directories that don't exist
 RUN mkdir -p ${OODT_HOME}/cas-filemgr/logs
 
-# customize filemgr.properties
+# customize properties
 COPY filemgr.properties $OODT_HOME/cas-filemgr/etc/filemgr.properties
+COPY logging.properties $OODT_HOME/cas-filemgr/etc/logging.properties
 
 # expose port to other containers
 EXPOSE 9000
