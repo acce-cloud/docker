@@ -20,4 +20,5 @@ EXPOSE 9000 9001 9002 8983
 
 # start labcas services
 COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY conf/ /etc/supervisor/
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

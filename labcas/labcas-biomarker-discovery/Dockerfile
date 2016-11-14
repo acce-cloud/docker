@@ -28,4 +28,3 @@ RUN cd /tmp && \
 RUN cd $LABCAS_SRC/labcas-backend && \
     git pull && \
     mvn install -Dworkflow=biomarker-discovery
-
