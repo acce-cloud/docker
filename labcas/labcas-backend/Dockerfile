@@ -18,7 +18,11 @@ RUN cd $LABCAS_SRC/labcas-backend && \
 # expose service ports
 EXPOSE 9000 9001 9002 8983
 
-# start labcas services
+# copy configuration and startup scripts
 COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY conf/ /etc/supervisor/
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+# start labcas services
+#ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# command can be overridden by child images, or at run time
+CMD ["/usr/local/bin/docker-entrypoint.sh"]
