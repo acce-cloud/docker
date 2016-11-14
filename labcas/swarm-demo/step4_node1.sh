@@ -23,9 +23,10 @@ docker service create --replicas 1 --name labcas-wmgr \
                       /usr/bin/supervisord -c /etc/supervisor/supervisord-workflow.conf
 
 docker service create --replicas 1 --name labcas-filemgr \
-                      -p 9000:9000 -p 8983:8983 --network swarm-network \
                       --mount type=bind,src=/usr/local/adeploy/archive,dst=/usr/local/oodt/archive \
                       --constraint 'node.labels.oodt_type==filemgr' \
+                      --network swarm-network \
+                      -p 9000:9000 -p 8983:8983 \
                       oodthub/labcas-biomarker-discovery \
                       /usr/bin/supervisord -c /etc/supervisor/supervisord-filemgr.conf
 
