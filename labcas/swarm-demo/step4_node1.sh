@@ -8,13 +8,14 @@
 mkdir -p /usr/local/adeploy/pges
 mkdir -p /usr/local/adeploy/archive
 
-docker service create --replicas 1 --name labcas-biomarker-discovery \
+docker service create --replicas 1 --name labcas-wmgr \
                       -p 9000:9000 -p 8983:8983 --network swarm-network \
                       --mount type=bind,src=/usr/local/adeploy/pges,dst=/usr/local/oodt/pges\
                       --mount type=bind,src=/usr/local/adeploy/archive,dst=/usr/local/oodt/archive\
-                      oodthub/labcas-biomarker-discovery
+                      oodthub/labcas-biomarker-discovery\
+                      /usr/bin/supervisord -c /etc/supervisor/supervisord-wmgr.conf
 
-docker service scale labcas-biomarker-discovery=3
+docker service scale labcas-wmgr=3
 
 docker service ls
-docker service ps labcas-biomarker-discovery
+docker service ps labcas-wmgr
