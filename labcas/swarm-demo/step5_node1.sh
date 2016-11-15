@@ -5,6 +5,10 @@
 # identify the container used to execute the wmgr-client
 wmgr_client_id=`docker ps | grep labcas-wmgr-client | awk '{print $1}'`
 
-# submit the workflow
-docker exec -it ${wmgr_client_id} sh -c "cd /usr/local/oodt/cas-workflow/bin; ./wmgr-client --url http://labcas-wmgr:9001 --operation --sendEvent --eventName biomarker-discovery --metaData --key CrossValidationIterationNumber 3 --key TrainingSet GSE4115_10female_10male.rds"
-sleep 5
+# submit NCV workflows
+NCV=2
+for i in `seq 1 $NCV`
+do
+  docker exec -it ${wmgr_client_id} sh -c "cd /usr/local/oodt/cas-workflow/bin; ./wmgr-client --url http://labcas-wmgr:9001 --operation --sendEvent --eventName biomarker-discovery --metaData --key CrossValidationIterationNumber $i --key TrainingSet GSE4115_10female_10male.rds"
+  sleep 5
+done

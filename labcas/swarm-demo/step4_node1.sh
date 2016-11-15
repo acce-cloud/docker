@@ -37,7 +37,7 @@ docker service create --replicas 1 --name labcas-wmgr-client \
                       oodthub/labcas-biomarker-discovery \
                       tail -f /dev/null
 
-docker service scale wmgr=2
+docker service scale labcas-wmgr=2
 
 docker service ls
 docker service ps labcas-wmgr
