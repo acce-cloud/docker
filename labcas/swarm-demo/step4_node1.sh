@@ -12,7 +12,7 @@ docker node update --label-add oodt_type=filemgr acce-build1.dyndns.org
 docker node update --label-add oodt_type=wmgr acce-build2.dyndns.org
 docker node update --label-add oodt_type=wmgr acce-build3.dyndns.org
 
-# start services: same images, different servers
+# start services: same image, different applications
 docker service create --replicas 1 --name labcas-wmgr \
                       -p 9001:9001 --network swarm-network \
                       --mount type=bind,src=/usr/local/adeploy/pges,dst=/usr/local/oodt/pges \
@@ -37,8 +37,7 @@ docker service create --replicas 1 --name labcas-wmgr-client \
                       oodthub/labcas-biomarker-discovery \
                       tail -f /dev/null
 
-
-docker service scale wmgr=3
+docker service scale wmgr=2
 
 docker service ls
 docker service ps labcas-wmgr
