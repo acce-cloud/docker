@@ -1,14 +1,14 @@
 # Docker image for OODT File Manager configured with Solr back-end
 
-FROM oodthub/oodt-node
+FROM oodthub/oodt-node:0.3
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
 # Solr env
-ENV SOLR_VERSION 5.3.1
-ENV SOLR_INSTALL_DIR ${OODT_HOME}/solr
-ENV SOLR_HOME ${OODT_HOME}/solr-home
-ENV SOLR_DATA_DIR ${OODT_HOME}/solr-index
+#ENV SOLR_VERSION 5.3.1
+#ENV SOLR_INSTALL_DIR ${OODT_HOME}/solr
+#ENV SOLR_HOME ${OODT_HOME}/solr-home
+#ENV SOLR_DATA_DIR ${OODT_HOME}/solr-index
 
 # install OODT File Manager
 COPY pom.xml /tmp/pom.xml
@@ -22,29 +22,17 @@ RUN cd $OODT_HOME && \
 RUN mkdir -p ${OODT_HOME}/cas-filemgr/logs
 
 # customize properties
-COPY filemgr.properties $OODT_HOME/cas-filemgr/etc/filemgr.properties
-COPY logging.properties $OODT_HOME/cas-filemgr/etc/logging.properties
+COPY conf/filemgr.properties $OODT_HOME/cas-filemgr/etc/filemgr.properties
+COPY conf/logging.properties $OODT_HOME/cas-filemgr/etc/logging.properties
 
 # expose port to other containers
 EXPOSE 9000
 
-# Solr
-RUN wget -O /tmp/solr-${SOLR_VERSION}.tgz http://archive.apache.org/dist/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz
-#COPY solr-${SOLR_VERSION}.tgz /tmp/solr-${SOLR_VERSION}.tgz
-RUN cd ${OODT_HOME} && \
-    tar xzf /tmp/solr-${SOLR_VERSION}.tgz && \
-    rm /tmp/solr-${SOLR_VERSION}.tgz && \
-    ln -s ./solr-${SOLR_VERSION} ./solr
-RUN mkdir -p $SOLR_DATA_DIR
-# copy solr-home directory tree (recursively)
-COPY solr-home/ $SOLR_HOME/
-# expose port to other containers
-EXPOSE 8983
-
 # install start/stop scripts
-COPY start.sh /usr/local/bin/start-filemgr.sh
-COPY stop.sh /usr/local/bin/stop-filemgr.sh
-COPY supervisord.conf /etc/supervisor/supervisord-filemgr.conf
+COPY scripts/start.sh /usr/local/bin/start-filemgr.sh
+COPY scripts/stop.sh /usr/local/bin/stop-filemgr.sh
+COPY scripts/test.sh /usr/local/bin/test.sh
+COPY scripts/supervisord.conf /etc/supervisor/supervisord-filemgr.conf
 
 # share archive directory
 VOLUME $OODT_ARCHIVE

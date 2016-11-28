@@ -41,7 +41,7 @@ RUN easy_install supervisor
 RUN mkdir -p /var/log/supervisor
 
 # default OODT environment (inherited by all child images)
-ENV OODT_VERSION 1.0
+ENV OODT_VERSION 0.3
 ENV OODT_HOME /usr/local/oodt
 
 ENV FILEMGR_URL http://localhost:9000/

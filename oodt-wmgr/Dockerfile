@@ -1,6 +1,6 @@
 # Docker image for OODT Workflow Manager and Crawler
 
-FROM oodthub/oodt-node
+FROM oodthub/oodt-node:0.3
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
