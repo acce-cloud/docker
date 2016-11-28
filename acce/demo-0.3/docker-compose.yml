@@ -9,23 +9,30 @@ version: '2'
 
 services:
 
-  oodt_filemgr_app:
+  oodt-filemgr:
     image: oodthub/oodt-filemgr:0.3
     #container_name: oodt.filemgr.host
     expose:
       - "9000"
     ports:
       - "9000:9000"
+    volumes:
+      - ./workflows/test-workflow/policy:/usr/local/oodt/workflows/policy
     volumes_from:
-      - oodt_wmgr_app
+      - oodt-wmgr
 
-  oodt_wmgr_app:
+  oodt-wmgr:
     image: oodthub/oodt-wmgr:0.3
-    #container_name: oodt_wmgr
     expose:
       - "9001"
     ports:
       - "9001:9001"
+    volumes:
+      - ./workflows/test-workflow/policy:/usr/local/oodt/workflows/policy
+      - ./workflows/test-workflow/pge-configs:/usr/local/oodt/workflows/test-workflow/pge-configs
+      - ./pges/test-workflow:/usr/local/oodt/pges/test-workflow
+    environment:
+      - FILEMGR_URL=http://oodt-filemgr:9000
 
   #oodt_fmprod_app:
   #  image: oodthub/oodt-fmprod:0.3
