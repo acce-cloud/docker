@@ -11,7 +11,6 @@ services:
 
   oodt-filemgr:
     image: oodthub/oodt-filemgr:0.3
-    #container_name: oodt.filemgr.host
     expose:
       - "9000"
     ports:
@@ -34,11 +33,13 @@ services:
     environment:
       - FILEMGR_URL=http://oodt-filemgr:9000
 
-  #oodt_fmprod_app:
-  #  image: oodthub/oodt-fmprod:0.3
-  #  expose:
-  #    - "8080"
-  #  ports:
-  #    - "8080:8080"
-  #  volumes_from:
-  #    - oodt_wmgr_app
+  oodt-fmprod:
+    image: oodthub/oodt-fmprod:0.3
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    volumes_from:
+      - oodt-wmgr
+    environment:
+      - FILEMGR_URL=http://oodt-filemgr:9000
