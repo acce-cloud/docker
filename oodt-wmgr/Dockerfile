@@ -14,13 +14,13 @@ RUN cd $OODT_HOME && \
     ln -s ./cas-crawler-${OODT_VERSION} ./cas-crawler
 
 # customize properties
-COPY workflow.properties $OODT_HOME/cas-workflow/etc/workflow.properties
-COPY logging.properties $OODT_HOME/cas-workflow/etc/logging.properties
+COPY conf/workflow.properties $OODT_HOME/cas-workflow/etc/workflow.properties
+COPY conf/logging.properties $OODT_HOME/cas-workflow/etc/logging.properties
+COPY conf/supervisord.conf /etc/supervisor/supervisord-workflow.conf
 
 # install scripts
-COPY start.sh /usr/local/bin/start-wmgr.sh
-COPY stop.sh /usr/local/bin/stop-wmgr.sh
-COPY supervisord.conf /etc/supervisor/supervisord-workflow.conf
+COPY scripts/start.sh /usr/local/bin/start-wmgr.sh
+COPY scripts/stop.sh /usr/local/bin/stop-wmgr.sh
 
 EXPOSE 9001
 VOLUME $OODT_STAGING
