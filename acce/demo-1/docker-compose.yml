@@ -1,0 +1,56 @@
+# Docker compose file for running the OODT test-workflow onto a single host.
+
+version: '2'
+
+services:
+
+  oodt-filemgr:
+    image: oodthub/oodt-filemgr
+    expose:
+      - "8983"
+      - "9000"
+    ports:
+      - "9000:9000"
+      - "8983:8983"
+    volumes:
+      - ./workflows:/usr/local/oodt/workflows
+    volumes_from:
+      - oodt-wmgr
+
+  oodt-wmgr:
+    image: oodthub/oodt-wmgr
+    expose:
+      - "9001"
+    ports:
+      - "9001:9001"
+    volumes:
+      - ./workflows:/usr/local/oodt/workflows
+      - ./pges:/usr/local/oodt/pges
+    #  - ./conf/workflow.properties:/usr/local/oodt/cas-workflow/etc/workflow.properties
+    environment:
+      - FILEMGR_URL=http://oodt-filemgr:9000
+      - RESMGR_URL=http://oodt-resmgr:9002
+
+  oodt-fmprod:
+    image: oodthub/oodt-fmprod
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    volumes_from:
+      - oodt-wmgr
+    environment:
+      - FILEMGR_URL=http://oodt-filemgr:9000
+
+  oodt-resmgr:
+    image: oodthub/oodt-resmgr
+    expose:
+      - "9002"
+    ports:
+      - "9002:9002"
+    volumes:
+      - ./workflows:/usr/local/oodt/workflows
+      - ./pges:/usr/local/oodt/pges
+    environment:
+      - WORKFLOW_URL=http://oodt-wmgr:9001
+      - RESMGR_HOME=/usr/local/oodt/cas-resource

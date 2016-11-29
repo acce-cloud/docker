@@ -22,8 +22,9 @@ RUN cd $OODT_HOME && \
 RUN mkdir -p ${OODT_HOME}/cas-filemgr/logs
 
 # customize properties
-COPY filemgr.properties $OODT_HOME/cas-filemgr/etc/filemgr.properties
-COPY logging.properties $OODT_HOME/cas-filemgr/etc/logging.properties
+COPY conf/filemgr.properties $OODT_HOME/cas-filemgr/etc/filemgr.properties
+COPY conf/logging.properties $OODT_HOME/cas-filemgr/etc/logging.properties
+COPY conf/supervisord.conf /etc/supervisor/supervisord-filemgr.conf
 
 # expose port to other containers
 EXPOSE 9000
@@ -42,9 +43,8 @@ COPY solr-home/ $SOLR_HOME/
 EXPOSE 8983
 
 # install start/stop scripts
-COPY start.sh /usr/local/bin/start-filemgr.sh
-COPY stop.sh /usr/local/bin/stop-filemgr.sh
-COPY supervisord.conf /etc/supervisor/supervisord-filemgr.conf
+COPY scripts/start.sh /usr/local/bin/start-filemgr.sh
+COPY scripts/stop.sh /usr/local/bin/stop-filemgr.sh
 
 # share archive directory
 VOLUME $OODT_ARCHIVE

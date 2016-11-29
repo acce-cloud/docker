@@ -45,6 +45,7 @@ Required env variables (set by calling client):
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
+
           <!-- unpack OODT modules into installation directories -->
           <execution>
             <id>install-oodt</id>
@@ -66,6 +67,67 @@ Required env variables (set by calling client):
               <overWrite>true</overWrite>
             </configuration>
           </execution>
+
+          <!-- install additional OODT jars into Resource Manager -->
+          <execution>
+            <id>install-oodt-jars</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-filemgr</artifactId>
+                  <version>${oodt.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-workflow</artifactId>
+                  <version>${oodt.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-crawler</artifactId>
+                  <version>${oodt.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-pge</artifactId>
+                  <version>${oodt.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${oodt.dir}/cas-resource-${oodt.version}/lib</outputDirectory>
+            </configuration>
+          </execution>
+
+          <!-- install OODT crawler -->
+          <execution>
+            <id>install-oodt-crawler</id>
+            <phase>install</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-crawler</artifactId>
+                  <version>${oodt.version}</version>
+                  <classifier>dist</classifier>
+                  <type>tar.gz</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${oodt.dir}</outputDirectory>
+              <overWrite>true</overWrite>
+            </configuration>
+          </execution>
+
         </executions>
       </plugin>
 
