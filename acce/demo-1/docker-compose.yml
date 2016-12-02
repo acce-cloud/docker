@@ -15,7 +15,7 @@ services:
     volumes:
       - ./workflows:/usr/local/oodt/workflows
     volumes_from:
-      - oodt-wmgr
+      - oodt-resmgr
 
   oodt-wmgr:
     image: oodthub/oodt-wmgr
@@ -26,7 +26,7 @@ services:
     volumes:
       - ./workflows:/usr/local/oodt/workflows
       - ./pges:/usr/local/oodt/pges
-    #  - ./conf/workflow.properties:/usr/local/oodt/cas-workflow/etc/workflow.properties
+      - ./conf/workflow.properties:/usr/local/oodt/cas-workflow/etc/workflow.properties
     environment:
       - FILEMGR_URL=http://oodt-filemgr:9000
       - RESMGR_URL=http://oodt-resmgr:9002
@@ -38,7 +38,7 @@ services:
     ports:
       - "8080:8080"
     volumes_from:
-      - oodt-wmgr
+      - oodt-resmgr
     environment:
       - FILEMGR_URL=http://oodt-filemgr:9000
 
