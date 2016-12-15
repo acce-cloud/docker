@@ -48,6 +48,7 @@ COPY setupSPDMdir.sh ${SPDM_BUILD}/.
 RUN cd ${SPDM_BUILD}; sh setupSPDMdir.sh
 RUN cd $SPDM_BUILD/spdm-${SPDM_VERSION}/spdm-distribution-${SPDM_VERSION}; sh configure.sh
 #
-# Start services automatically
+# Retart services automatically
 #
-RUN cd ${SPDM_HOME}/spdm-main/bin; for service in filemgr workflow resource all-crawler ; do sh spdm_startup.sh ${service}; done
+RUN cd ${SPDM_HOME}/spdm-main/bin; sh spdm_shutdown.sh all
+RUN cd ${SPDM_HOME}/spdm-main/bin; for service in filemgr resource workflow all-crawler ; do sh spdm_startup.sh ${service}; done
