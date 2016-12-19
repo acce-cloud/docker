@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright 2009-2015, by the California Institute of Technology.
+   ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
+
+   @author mcayanan
+   @version $Id$
+-->
+<pgeConfig>
+  <import file="../PgeCommonMetadata.xml"/>
+
+  <!-- files to ingest -->
+  <output>
+    <dir path="[ProductLocation]" createBeforeExe="true">
+      <files regExp="SMAP_L1C_S0_HIRES_.*\.h5" metFileWriterClass="[SpdmMetFileWriter]" args="[ConfigMetoutFile]" primary="true"/>
+      <files name="[RunConfigFile]" metFileWriterClass="[MetFileWriter]" args="[RunConfigMetoutFile]" />
+      <files regExp="SMAP_L1C_S0_HIRES.*\.log" metFileWriterClass="[MetFileWriter]" args="[LogMetoutFile]" />
+      <files regExp="SMAP_L1C_S0_HIRES.*\.iso\.xml" metFileWriterClass="[MetFileWriter]" args="[ISOMetoutFile]"/>
+      <files regExp="SMAP_L1C_S0_HIRES.*\.qa" metFileWriterClass="[MetFileWriter]" args="[QAMetoutFile]"/>
+      <files regExp="SMAP_CAL_LT_HIRES.*\.xml" metFileWriterClass="[SpdmMetFileWriter]" args="[CalLtHiResMetoutFile]" required="false"/>
+      <files regExp="SMAP_CAL_LT_HIRES_LIST.*\.list" metFileWriterClass="[MetFileWriter]" args="[CalLtHiResListMetoutFile]"/>
+      <files regExp="SMAP_CAL_LT_LORES_LIST.*\.list" metFileWriterClass="[MetFileWriter]" args="[CalLtLoResListMetoutFile]"/>
+    </dir>
+  </output>
+
+  <customMetadata>
+    <metadata key="ConfigMetoutFile" val="[PGECONFIG_HOME]/conf/L01_Radar/L1C_S0_HiRes_metout.xml" />
+    <metadata key="CalLtHiResMetoutFile" val="[PGECONFIG_HOME]/conf/L01_Radar/Cal_Lt_HiRes_metout.xml"/>
+    <metadata key="CalLtHiResListMetoutFile" val="[PGECONFIG_HOME]/conf/L01_Radar/Cal_Lt_HiRes_list_metout.xml"/>
+    <metadata key="CalLtLoResListMetoutFile" val="[PGECONFIG_HOME]/conf/L01_Radar/Cal_Lt_LoRes_list_metout.xml"/>
+
+    <!-- SPS RunConfig Information -->
+
+    <!-- static -->
+    <metadata key="SPSNameGroup~SPSName" val="[PGETask_Name]" />
+
+    <!-- List of Input Files -->
+    <metadata key="StaticAncillaryFileGroup~SpiceSCLK"/>
+    <metadata key="StaticAncillaryFileGroup~SpiceProjectFrames"/>
+    <metadata key="StaticAncillaryFileGroup~SpiceLeapSecond"/>
+    <metadata key="StaticAncillaryFileGroup~SpicePlanetaryConstants"/>
+    <metadata key="StaticAncillaryFileGroup~SpiceEarthFixedFrame"/>
+    <metadata key="StaticAncillaryFileGroup~SpicePlanetaryTrajectory"/>
+    <metadata key="StaticAncillaryFileGroup~SpiceEarthOrientation"/>
+    <metadata key="StaticAncillaryFileGroup~RadarAntennaPattern"/>
+    <metadata key="StaticAncillaryFileGroup~BFPQ_DECODE_MANT"/>
+    <metadata key="StaticAncillaryFileGroup~BFPQ_DECODE_EXP"/>
+    <metadata key="StaticAncillaryFileGroup~CAL_LT_HIRES_DEFAULT"/>
+    <metadata key="StaticAncillaryFileGroup~HiResExternalTargets"/>
+    <metadata key="StaticAncillaryFileGroup~L1CAdHoc"/>
+
+    <metadata key="DynamicAncillaryFileGroup~SpiceSpacecraftTrajectory"/>
+    <metadata key="DynamicAncillaryFileGroup~SpiceSpacecraftAttitude"/>
+    <metadata key="DynamicAncillaryFileGroup~SpiceAntennaAzimuth"/>
+    <metadata key="DynamicAncillaryFileGroup~CAL_ST"/>
+    <metadata key="DynamicAncillaryFileGroup~CAL_LT_HIRES_LIST" val="[ProductLocation]/[CalLtHiResListFilename]"/>
+    <metadata key="DynamicAncillaryFileGroup~CAL_LT_LORES_LIST" val="[ProductLocation]/[CalLtLoResListFilename]"/>
+    <metadata key="DynamicAncillaryFileGroup~TotalElectronContent"/>
+    <metadata key="DynamicAncillaryFileGroup~DEM_LIST"/>
+
+    <!-- Output Location -->
+    <metadata key="ProductPathGroup~ShortName" val="L1C_S0_HiRes" />
+
+    <!-- Debug Options -->
+    <metadata key="DebugLevelGroup~GEOM" val="OFF" />
+    <metadata key="DebugLevelGroup~RNG_COMP" val="OFF" />
+    <metadata key="DebugLevelGroup~RFI" val="OFF" />
+    <metadata key="DebugLevelGroup~AZI_CMP" val="OFF" />
+    <metadata key="DebugLevelGroup~RADCAL" val="OFF" />
+    <metadata key="DebugLevelGroup~GRID" val="OFF" />
+    <metadata key="DebugLevelGroup~CORR" val="OFF" />
+    <metadata key="DebugLevelGroup~FR" val="OFF" />
+    <metadata key="DebugLevelGroup~INFO" val="OFF" />
+    <metadata key="DebugLevelGroup~TEST" val="OFF" />
+
+    <metadata key="DebugGroup~DebugSwitch" val="Off" />
+    <metadata key="DebugGroup~DebugPath" key-ref="ProductLocation" />
+    <metadata key="DebugGroup~CaptureLogMessagesSwitch" val="On" />
+    <metadata key="DebugGroup~EchoToScreenSwitch" val="Off" />
+
+    <!-- Specifies whether certain Analysis products are created -->
+    <metadata key="AnalysisGroup~SLP" val="Off"/>
+    <metadata key="AnalysisGroup~BFPQ" val="Off"/>
+    <metadata key="AnalysisGroup~RACOMP" val="Off"/>
+    <metadata key="AnalysisGroup~NOSUB" val="Off"/>
+
+    <metadata key="NumProcessors" val="[NumProcessors]"/>
+
+  </customMetadata>
+
+  <!-- how to run science PGE -->
+  <exe dir="[RunInDir]" shellType="/bin/sh">
+    <!-- Move Radar Calibration Long Term List Files to the production location -->
+    <cmd>mv [PGETask_ProductPath]/[PGETask_Name]/list/[CalLtHiResListFilename] [ProductLocation]</cmd>
+    <cmd>mv [PGETask_ProductPath]/[PGETask_Name]/list/[CalLtLoResListFilename] [ProductLocation]</cmd>
+    <cmd>[Executable] [ProductLocation]/[RunConfigFile] [CshPipeToStdOutAndError] [CasPgeLogFileName]</cmd>
+  </exe>
+
+</pgeConfig>
