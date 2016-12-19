@@ -1,5 +1,5 @@
 #!/bin/sh
-# Script that stops and removed the Docker container with the Stock Pipeline for biomaker discovery.
+# Script that stops and removes the Docker container with the Stock Pipeline for biomaker discovery.
 # Note that all output will be lost as well.
 
 docker stop labcas-biomarker-discovery
