@@ -2,11 +2,15 @@
 
 FROM oodthub/oodt-node
 
+# Required arguments
+ARG spdm_git_user=
+ARG spdm_git_token=
+
 #
 # install sqlplus
 #
-COPY oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.rpm /tmp/.
-COPY oracle-instantclient12.1-sqlplus-12.1.0.2.0-1.x86_64.rpm /tmp/.
+COPY build/apps/oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.rpm /tmp/.
+COPY build/apps/oracle-instantclient12.1-sqlplus-12.1.0.2.0-1.x86_64.rpm /tmp/.
 # 
 RUN yum -y install libaio
 RUN cd /tmp; rpm -ivh oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.rpm
@@ -31,8 +35,8 @@ RUN mkdir -p $SPDM_BUILD
 #
 # compile SPDM
 #
-RUN cd $SPDM_BUILD; curl -fsSL --user clwong:7864d53965defcc7332335ea3fe9699f0acebe22 https://github.jpl.nasa.gov/SPDM/spdm/archive/${SPDM_VERSION}.tar.gz | tar -xvz
-COPY spdm.properties ${SPDM_BUILD}/spdm-${SPDM_VERSION}
+RUN cd $SPDM_BUILD; curl -fsSL --user $spdm_git_user:$spdm_git_token https://github.jpl.nasa.gov/SPDM/spdm/archive/${SPDM_VERSION}.tar.gz | tar -xvz
+COPY build/spdm.properties ${SPDM_BUILD}/spdm-${SPDM_VERSION}
 RUN cd ${SPDM_BUILD}/spdm-${SPDM_VERSION}; mvn install -Pspdm-dev -Dmaven.test.skip=true
 #
 # distrubte SPDM
@@ -43,12 +47,12 @@ RUN cd $SPDM_BUILD/spdm-${SPDM_VERSION}/spdm-distribution-${SPDM_VERSION}; sh in
 # setup & configure SPDM with pre-set property file, setenv.sh
 #
 RUN cd ${SPDM_HOME}/spdm-main/bin; mv setenv.sh setenv.sh.orig
-COPY setenv.sh ${SPDM_HOME}/spdm-main/bin/.
-COPY setupSPDMdir.sh ${SPDM_BUILD}/.
+COPY config/setenv.sh ${SPDM_HOME}/spdm-main/bin/.
+COPY build/setupSPDMdir.sh ${SPDM_BUILD}/.
 RUN cd ${SPDM_BUILD}; sh setupSPDMdir.sh
 RUN cd $SPDM_BUILD/spdm-${SPDM_VERSION}/spdm-distribution-${SPDM_VERSION}; sh configure.sh
 #
 # Retart services automatically
 #
-RUN cd ${SPDM_HOME}/spdm-main/bin; sh spdm_shutdown.sh all
-RUN cd ${SPDM_HOME}/spdm-main/bin; for service in filemgr resource workflow all-crawler ; do sh spdm_startup.sh ${service}; done
+COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+CMD ["/usr/local/bin/docker-entrypoint.sh"]

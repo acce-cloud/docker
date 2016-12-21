@@ -101,8 +101,8 @@ export DB_PORT=1521
 export DB_INSTANT=ECOSTRSD
 
 #--- Database username and password ---
-export FILEMGR_DB_USER=acce
-export FILEMGR_DB_PASS=A#c17!!!
+export FILEMGR_DB_USER=
+export FILEMGR_DB_PASS=
 
 #--- LDAP url and LDAP users ---
 export LDAP_URL=ldap://ldap.jpl.nasa.gov:389
