@@ -13,7 +13,7 @@ RUN yum -y update; yum clean all
 
 # install system utilities
 RUN yum -y update && \
-    yum -y install git lsof unzip python-argparse python-setuptools tar wget zip && \
+    yum -y install git lsof unzip python-argparse python-setuptools python-pip tar wget zip && \
     yum clean all
 
 # Java 8
