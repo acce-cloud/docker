@@ -7,7 +7,7 @@ MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 # install dependencies
 RUN yum -y update && \
     yum -y install epel-release && \
-    yum -y install logrotate socat python-pip && \
+    yum -y install logrotate socat && \
     yum clean all
 
 # install zero-dependency Erlang from RabbitMQ
@@ -19,6 +19,8 @@ RUN rpm -ivh erlang-19.2.0-1.el6.x86_64.rpm
 # runs as user "rabbitmq"
 # database location: /var/lib/rabbitmq/mnesia
 # logs location: /var/log/rabbitmq
+# env file location: /etc/rabbitmq/rabbitmq-env.conf
+# config file location: /etc/rabbitmq/rabbitmq.config 
 # start/stop: /sbin/service rabbitmq-server stop/start/etc
 # or rabbitmqctl stop/status
 
@@ -26,14 +28,19 @@ ADD https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_
 RUN rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc
 RUN rpm -ivh rabbitmq-server-3.6.6-1.el6.noarch.rpm
 
-# must increase the number of per-user file descriptors before starting the server
-RUN ulimit -S -n 65536
+# enable the Management plugin and web UI
+RUN rabbitmq-plugins --offline enable rabbitmq_management
+
+# customize environment
+COPY conf/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
 
 # install python client libraries
 RUN pip install pika
 
 EXPOSE 5672 15672
 
+# copy all scripts to /usr/local/bin
+COPY scripts/ /usr/local/bin/
+
 # start the server
-COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
