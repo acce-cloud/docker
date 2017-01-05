@@ -2,10 +2,6 @@
 
 version: '2'
 
-networks:
-  mynetwork:
-    driver: bridge
-
 services:
 
   # OODT file manager
@@ -21,8 +17,7 @@ services:
     volumes_from:
       - oodt_test_workflow_app
     networks:
-      default: {}
-      mynetwork:
+      default:
         aliases:
           - oodt.filemgr.host
 
@@ -39,8 +34,7 @@ services:
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
     networks:
-      default: {}
-      mynetwork:
+      default:
         aliases:
           - oodt.wmgr.host
 
@@ -52,9 +46,6 @@ services:
       - "WORKFLOW_URL=http://oodt.wmgr.host:9001"
     # keep container running
     entrypoint: ["tail", "-f", "/dev/null"]
-    networks:
-      default: {}
-      mynetwork: {}
 
   # OODT product server
   oodt_fmprod_app:
@@ -69,8 +60,7 @@ services:
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
     networks:
-      default: {}
-      mynetwork:
+      default:
         aliases:
           - oodt.fmprod.host
 

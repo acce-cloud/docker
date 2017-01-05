@@ -71,6 +71,7 @@ ENV MAVEN_HOME /usr/share/maven
 VOLUME /root/.m2
 
 # install Supervisor
+# /usr/local/bin/python ==> installs executable under /usr/local/bin/supervisord
 RUN easy_install supervisor
 RUN mkdir -p /var/log/supervisor
 

@@ -49,5 +49,5 @@ COPY scripts/stop.sh /usr/local/bin/stop-filemgr.sh
 # share archive directory
 VOLUME $OODT_ARCHIVE
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord-filemgr.conf"]
+CMD ["/usr/local/bin/supervisord", "-c", "/etc/supervisor/supervisord-filemgr.conf"]
 #ENTRYPOINT ["/usr/local/bin/start-filemgr.sh"]
