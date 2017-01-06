@@ -9,6 +9,7 @@ import os
 
 def callback(ch, method, properties, body):
     print("Submitting workflow %r: %r" % (method.routing_key, body))
+    os.system("cd $OODT_HOME/cas-workflow/bin; ./wmgr-client --url http://localhost:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123")
 
 # connect to RabbitMQ server: use RABBITMQ_URL or default to guest/guest @ localhost
 url = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')

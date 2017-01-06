@@ -8,6 +8,7 @@ rabbitmqctl set_permissions -p / oodt-user ".*" ".*" ".*"
 
 # create admin user
 rabbitmqctl add_user oodt-admin changeit
+rabbitmqctl set_permissions -p / oodt-admin ".*" ".*" ".*"
 rabbitmqctl set_user_tags oodt-admin administrator
 
 # delete default user

@@ -28,11 +28,13 @@ services:
     expose:
       - "9001"
     ports:
-      - "9001"
+      - "9001:9001"
     volumes_from:
       - oodt_test_workflow_app
+      - oodt_rabbitmq_app
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+      - "RABBITMQ_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
     networks:
       default:
         aliases:
@@ -64,6 +66,22 @@ services:
         aliases:
           - oodt.fmprod.host
 
+  # RabbitMQ server
+  oodt_rabbitmq_app:
+    image: oodthub/oodt-rabbitmq
+    container_name: myrabbitmq
+    expose:
+      - "5672"
+      - "15672"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      default:
+        aliases:
+          - oodt.rabbitmq.host
+
+  # image with specific test-workflow configuration
   oodt_test_workflow_app:
     image: oodthub/oodt-example-compose
     container_name: myapp

@@ -50,16 +50,13 @@ ENV PATH=/usr/local/bin:$PATH
 ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python:$LD_LIBRARY_PATH
 
 # install additional core Python packages
-ENV PILLOW_VERSION 2.8.2
 RUN cd /tmp
 RUN wget --no-check-certificate https://bootstrap.pypa.io/ez_setup.py
 RUN python ez_setup.py --insecure
 RUN rm -rf ez_setup.py
 RUN easy_install pip
 RUN pip install argparse
-RUN pip install virtualenv
-RUN pip install wheel
-RUN pip install --use-wheel Pillow==${PILLOW_VERSION}
+RUN pip install pika
 
 # Maven
 ENV MAVEN_VERSION 3.3.9

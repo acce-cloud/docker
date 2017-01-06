@@ -34,13 +34,14 @@ RUN rabbitmq-plugins --offline enable rabbitmq_management
 # customize environment
 COPY conf/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
 
-# install python client libraries
-RUN pip install pika
-
 EXPOSE 5672 15672
 
 # copy all scripts to /usr/local/bin
 COPY scripts/ /usr/local/bin/
+
+# make python clients available to other containers
+COPY clients/ /usr/local/oodt/rabbitmq/
+VOLUME /usr/local/oodt/rabbitmq
 
 # start the server
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
