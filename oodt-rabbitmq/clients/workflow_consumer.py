@@ -19,8 +19,12 @@ class WorkflowConsumer(object):
                  workflowManagerUrl='http://localhost:9001/',
                  verbose=False):
         
-        # WORKFLOW_URL
-        self.workflowManagerUrl = workflowManagerUrl
+        # connect to Workflow Manager server
+        self.workflowManagerServerProxy = xmlrpclib.ServerProxy(workflowManagerUrl, verbose=verbose)
+        
+        # retrieve workflow definition
+        self.workflowTasks = self._getWorkflowTasks(workflow_event)
+        print 'Workflow tasks: %s' % self.workflowTasks
         
         # RABBITMQ_URL (defaults to guest/guest @ localhost)
         rabbitmqUrl = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')
@@ -47,16 +51,35 @@ class WorkflowConsumer(object):
         '''Method to listen for messages from the RabbitMQ server.'''
         
         print('Waiting for workflow events. To exit press CTRL+C')
-        self.channel.basic_consume(self.callback, queue=self.queue_name, no_ack=True)
+        self.channel.basic_consume(self._callback, queue=self.queue_name, no_ack=True)
         self.channel.start_consuming()
         
 
-    def callback(self, ch, method, properties, body):
-        '''Callback method invoked when a message is received.'''
+    def _callback(self, ch, method, properties, body):
+        '''Callback method invoked when a RabbitMQ message is received.'''
         
         print("Submitting workflow %r: %r" % (method.routing_key, body))
-        os.system("cd $OODT_HOME/cas-workflow/bin; ./wmgr-client --url http://localhost:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123")
+        #os.system("cd $OODT_HOME/cas-workflow/bin; ./wmgr-client --url http://localhost:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123")
 
+    def _getWorkflowTasks(self, workflow_event):
+        '''Retrieve the workflow tasks by the triggering event.'''
+        
+        workflows =  self.workflowManagerServerProxy.workflowmgr.getWorkflowsByEvent(workflow_event)
+        for workflow in workflows:
+             #self._printWorkflow(workflow)
+            tasks = []
+            for task in workflow['tasks']:
+                tasks.append(task['id'])
+            return tasks # assume only one workflow for each event
+                       
+    def _printWorkflow(self, workflowDict):
+        '''Utiliy method to print out a workflow. '''
+        
+        print workflowDict
+        print "Workflow id=%s name=%s" % (workflowDict['id'], workflowDict['name'])
+        for task in workflowDict['tasks']:
+            print "Task: %s" % task        
+            
 
 if __name__ == '__main__':
     ''' Command line invocation method. '''
