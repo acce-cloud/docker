@@ -55,30 +55,36 @@ class WorkflowConsumer(object):
         self.channel.start_consuming()
         
 
-    def _callback(self, ch, method, properties, body):
-        '''Callback method invoked when a RabbitMQ message is received.'''
-        
-        print("Submitting workflow %r: %r" % (method.routing_key, body))
-        #os.system("cd $OODT_HOME/cas-workflow/bin; ./wmgr-client --url http://localhost:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123")
 
     def _getWorkflowTasks(self, workflow_event):
         '''Retrieve the workflow tasks by the triggering event.'''
         
         workflows =  self.workflowManagerServerProxy.workflowmgr.getWorkflowsByEvent(workflow_event)
         for workflow in workflows:
-             #self._printWorkflow(workflow)
             tasks = []
             for task in workflow['tasks']:
                 tasks.append(task['id'])
             return tasks # assume only one workflow for each event
-                       
-    def _printWorkflow(self, workflowDict):
-        '''Utiliy method to print out a workflow. '''
         
-        print workflowDict
-        print "Workflow id=%s name=%s" % (workflowDict['id'], workflowDict['name'])
-        for task in workflowDict['tasks']:
-            print "Task: %s" % task        
+    def _callback(self, ch, method, properties, body):
+        '''Callback method invoked when a RabbitMQ message is received.'''
+
+        # FIXME: must parse body to extract metadata
+        metadata = { 'Dataset':'abc', 'Project': '123' }
+        
+        print("Submitting workflow %r: %r" % (method.routing_key, metadata))
+        #os.system("cd $OODT_HOME/cas-workflow/bin; ./wmgr-client --url http://localhost:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123")
+        wid = self._executeWorkflow(metadata)
+        print('Waiting for completion of workflow: %s' % wid)
+        
+        # FIXME: wait for completion and send ack
+
+                       
+    def _executeWorkflow(self, metadata):
+        '''Submits a dynamic workflow using the specified metadata.'''
+        
+        # FIXME: pass metadata through: s.encode('ascii',errors='ignore')
+        return self.workflowManagerServerProxy.workflowmgr.executeDynamicWorkflow(self.workflowTasks, metadata)
             
 
 if __name__ == '__main__':
