@@ -25,9 +25,12 @@ else:
   message = ' '.join(sys.argv[2:]) or ''
 
 # produce message
+# make message persist if RabbitMQ server goes down
 channel.basic_publish(exchange='oodt_workflows',
                       routing_key=workflow_event,
-                      body=message)
+                      body=message,
+                      properties=pika.BasicProperties(delivery_mode=2) # make message persistent
+                      )
 
 print(" [x] Sent workflow message %r: %r" % (workflow_event, message))
 connection.close()

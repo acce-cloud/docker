@@ -82,7 +82,7 @@ class WorkflowConsumer(object):
         # wait for completion and send ack
         print('Waiting for completion of workflow: %s...' % wInstId)
         status = self._waitForWorkflowCompletion(wInstId)
-        print('...worfklow ended with status: %s' % status)
+        print('Worfklow ended with status: %s' % status)
         
         # send acknowledgment to RabbitMQ server
         ch.basic_ack(delivery_tag = method.delivery_tag)
@@ -118,7 +118,6 @@ class WorkflowConsumer(object):
             else:
                 print 'UNRECOGNIZED WORKFLOW STATUS: %s' % status
                 break
-        print 'Workflow ended with status: %s' % status
         return status
 
 if __name__ == '__main__':
