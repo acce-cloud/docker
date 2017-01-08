@@ -48,6 +48,7 @@ class WorkflowConsumer(object):
                                 queue=self.queue_name,
                                 routing_key=workflow_event)
         
+        
     def consume(self):
         '''Method to listen for messages from the RabbitMQ server.'''
         
@@ -55,7 +56,6 @@ class WorkflowConsumer(object):
         self.channel.basic_consume(self._callback, queue=self.queue_name, no_ack=True)
         self.channel.start_consuming()
         
-
 
     def _getWorkflowTasks(self, workflow_event):
         '''Retrieve the workflow tasks by the triggering event.'''
@@ -70,9 +70,11 @@ class WorkflowConsumer(object):
     def _callback(self, ch, method, properties, body):
         '''Callback method invoked when a RabbitMQ message is received.'''
 
-        # FIXME: must parse body to extract metadata
-        metadata = { 'Dataset':'abc', 'Project': '123' }
-        
+        # parse message body into metadata dictionary
+        # from: 'Dataset=abc Project=123'
+        # to: { 'Dataset':'abc', 'Project': '123' }
+        metadata = dict(word.split('=') for word in body.split())
+                
         print("Submitting workflow %r: %r" % (method.routing_key, metadata))
         #os.system("cd $OODT_HOME/cas-workflow/bin; ./wmgr-client --url http://localhost:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123")
         wInstId = self._submitWorkflow(metadata)
