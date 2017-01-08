@@ -7,6 +7,7 @@ import sys
 import os
 import pika
 import xmlrpclib
+import time
 
 class WorkflowConsumer(object):
     '''
@@ -74,18 +75,45 @@ class WorkflowConsumer(object):
         
         print("Submitting workflow %r: %r" % (method.routing_key, metadata))
         #os.system("cd $OODT_HOME/cas-workflow/bin; ./wmgr-client --url http://localhost:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123")
-        wid = self._executeWorkflow(metadata)
-        print('Waiting for completion of workflow: %s' % wid)
+        wInstId = self._submitWorkflow(metadata)
         
         # FIXME: wait for completion and send ack
+        print('Waiting for completion of workflow: %s' % wInstId)
+        status = self._waitForWorkflowCompletion(wInstId)
 
                        
-    def _executeWorkflow(self, metadata):
+    def _submitWorkflow(self, metadata):
         '''Submits a dynamic workflow using the specified metadata.'''
         
         # FIXME: pass metadata through: s.encode('ascii',errors='ignore')
         return self.workflowManagerServerProxy.workflowmgr.executeDynamicWorkflow(self.workflowTasks, metadata)
+    
             
+    def _waitForWorkflowCompletion(self, wInstId):
+        ''' Monitors a workflow instance until it completes.'''
+    
+        # wait for the server to instantiate this workflow before querying it
+        time.sleep(2) 
+    
+        # now use the workflow instance id to check for status, wait until completed
+        running_status  = ['CREATED', 'QUEUED', 'STARTED', 'PAUSED']
+        pge_task_status = ['STAGING INPUT', 'BUILDING CONFIG FILE', 'PGE EXEC', 'CRAWLING']
+        finished_status = ['FINISHED', 'ERROR', 'METMISS']
+        status = 'UNKNOWN'
+        while (True):
+            response = self.workflowManagerServerProxy.workflowmgr.getWorkflowInstanceById(wInstId)
+            status = response['status']
+            if status in running_status or status in pge_task_status:
+                print 'Workflow instance=%s running with status=%s' % (wInstId, status)
+                time.sleep(1)
+            elif status in finished_status:
+                print 'Workflow instance=%s ended with status=%s' % (wInstId, status)
+                break
+            else:
+                print 'UNRECOGNIZED WORKFLOW STATUS: %s' % status
+                break
+        print 'Workflow ended with status: %s' % status
+        return status
 
 if __name__ == '__main__':
     ''' Command line invocation method. '''
