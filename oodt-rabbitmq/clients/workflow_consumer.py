@@ -53,7 +53,7 @@ class WorkflowConsumer(object):
         '''Method to listen for messages from the RabbitMQ server.'''
         
         print('Waiting for workflow events. To exit press CTRL+C')
-        self.channel.basic_consume(self._callback, queue=self.queue_name, no_ack=True)
+        self.channel.basic_consume(self._callback, queue=self.queue_name) # no_ack=False
         self.channel.start_consuming()
         
 
@@ -79,9 +79,13 @@ class WorkflowConsumer(object):
         #os.system("cd $OODT_HOME/cas-workflow/bin; ./wmgr-client --url http://localhost:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123")
         wInstId = self._submitWorkflow(metadata)
         
-        # FIXME: wait for completion and send ack
-        print('Waiting for completion of workflow: %s' % wInstId)
+        # wait for completion and send ack
+        print('Waiting for completion of workflow: %s...' % wInstId)
         status = self._waitForWorkflowCompletion(wInstId)
+        print('...worfklow ended with status: %s' % status)
+        
+        # send acknowledgment to RabbitMQ server
+        ch.basic_ack(delivery_tag = method.delivery_tag)
 
                        
     def _submitWorkflow(self, metadata):
