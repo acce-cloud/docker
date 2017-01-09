@@ -7,7 +7,7 @@ services:
   # OODT file manager
   oodt_filemgr_app:
     image: oodthub/oodt-filemgr
-    container_name: myfilemgr
+    container_name: filemgr
     expose:
       - "9000"
       - "8983"
@@ -24,7 +24,7 @@ services:
   # OODT workflow manager
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
-    #container_name: mywmgr
+    #container_name: wmgr
     expose:
       - "9001"
     ports:
@@ -41,18 +41,18 @@ services:
           - oodt.wmgr.host
 
   # workflow manager container used as client to workflow manager server instances
-  oodt_wmgr_client_app:
-    image: oodthub/oodt-wmgr
-    container_name: mywmgr_client
-    environment:
-      - "WORKFLOW_URL=http://oodt.wmgr.host:9001"
+  #oodt_wmgr_client_app:
+  #  image: oodthub/oodt-wmgr
+  #  container_name: mywmgr_client
+  #  environment:
+  #    - "WORKFLOW_URL=http://oodt.wmgr.host:9001"
     # keep container running
-    entrypoint: ["tail", "-f", "/dev/null"]
+  #  entrypoint: ["tail", "-f", "/dev/null"]
 
   # OODT product server
   oodt_fmprod_app:
     image: oodthub/oodt-fmprod
-    container_name: myfmprod
+    container_name: fmprod
     expose:
       - "8080"
     ports:
@@ -69,7 +69,7 @@ services:
   # RabbitMQ server
   oodt_rabbitmq_app:
     image: oodthub/oodt-rabbitmq
-    container_name: myrabbitmq
+    container_name: rabbitmq
     expose:
       - "5672"
       - "15672"

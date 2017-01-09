@@ -64,8 +64,8 @@ if __name__ == '__main__':
     rmqProducer = RabbitmqProducer(workflow_event)
     
     # send messages
-    #for i in range(num_events):
-    #    rmqProducer.produce(message)
+    for i in range(num_events):
+        rmqProducer.produce(message)
     
     # shut down
     rmqProducer.close()
