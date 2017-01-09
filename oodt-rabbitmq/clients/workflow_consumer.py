@@ -110,6 +110,9 @@ class RabbitmqConsumer(object):
                                 queue=self.queue_name,
                                 routing_key=workflow_event)
         
+        # dispatch N messages at a time to this queue
+        self.channel.basic_qos(prefetch_count=2)
+        
         
     def consume(self):
         '''Method to listen for messages from the RabbitMQ server.'''
@@ -128,7 +131,7 @@ class RabbitmqConsumer(object):
         metadata = dict(word.split('=') for word in body.split())
                 
         # submit workflow, then wait for its completeion
-        print("Submitting workflow %r: %r" % (method.routing_key, metadata))
+        print("Received message: %r: %r, submitting workflow..." % (method.routing_key, metadata))
         status = self.wmgrClient.executeWorkflow(metadata)        
         print('Worfklow ended with status: %s' % status)
         
