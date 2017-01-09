@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Python workflow producer client:
 # sends a message to the RabbitMQ server to start a workflow
-# Usage: python workflow_producer.py <workflow_event> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]
+# Usage: python workflow_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]
 
 import sys
 import os
@@ -38,6 +38,12 @@ class RabbitmqProducer(object):
                       )
 
         logging.critical("Sent workflow message %r: %r" % (workflow_event, message))
+        
+        
+    def close(self):
+        '''
+        Closes the connection to the RabbitMQ server.
+        '''
         self.connection.close()
         
 
@@ -46,13 +52,20 @@ if __name__ == '__main__':
     ''' Command line invocation method. '''
 
     # parse command line arguments
-    if len(sys.argv) < 2:
-      raise Exception("Usage: python workflow_producer.py <workflow_event> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
+    if len(sys.argv) < 3:
+      raise Exception("Usage: python workflow_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
     else:
       workflow_event = sys.argv[1]
-      message = ' '.join(sys.argv[2:]) or ''
+      num_events = int( sys.argv[2] )
+      message = ' '.join(sys.argv[3:]) or ''
 
 
-    # send message
+    # connect to RabbitMQ server on given queue
     rmqProducer = RabbitmqProducer(workflow_event)
-    rmqProducer.produce(message)
+    
+    # send messages
+    #for i in range(num_events):
+    #    rmqProducer.produce(message)
+    
+    # shut down
+    rmqProducer.close()
