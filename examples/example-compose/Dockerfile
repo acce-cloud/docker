@@ -23,6 +23,10 @@ COPY wmgr_config/pge-configs/ $OODT_CONFIG/test-workflow/pge-configs/
 RUN mkdir -p $PGE_ROOT/test-workflow
 COPY pges/ $PGE_ROOT/test-workflow/
 
+# FIXME: install custom scripts to start/stop workflow manager and rabbitmq clients
+COPY scripts/ /usr/local/bin/
+
 VOLUME $OODT_CONFIG
 VOLUME $PGE_ROOT
 VOLUME $OODT_ARCHIVE
+VOLUME /usr/local/bin

@@ -39,6 +39,7 @@ services:
       default:
         aliases:
           - oodt.wmgr.host
+    entrypoint: ["/usr/local/bin/start.sh", "test-workflow", "2"]
 
   # workflow manager container used as client to workflow manager server instances
   #oodt_wmgr_client_app:

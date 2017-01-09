@@ -22,7 +22,7 @@ if [ $OUT -eq 0 ];then
 else
    echo "User account 'oodt-user' not found, creating it."
    rabbitmqctl add_user oodt-user changeit
-   rabbitmqctl set_permissions -p / oodt-admin ".*" ".*" ".*"
+   rabbitmqctl set_permissions -p / oodt-user ".*" ".*" ".*"
 fi
  
 # delete 'guest' user if found
