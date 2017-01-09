@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 # Python workflow consumer client:
 # receives messages from the RabbitMQ server to start OODT workflows
-# Usage: # Usage: python workflow_producer.py <workflow_event>
+# Usage: # Usage: python workflow_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>
 
 import sys
 import os
 import pika
 import xmlrpclib
 import time
+import threading
+import logging
+
+logging.basicConfig(level=logging.INFO, format='(%(threadName)-10s) %(message)s')
 
 
 class WorkflowManagerClient(object):
@@ -26,7 +30,7 @@ class WorkflowManagerClient(object):
         
         # retrieve workflow definition
         self.workflowTasks = self._getWorkflowTasks(workflow_event)
-        print 'Workflow tasks: %s' % self.workflowTasks
+        logging.info('Workflow tasks: %s' % self.workflowTasks)
     
     def _getWorkflowTasks(self, workflow_event):
         '''Retrieves the workflow tasks by the triggering event.'''
@@ -67,24 +71,29 @@ class WorkflowManagerClient(object):
             response = self.workflowManagerServerProxy.workflowmgr.getWorkflowInstanceById(wInstId)
             status = response['status']
             if status in running_status or status in pge_task_status:
-                print 'Workflow instance=%s running with status=%s' % (wInstId, status)
+                logging.debug('Workflow instance=%s running with status=%s' % (wInstId, status))
                 time.sleep(1)
             elif status in finished_status:
-                print 'Workflow instance=%s ended with status=%s' % (wInstId, status)
+                logging.info('Workflow instance=%s ended with status=%s' % (wInstId, status))
                 break
             else:
-                print 'UNRECOGNIZED WORKFLOW STATUS: %s' % status
+                logging.warn('UNRECOGNIZED WORKFLOW STATUS: %s' % status)
                 break
         return status
     
 
-class RabbitmqConsumer(object):
+class RabbitmqConsumer(threading.Thread):
     '''
     Python client that consumes messages from the RabbitMQ server,
     and triggers execution of workflows through the WorkflowManagerClient.
+    This class listens for messages in a separate thread.
     '''
     
-    def __init__(self, workflow_event, wmgrClient):
+    def __init__(self, workflow_event, wmgrClient, 
+                 group=None, target=None, name=None, verbose=None): # Thread parent class arguments
+        
+        # initialize Thread
+        threading.Thread.__init__(self, group=group, target=target, name=name, verbose=verbose)
         
         # workflow manager client
         self.wmgrClient = wmgrClient
@@ -101,15 +110,17 @@ class RabbitmqConsumer(object):
         # connect to queue for given workflow
         self.queue_name = workflow_event
         self.channel.queue_declare(queue=self.queue_name, durable=True)
-                        
+                 
+    def run(self):
+        logging.debug("Listening for messages...")
+        self._consume()       
         
-    def consume(self):
+    def _consume(self):
         '''Method to listen for messages from the RabbitMQ server.'''
         
         # process 1 message at a time from this queue
         self.channel.basic_qos(prefetch_count=1)
-
-        print('Waiting for workflow events. To exit press CTRL+C')
+        
         self.channel.basic_consume(self._callback, queue=self.queue_name) # no_ack=False
         self.channel.start_consuming()
         
@@ -123,11 +134,10 @@ class RabbitmqConsumer(object):
         metadata = dict(word.split('=') for word in body.split())
                 
         # submit workflow, then wait for its completeion
-        print("Received message: %r: %r, submitting workflow..." % (method.routing_key, metadata))
-        time.sleep(10)
-        #status = self.wmgrClient.executeWorkflow(metadata)    
-        status = 'DONE'    
-        print('Worfklow ended with status: %s' % status)
+        logging.info("Received message: %r: %r, submitting workflow..." % (method.routing_key, metadata))
+        #time.sleep(10)
+        status = self.wmgrClient.executeWorkflow(metadata)      
+        logging.info('Worfklow ended with status: %s' % status)
         
         # send acknowledgment to RabbitMQ server
         ch.basic_ack(delivery_tag = method.delivery_tag)
@@ -137,17 +147,22 @@ if __name__ == '__main__':
     ''' Command line invocation method. '''
     
     # parse command line argument
-    if len(sys.argv) < 2:
-      raise Exception("Usage: python workflow_consumer.py <workflow_event>")
+    if len(sys.argv) < 3:
+      raise Exception("Usage: python workflow_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>")
     else:
       workflow_event = sys.argv[1]
+      num_workflow_clients = int(sys.argv[2])
       
     # instantiate Workflow Manager client
     wmgrClient = WorkflowManagerClient(workflow_event)
       
-    # instantiate RabbitMQ client client 
-    rmqConsumer = RabbitmqConsumer(workflow_event, wmgrClient)
+    # instantiate N RabbitMQ clients
+    for i in range(num_workflow_clients):
+        
+        rmqConsumer = RabbitmqConsumer(workflow_event, wmgrClient)
     
-    # start listening for workflow events
-    rmqConsumer.consume()
+        # start listening for workflow events
+        rmqConsumer.start()
+    
+    logging.info('Waiting for workflow events. To exit press CTRL+Z')
     
