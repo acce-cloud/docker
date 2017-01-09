@@ -18,6 +18,8 @@ class WorkflowManagerClient(object):
     '''
     Python client used to interact with a remote Workflow Manager via the XML/RPC API.
     Available methods are defined in Java class org.apache.oodt.cas.workflow.system.XmlRpcWorkflowManager.
+    
+    IMPORTANT: this class is NOT thread safe because xmlrpclib is NOT thread safe under Pythn 2.7
     '''
     
     def __init__(self, 
@@ -153,11 +155,13 @@ if __name__ == '__main__':
       workflow_event = sys.argv[1]
       num_workflow_clients = int(sys.argv[2])
       
-    # instantiate Workflow Manager client
-    wmgrClient = WorkflowManagerClient(workflow_event)
-      
     # instantiate N RabbitMQ clients
     for i in range(num_workflow_clients):
+        
+        # instantiate Workflow Manager client
+        # IMPORTANT: xmlrpclib is NOT thread safe in Python 2.7
+        # so must create one WorkflowManagerClient to be used in each thread
+        wmgrClient = WorkflowManagerClient(workflow_event)
         
         rmqConsumer = RabbitmqConsumer(workflow_event, wmgrClient)
     
