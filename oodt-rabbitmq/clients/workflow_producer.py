@@ -10,6 +10,7 @@ import logging
 import time
 import json
 import requests
+import datetime
 
 logging.basicConfig(level=logging.CRITICAL)
 
@@ -83,7 +84,10 @@ class RabbitmqProducer(object):
 
 if __name__ == '__main__':
     ''' Command line invocation method. '''
-
+    
+    startTime = datetime.datetime.now()
+    logging.critical("Start Time: %s" % startTime.strftime("%Y-%m-%d %H:%M:%S") )
+ 
     # parse command line arguments
     if len(sys.argv) < 3:
       raise Exception("Usage: python workflow_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
@@ -107,3 +111,7 @@ if __name__ == '__main__':
     
     # shut down
     rmqProducer.close()
+    
+    stopTime = datetime.datetime.now()
+    logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
+    logging.critical("Elapsed Time: %s secs" % (stopTime-startTime).seconds )

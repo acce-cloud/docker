@@ -57,6 +57,7 @@ RUN rm -rf ez_setup.py
 RUN easy_install pip
 RUN pip install argparse
 RUN pip install pika
+RUN pip install requests
 
 # Maven
 ENV MAVEN_VERSION 3.3.9
