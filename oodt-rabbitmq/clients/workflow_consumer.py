@@ -9,7 +9,8 @@ import pika
 import xmlrpclib
 import time
 
-class WorkflowConsumer(object):
+
+class WorkflowManagerClient(object):
     '''
     Python client used to interact with a remote Workflow Manager via the XML/RPC API.
     Available methods are defined in Java class org.apache.oodt.cas.workflow.system.XmlRpcWorkflowManager.
@@ -26,7 +27,68 @@ class WorkflowConsumer(object):
         # retrieve workflow definition
         self.workflowTasks = self._getWorkflowTasks(workflow_event)
         print 'Workflow tasks: %s' % self.workflowTasks
+    
+    def _getWorkflowTasks(self, workflow_event):
+        '''Retrieves the workflow tasks by the triggering event.'''
         
+        workflows =  self.workflowManagerServerProxy.workflowmgr.getWorkflowsByEvent(workflow_event)
+        for workflow in workflows:
+            tasks = []
+            for task in workflow['tasks']:
+                tasks.append(task['id'])
+            return tasks # assume only one workflow for each event
+        
+        
+    def executeWorkflow(self, metadata):
+        '''
+        Public method that submits a workflow using the specified metadata,
+        then blocks until its completion.
+        '''
+        
+        # submit workflow
+        wInstId = self.workflowManagerServerProxy.workflowmgr.executeDynamicWorkflow(self.workflowTasks, metadata)
+
+        # wait for workflow completion
+        return self._waitForWorkflowCompletion(wInstId)
+        
+    
+    def _waitForWorkflowCompletion(self, wInstId):
+        ''' Monitors a workflow instance until it completes.'''
+    
+        # wait for the server to instantiate this workflow before querying it
+        time.sleep(2) 
+    
+        # now use the workflow instance id to check for status, wait until completed
+        running_status  = ['CREATED', 'QUEUED', 'STARTED', 'PAUSED']
+        pge_task_status = ['STAGING INPUT', 'BUILDING CONFIG FILE', 'PGE EXEC', 'CRAWLING']
+        finished_status = ['FINISHED', 'ERROR', 'METMISS']
+        status = 'UNKNOWN'
+        while (True):
+            response = self.workflowManagerServerProxy.workflowmgr.getWorkflowInstanceById(wInstId)
+            status = response['status']
+            if status in running_status or status in pge_task_status:
+                print 'Workflow instance=%s running with status=%s' % (wInstId, status)
+                time.sleep(1)
+            elif status in finished_status:
+                print 'Workflow instance=%s ended with status=%s' % (wInstId, status)
+                break
+            else:
+                print 'UNRECOGNIZED WORKFLOW STATUS: %s' % status
+                break
+        return status
+    
+
+class RabbitmqConsumer(object):
+    '''
+    Python client that consumes messages from the RabbitMQ server,
+    and triggers execution of workflows through the WorkflowManagerClient.
+    '''
+    
+    def __init__(self, workflow_event, wmgrClient):
+        
+        # workflow manager client
+        self.wmgrClient = wmgrClient
+                
         # RABBITMQ_URL (defaults to guest/guest @ localhost)
         rabbitmqUrl = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')
         
@@ -56,16 +118,6 @@ class WorkflowConsumer(object):
         self.channel.basic_consume(self._callback, queue=self.queue_name) # no_ack=False
         self.channel.start_consuming()
         
-
-    def _getWorkflowTasks(self, workflow_event):
-        '''Retrieve the workflow tasks by the triggering event.'''
-        
-        workflows =  self.workflowManagerServerProxy.workflowmgr.getWorkflowsByEvent(workflow_event)
-        for workflow in workflows:
-            tasks = []
-            for task in workflow['tasks']:
-                tasks.append(task['id'])
-            return tasks # assume only one workflow for each event
         
     def _callback(self, ch, method, properties, body):
         '''Callback method invoked when a RabbitMQ message is received.'''
@@ -75,50 +127,14 @@ class WorkflowConsumer(object):
         # to: { 'Dataset':'abc', 'Project': '123' }
         metadata = dict(word.split('=') for word in body.split())
                 
+        # submit workflow, then wait for its completeion
         print("Submitting workflow %r: %r" % (method.routing_key, metadata))
-        #os.system("cd $OODT_HOME/cas-workflow/bin; ./wmgr-client --url http://localhost:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123")
-        wInstId = self._submitWorkflow(metadata)
-        
-        # wait for completion and send ack
-        print('Waiting for completion of workflow: %s...' % wInstId)
-        status = self._waitForWorkflowCompletion(wInstId)
+        status = self.wmgrClient.executeWorkflow(metadata)        
         print('Worfklow ended with status: %s' % status)
         
         # send acknowledgment to RabbitMQ server
         ch.basic_ack(delivery_tag = method.delivery_tag)
 
-                       
-    def _submitWorkflow(self, metadata):
-        '''Submits a dynamic workflow using the specified metadata.'''
-        
-        # FIXME: pass metadata through: s.encode('ascii',errors='ignore')
-        return self.workflowManagerServerProxy.workflowmgr.executeDynamicWorkflow(self.workflowTasks, metadata)
-    
-            
-    def _waitForWorkflowCompletion(self, wInstId):
-        ''' Monitors a workflow instance until it completes.'''
-    
-        # wait for the server to instantiate this workflow before querying it
-        time.sleep(2) 
-    
-        # now use the workflow instance id to check for status, wait until completed
-        running_status  = ['CREATED', 'QUEUED', 'STARTED', 'PAUSED']
-        pge_task_status = ['STAGING INPUT', 'BUILDING CONFIG FILE', 'PGE EXEC', 'CRAWLING']
-        finished_status = ['FINISHED', 'ERROR', 'METMISS']
-        status = 'UNKNOWN'
-        while (True):
-            response = self.workflowManagerServerProxy.workflowmgr.getWorkflowInstanceById(wInstId)
-            status = response['status']
-            if status in running_status or status in pge_task_status:
-                print 'Workflow instance=%s running with status=%s' % (wInstId, status)
-                time.sleep(1)
-            elif status in finished_status:
-                print 'Workflow instance=%s ended with status=%s' % (wInstId, status)
-                break
-            else:
-                print 'UNRECOGNIZED WORKFLOW STATUS: %s' % status
-                break
-        return status
 
 if __name__ == '__main__':
     ''' Command line invocation method. '''
@@ -129,9 +145,12 @@ if __name__ == '__main__':
     else:
       workflow_event = sys.argv[1]
       
-    # instantiate client 
-    consumer = WorkflowConsumer(workflow_event)
+    # instantiate Workflow Manager client
+    wmgrClient = WorkflowManagerClient(workflow_event)
+      
+    # instantiate RabbitMQ client client 
+    rmqConsumer = RabbitmqConsumer(workflow_event, wmgrClient)
     
     # start listening for workflow events
-    consumer.consume()
+    rmqConsumer.consume()
     
