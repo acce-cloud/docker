@@ -98,25 +98,17 @@ class RabbitmqConsumer(object):
         connection = pika.BlockingConnection(params)
         self.channel = connection.channel()
         
-        # use common OODT workflows Exchange
-        self.channel.exchange_declare(exchange='oodt_workflows', type='direct')
-
-        # declare one temporary queue per consumer
-        result = self.channel.queue_declare(exclusive=True)
-        self.queue_name = result.method.queue
-        
-        # bind queue to exchange with appropriate binding key
-        self.channel.queue_bind(exchange='oodt_workflows',
-                                queue=self.queue_name,
-                                routing_key=workflow_event)
-        
-        # dispatch N messages at a time to this queue
-        self.channel.basic_qos(prefetch_count=2)
-        
+        # connect to queue for given workflow
+        self.queue_name = workflow_event
+        self.channel.queue_declare(queue=self.queue_name, durable=True)
+                        
         
     def consume(self):
         '''Method to listen for messages from the RabbitMQ server.'''
         
+        # process N messages at a time from this queue
+        self.channel.basic_qos(prefetch_count=2)
+
         print('Waiting for workflow events. To exit press CTRL+C')
         self.channel.basic_consume(self._callback, queue=self.queue_name) # no_ack=False
         self.channel.start_consuming()
@@ -132,7 +124,9 @@ class RabbitmqConsumer(object):
                 
         # submit workflow, then wait for its completeion
         print("Received message: %r: %r, submitting workflow..." % (method.routing_key, metadata))
-        status = self.wmgrClient.executeWorkflow(metadata)        
+        time.sleep(10)
+        #status = self.wmgrClient.executeWorkflow(metadata)    
+        status = 'DONE'    
         print('Worfklow ended with status: %s' % status)
         
         # send acknowledgment to RabbitMQ server
