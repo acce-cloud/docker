@@ -7,6 +7,9 @@ import sys
 import os
 import pika
 import logging
+import time
+import json
+import requests
 
 logging.basicConfig(level=logging.CRITICAL)
 
@@ -39,6 +42,36 @@ class RabbitmqProducer(object):
 
         logging.critical("Sent workflow message %r: %r" % (workflow_event, message))
         
+    def wait_for_completion(self):
+        '''
+        Method that waits until the number of 'unack messages is 0
+        (signaling that all workflows have been completed).
+        '''
+        
+        #url = 'http://oodt-admin:changeit@localhost:15672/api/queues/%2f/test-workflow'
+        #resp = requests.get(url=url)
+        #data = json.loads(resp.text)
+        #print data
+        #print data['messages_unacknowledged']
+        #print data['messages_ready']
+        
+        # wait for 'Ready Messages' = 0 (i.e. all messages have been sent)
+        num_msgs = -1
+        while num_msgs !=0 :
+            num_msgs = self.channel.queue_declare(queue=self.queue_name, durable=True, passive=True).method.message_count
+            logging.critical("Number of ready messages: %s" % num_msgs)
+            time.sleep(1)
+            
+        # then wait for the 'Unack Messages = 0' (i.e. all messages have been acknowldged)
+        num_unack_messages = -1
+        # FIXME
+        url = 'http://oodt-admin:changeit@localhost:15672/api/queues/%2f/test-workflow'
+        while num_unack_messages != 0:
+            resp = requests.get(url=url)
+            data = json.loads(resp.text)
+            num_unack_messages = data['messages_unacknowledged']
+            logging.critical("Number of unack messages: %s" % num_unack_messages)
+            time.sleep(1)
         
     def close(self):
         '''
@@ -66,6 +99,11 @@ if __name__ == '__main__':
     # send messages
     for i in range(num_events):
         rmqProducer.produce(message)
+        
+    # wait a little for messages to be logged
+    time.sleep(3)
+    # then wait for all messages to be acknowledged
+    rmqProducer.wait_for_completion()
     
     # shut down
     rmqProducer.close()
