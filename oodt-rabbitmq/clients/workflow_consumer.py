@@ -106,8 +106,8 @@ class RabbitmqConsumer(object):
     def consume(self):
         '''Method to listen for messages from the RabbitMQ server.'''
         
-        # process N messages at a time from this queue
-        self.channel.basic_qos(prefetch_count=2)
+        # process 1 message at a time from this queue
+        self.channel.basic_qos(prefetch_count=1)
 
         print('Waiting for workflow events. To exit press CTRL+C')
         self.channel.basic_consume(self._callback, queue=self.queue_name) # no_ack=False
