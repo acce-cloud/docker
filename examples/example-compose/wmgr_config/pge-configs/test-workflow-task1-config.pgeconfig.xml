@@ -4,6 +4,8 @@
 	<!-- PGE commands -->
 	<exe dir="[JobDir]" shell="/bin/bash">
 		<cmd>cd [JobDir]</cmd>
+                <cmd>echo 'Sleeping...'</cmd>
+                <cmd>sleep 10</cmd>
 		<cmd>python [PGE_ROOT]/test-workflow/writeBin.py</cmd>
 	</exe>
 
