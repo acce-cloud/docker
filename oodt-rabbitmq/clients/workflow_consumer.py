@@ -62,7 +62,7 @@ class WorkflowManagerClient(object):
         ''' Monitors a workflow instance until it completes.'''
     
         # wait for the server to instantiate this workflow before querying it
-        time.sleep(2) 
+        time.sleep(1) 
     
         # now use the workflow instance id to check for status, wait until completed
         running_status  = ['CREATED', 'QUEUED', 'STARTED', 'PAUSED']
@@ -71,16 +71,18 @@ class WorkflowManagerClient(object):
         status = 'UNKNOWN'
         while (True):
             response = self.workflowManagerServerProxy.workflowmgr.getWorkflowInstanceById(wInstId)
-            status = response['status']
-            if status in running_status or status in pge_task_status:
-                logging.debug('Workflow instance=%s running with status=%s' % (wInstId, status))
-                time.sleep(1)
-            elif status in finished_status:
-                logging.info('Workflow instance=%s ended with status=%s' % (wInstId, status))
-                break
-            else:
-                logging.warn('UNRECOGNIZED WORKFLOW STATUS: %s' % status)
-                break
+            if response is not None:
+                status = response['status']
+                if status in running_status or status in pge_task_status:
+                    logging.debug('Workflow instance=%s running with status=%s' % (wInstId, status))
+                    
+                elif status in finished_status:
+                    logging.info('Workflow instance=%s ended with status=%s' % (wInstId, status))
+                    break
+                else:
+                    logging.warn('UNRECOGNIZED WORKFLOW STATUS: %s' % status)
+                    break
+            time.sleep(1)
         return status
     
 
