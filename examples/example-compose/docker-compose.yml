@@ -28,7 +28,7 @@ services:
     expose:
       - "9001"
     ports:
-      - "9001:9001"
+      - "9001"
     volumes_from:
       - oodt_test_workflow_app
       - oodt_rabbitmq_app
