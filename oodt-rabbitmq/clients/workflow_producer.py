@@ -2,6 +2,7 @@
 # Python workflow producer client:
 # sends a message to the RabbitMQ server to start a workflow
 # Usage: python workflow_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]
+# To be used together with workflow_consumer.py
 
 import sys
 import os
