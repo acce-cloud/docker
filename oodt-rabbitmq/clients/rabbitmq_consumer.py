@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Adapted from:
 # http://pika.readthedocs.io/en/0.10.0/examples/asynchronous_consumer_example.html
+#
 # Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>
 
 import os
@@ -48,8 +49,7 @@ class RabbitmqConsumer(threading.Thread):
         self._channel = None
         self._closing = False
         self._consumer_tag = None
-        self._url = amqp_url
-        
+        self._url = amqp_url        
         self._queue = workflow_event
         self._routing_key = workflow_event
 

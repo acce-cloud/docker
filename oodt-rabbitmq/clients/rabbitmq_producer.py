@@ -6,11 +6,15 @@
 #   and keeps tracks of which messages have been acknowledged or not acknowledged
 # o Reconnects if connection to RabbitMQ servers goes down for any reason
 # o Shuts down if RabbitMQ server closes the channel
+#
+# Usage: python rabbitmq_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]
 
 import logging
 import pika
 import json
 import os
+import sys
+import datetime
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
@@ -30,15 +34,13 @@ class RabbitmqProducer(object):
     messages that have been sent and if they've been confirmed by RabbitMQ.
 
     """
-    EXCHANGE = 'oodt-exchange' # FIXME ?
-    EXCHANGE_TYPE = 'direct' # FIXME ?
+    EXCHANGE = 'oodt-exchange' 
+    EXCHANGE_TYPE = 'direct'
     PUBLISH_INTERVAL = 1
-    QUEUE = 'test-workflow' # FIXME
-    ROUTING_KEY = 'test-workflow' # FIXME
     PRODUCER_ID = 'oodt-producer' # FIXME:make unique ?
     
 
-    def __init__(self, amqp_url):
+    def __init__(self, amqp_url, workflow_event, num_messages, message):
         """Setup the example publisher object, passing in the URL we will use
         to connect to RabbitMQ.
 
@@ -54,6 +56,11 @@ class RabbitmqProducer(object):
         self._stopping = False
         self._url = amqp_url
         self._closing = False
+        self._queue = workflow_event
+        self._routing_key = workflow_event
+        self._num_messages = num_messages
+        self._message = message
+
 
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
@@ -196,7 +203,7 @@ class RabbitmqProducer(object):
 
         """
         LOGGER.info('Exchange declared')
-        self.setup_queue(self.QUEUE)
+        self.setup_queue(self._queue)
 
     def setup_queue(self, queue_name):
         """Setup the queue on RabbitMQ by invoking the Queue.Declare RPC
@@ -220,9 +227,9 @@ class RabbitmqProducer(object):
 
         """
         LOGGER.info('Binding %s to %s with %s',
-                    self.EXCHANGE, self.QUEUE, self.ROUTING_KEY)
-        self._channel.queue_bind(self.on_bindok, self.QUEUE,
-                                 self.EXCHANGE, self.ROUTING_KEY)
+                    self.EXCHANGE, self._queue, self._routing_key)
+        self._channel.queue_bind(self.on_bindok, self._queue,
+                                 self.EXCHANGE, self._routing_key)
 
     def on_bindok(self, unused_frame):
         """This method is invoked by pika when it receives the Queue.BindOk
@@ -318,15 +325,17 @@ class RabbitmqProducer(object):
                                           content_type='application/json',
                                           headers=message)
 
-        self._channel.basic_publish(self.EXCHANGE, self.ROUTING_KEY,
-                                    json.dumps(message, ensure_ascii=False),
+        self._channel.basic_publish(self.EXCHANGE, self._routing_key,
+                                    self._message,
+                                    #json.dumps(message, ensure_ascii=False),
                                     properties)
         
         self._deliveries.append(self._message_number)
         LOGGER.info('Published message # %i', self._message_number)
         
-        # FIXME: make loop optional
-        self.schedule_next_message()
+        # stop publishing after num_messages
+        if self._message_number < self._num_messages:
+            self.schedule_next_message()
 
     def close_channel(self):
         """Invoke this command to close the channel with RabbitMQ by sending
@@ -367,19 +376,47 @@ class RabbitmqProducer(object):
         self._connection.close()
 
 
-def main():
+def main(workflow_event, num_events, message):
+    
     logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
+    
+    startTime = datetime.datetime.now()
+    logging.critical("Start Time: %s" % startTime.strftime("%Y-%m-%d %H:%M:%S") )
+
     
     # RABBITMQ_URL (defaults to guest/guest @ localhost)
     # connect to virtual host "/" (%2F)
     rabbitmqUrl = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')
 
-    #example = ExamplePublisher('amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat_interval=3600')
-    rabbitmqProducer = RabbitmqProducer(rabbitmqUrl + '?connection_attempts=3&heartbeat_interval=3600')
+    # instantiate producer
+    rabbitmqProducer = RabbitmqProducer(rabbitmqUrl + '?connection_attempts=3&heartbeat_interval=3600', 
+                                        workflow_event, num_events, message)
+    
     try:
+        # publish N messages
         rabbitmqProducer.run()
+        
+        # wait for completion    
+        
     except KeyboardInterrupt:
         rabbitmqProducer.stop()
+        
+    stopTime = datetime.datetime.now()
+    logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
+    logging.critical("Elapsed Time: %s secs" % (stopTime-startTime).seconds )
+
 
 if __name__ == '__main__':
-    main()
+    """ Parse command line arguments.
+    
+    """
+    
+    if len(sys.argv) < 3:
+      raise Exception("Usage: python rabbitmq_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
+    else:
+      workflow_event = sys.argv[1]
+      num_events = int( sys.argv[2] )
+      message = ' '.join(sys.argv[3:]) or ''
+
+    main(workflow_event, num_events, message)
+    
