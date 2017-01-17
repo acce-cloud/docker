@@ -34,7 +34,8 @@ services:
       - oodt_rabbitmq_app
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
-      - "RABBITMQ_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
+      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
+      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
     networks:
       default:
         aliases:
