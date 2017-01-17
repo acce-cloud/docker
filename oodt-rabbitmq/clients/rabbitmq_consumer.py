@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 # Adapted from:
 # http://pika.readthedocs.io/en/0.10.0/examples/asynchronous_consumer_example.html
+# Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>
 
 import os
+import sys
 import logging
 import pika
+import threading
 from workflow_client import WorkflowManagerClient
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
@@ -12,7 +15,7 @@ LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
 LOGGER = logging.getLogger(__name__)
 
 
-class RabbitmqConsumer(object):
+class RabbitmqConsumer(threading.Thread):
     """This is an example consumer that will handle unexpected interactions
     with RabbitMQ such as channel and connection closures.
 
@@ -26,24 +29,29 @@ class RabbitmqConsumer(object):
 
     """
     
-    EXCHANGE = 'oodt-exchange' # FIXME ?
-    EXCHANGE_TYPE = 'direct' # FIXME ? 
+    EXCHANGE = 'oodt-exchange'
+    EXCHANGE_TYPE = 'direct'
     
-    QUEUE = 'test-workflow' # FIXME
-    ROUTING_KEY = 'test-workflow' # FIXME
-
-    def __init__(self, amqp_url):
+    def __init__(self, amqp_url, workflow_event,
+                 group=None, target=None, name=None, verbose=None): # Thread parent class arguments
         """Create a new instance of the consumer class, passing in the AMQP
         URL used to connect to RabbitMQ.
 
         :param str amqp_url: The AMQP url to connect with
 
         """
+        
+        # initialize Thread
+        threading.Thread.__init__(self, group=group, target=target, name=name, verbose=verbose)
+        
         self._connection = None
         self._channel = None
         self._closing = False
         self._consumer_tag = None
         self._url = amqp_url
+        
+        self._queue = workflow_event
+        self._routing_key = workflow_event
 
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
@@ -180,7 +188,7 @@ class RabbitmqConsumer(object):
 
         """
         LOGGER.info('Exchange declared')
-        self.setup_queue(self.QUEUE)
+        self.setup_queue(self._queue)
 
     def setup_queue(self, queue_name):
         """Setup the queue on RabbitMQ by invoking the Queue.Declare RPC
@@ -204,9 +212,9 @@ class RabbitmqConsumer(object):
 
         """
         LOGGER.info('Binding %s to %s with %s',
-                    self.EXCHANGE, self.QUEUE, self.ROUTING_KEY)
-        self._channel.queue_bind(self.on_bindok, self.QUEUE,
-                                 self.EXCHANGE, self.ROUTING_KEY)
+                    self.EXCHANGE, self._queue, self._routing_key)
+        self._channel.queue_bind(self.on_bindok, self._queue,
+                                 self.EXCHANGE, self._routing_key)
 
     def on_bindok(self, unused_frame):
         """Invoked by pika when the Queue.Bind method has completed. At this
@@ -232,7 +240,7 @@ class RabbitmqConsumer(object):
         LOGGER.info('Issuing consumer related RPC commands')
         self.add_on_cancel_callback()
         self._consumer_tag = self._channel.basic_consume(self.on_message,
-                                                         self.QUEUE)
+                                                         self._queue)
 
     def add_on_cancel_callback(self):
         """Add a callback that will be invoked if RabbitMQ cancels the consumer
@@ -343,21 +351,35 @@ class RabbitmqConsumer(object):
         self._connection.close()
 
 
-def main():
+def main(workflow_event, num_workflow_clients):
     
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
     
     # RABBITMQ_URL (defaults to guest/guest @ localhost)
     rabbitmqUrl = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')
     
-    rabbitmqConsumer = RabbitmqConsumer(rabbitmqUrl)
-    #example = ExampleConsumer('amqp://guest:guest@localhost:5672/%2F')
-    
     try:
-        rabbitmqConsumer.run()
+        
+        # instantiate N RabbitMQ clients
+        for i in range(num_workflow_clients):
+            
+            rmqConsumer = RabbitmqConsumer(rabbitmqUrl, workflow_event)
+
+            # Thread.start() --> rmqConsumer.run()
+            rmqConsumer.start()
+            
     except KeyboardInterrupt:
-        rabbitmqConsumer.stop()
+        rmqConsumer.stop()
 
 
 if __name__ == '__main__':
-    main()
+    
+    # parse command line argument
+    if len(sys.argv) < 3:
+      raise Exception("Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>")
+    else:
+      workflow_event = sys.argv[1]
+      num_workflow_clients = int(sys.argv[2])
+
+    
+    main(workflow_event, num_workflow_clients)
