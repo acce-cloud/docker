@@ -388,28 +388,38 @@ class RabbitmqProducer(object):
         self._closing = True
         self._connection.close()
 
-def wait():
+def wait(queue_name):
     '''
     Method that waits until the number of 'ready' messages and 'unacked' messages is 0
     (signaling that all workflows have been completed).
+    Use ^C to stop waiting before all messages have been processed.
     '''
     
     LOGGER.info("Waiting for all messages to be processed...")
+    time.sleep(3) # wait for queue to be ready
             
     num_messages = -1
     num_ready_messages = -1
     num_unack_messages = -1
-    # FIXME
-    url = 'http://oodt-admin:changeit@localhost:15672/api/queues/%2f/test-workflow'
+    
+    # must connect to RabbitMQ server with administrator privileges
+    # RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672
+    url = os.environ.get('RABBITMQ_ADMIN_URL', 'http://guest:guest@localhost:15672') + "/api/queues/%2f/" + queue_name
+    
     while num_messages != 0:
-        resp = requests.get(url=url)
-        data = json.loads(resp.text)
-        num_messages = data['messages']
-        num_ready_messages = data['messages_ready']
-        num_unack_messages = data['messages_unacknowledged']
-        logging.critical("Number of messages: ready=%s unacked= %s total=%s" % 
-                         (num_ready_messages, num_unack_messages, num_messages))
-        time.sleep(1)
+        try:
+            resp = requests.get(url=url)
+            data = json.loads(resp.text)
+            num_messages = data['messages']
+            num_ready_messages = data['messages_ready']
+            num_unack_messages = data['messages_unacknowledged']
+            logging.critical("Number of messages: ready=%s unacked= %s total=%s" % 
+                             (num_ready_messages, num_unack_messages, num_messages))
+            time.sleep(1) 
+        except KeyboardInterrupt:
+            LOGGER.info("Breaking out of wait mode...")
+            break
+        
 
 def main(workflow_event, num_events, msg_dict):
     
@@ -419,9 +429,9 @@ def main(workflow_event, num_events, msg_dict):
     logging.critical("Start Time: %s" % startTime.strftime("%Y-%m-%d %H:%M:%S") )
 
     
-    # RABBITMQ_URL (defaults to guest/guest @ localhost)
+    # RABBITMQ_USER_URL (defaults to guest/guest @ localhost)
     # connect to virtual host "/" (%2F)
-    rabbitmqUrl = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')
+    rabbitmqUrl = os.environ.get('RABBITMQ_USER_URL', 'amqp://guest:guest@localhost/%2f')
 
     # instantiate producer
     rmqProducer = RabbitmqProducer(rabbitmqUrl + '?connection_attempts=3&heartbeat_interval=3600', 
@@ -430,8 +440,8 @@ def main(workflow_event, num_events, msg_dict):
     # publish N messages
     rmqProducer.run()
     
-    # wait for RabbitMQ server to process all messages
-    wait()
+    # wait for RabbitMQ server to process all messages in given queue
+    wait(workflow_event)
                         
     stopTime = datetime.datetime.now()
     logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
@@ -454,6 +464,5 @@ if __name__ == '__main__':
           key, val = arg.split('=')
           msg_dict[key]=val
 
-    print msg_dict
     main(workflow_event, num_events, msg_dict)
     

@@ -381,8 +381,8 @@ def main(workflow_event, num_workflow_clients):
     
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
     
-    # RABBITMQ_URL (defaults to guest/guest @ localhost)
-    rabbitmqUrl = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')
+    # RABBITMQ_USER_URL (defaults to guest/guest @ localhost)
+    rabbitmqUrl = os.environ.get('RABBITMQ_USER_URL', 'amqp://guest:guest@localhost/%2f')
     
     # list of all consumers to wait for
     rmqConsumers = []

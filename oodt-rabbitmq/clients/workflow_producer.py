@@ -19,8 +19,8 @@ class RabbitmqProducer(object):
     
     def __init__(self, workflow_event):
 
-        # connect to RabbitMQ server: use RABBITMQ_URL or default to guest/guest @ localhost
-        url = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')
+        # connect to RabbitMQ server: use RABBITMQ_USER_URL or default to guest/guest @ localhost
+        url = os.environ.get('RABBITMQ_USER_URL', 'amqp://guest:guest@localhost/%2f')
         params = pika.URLParameters(url)
         params.socket_timeout = 5
         self.connection = pika.BlockingConnection(params)

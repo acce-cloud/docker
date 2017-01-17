@@ -34,8 +34,8 @@ class RabbitmqConsumer(threading.Thread):
         # workflow manager client
         self.wmgrClient = wmgrClient
         
-        # RABBITMQ_URL (defaults to guest/guest @ localhost)
-        rabbitmqUrl = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')
+        # RABBITMQ_USER_URL (defaults to guest/guest @ localhost)
+        rabbitmqUrl = os.environ.get('RABBITMQ_USER_URL', 'amqp://guest:guest@localhost/%2f')
         
         # connect to RabbitMQ server
         params = pika.URLParameters(rabbitmqUrl)
