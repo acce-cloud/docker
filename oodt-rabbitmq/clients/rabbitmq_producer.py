@@ -242,12 +242,13 @@ class RabbitmqProducer(object):
 
     def start_publishing(self):
         """This method will enable delivery confirmations and schedule the
-        first message to be sent to RabbitMQ
+        first message to be sent to RabbitMQ.
 
         """
         LOGGER.info('Issuing consumer related RPC commands')
         self.enable_delivery_confirmations()
         self.schedule_next_message()
+        
 
     def enable_delivery_confirmations(self):
         """Send the Confirm.Select RPC method to RabbitMQ to enable delivery
@@ -324,9 +325,6 @@ class RabbitmqProducer(object):
 
         self._message_number += 1
         
-        # FIXME: use arguments to create message
-        message = {'Project':'ABC', 'Dataset':self._message_number }
-
         properties = pika.BasicProperties(app_id=self.PRODUCER_ID,
                                           content_type='application/json',
                                           headers=self._msg_dict)
@@ -342,34 +340,7 @@ class RabbitmqProducer(object):
         # stop publishing after num_messages
         if self._message_number < self._num_messages:
             self.schedule_next_message()
-        #else:
-        #    self.wait_for_completion()
     
-    def wait_for_completion(self):
-        '''
-        Method that waits until the number of 'unack messages is 0
-        (signaling that all workflows have been completed).
-        
-        '''
-                
-        # wait for 'Ready Messages' = 0 (i.e. all messages have been sent)
-        #num_msgs = -1
-        #while num_msgs !=0 :
-        #    num_msgs = self._channel.queue_declare(self.do_nothing, queue=self._queue, passive=True).method.message_count
-        #    LOGGER.info("Number of ready messages: %s" % num_msgs)
-        #    time.sleep(1)
-            
-        # then wait for the 'Unack Messages = 0' (i.e. all messages have been acknowldged)
-        num_unack_messages = -1
-        # FIXME
-        url = 'http://oodt-admin:changeit@localhost:15672/api/queues/%2f/test-workflow'
-        while num_unack_messages != 0:
-            resp = requests.get(url=url)
-            data = json.loads(resp.text)
-            print data
-            num_unack_messages = data['messages_unacknowledged']
-            LOGGER.info("Number of unack messages: %s" % num_unack_messages)
-            time.sleep(1)
 
     def close_channel(self):
         """Invoke this command to close the channel with RabbitMQ by sending
@@ -410,10 +381,29 @@ class RabbitmqProducer(object):
         self._closing = True
         self._connection.close()
 
+def wait():
+    '''
+    Method that waits until the number of 'ready' messages and 'unacked' messages is 0
+    (signaling that all workflows have been completed).
+    '''
+    
+    LOGGER.info("Waiting for all messages to be processed...")
+            
+    num_ready_messages = -1
+    num_unack_messages = -1
+    # FIXME
+    url = 'http://oodt-admin:changeit@localhost:15672/api/queues/%2f/test-workflow'
+    while num_ready_messages != 0 or num_unack_messages != 0:
+        resp = requests.get(url=url)
+        data = json.loads(resp.text)
+        num_ready_messages = data['messages_ready']
+        num_unack_messages = data['messages_unacknowledged']
+        logging.critical("Number of ready messages: %s, number of unacked messages: %s" % (num_ready_messages, num_unack_messages))
+        time.sleep(1)
 
 def main(workflow_event, num_events, msg_dict):
     
-    logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
+    logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
     
     startTime = datetime.datetime.now()
     logging.critical("Start Time: %s" % startTime.strftime("%Y-%m-%d %H:%M:%S") )
@@ -429,6 +419,9 @@ def main(workflow_event, num_events, msg_dict):
     
     # publish N messages
     rmqProducer.run()
+    
+    # wait for RabbitMQ server to process all messages
+    wait()
                         
     stopTime = datetime.datetime.now()
     logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
