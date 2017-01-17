@@ -5,7 +5,9 @@
 **/*.swp
 **/target
 **/logs
-**/.met
-**/.out
+**/*.met
+**/*.out
+**/*.pyc
+.settings
 .project
 .pydevproject
