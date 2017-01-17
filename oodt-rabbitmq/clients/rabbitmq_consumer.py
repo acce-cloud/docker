@@ -4,6 +4,13 @@
 #
 # Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>
 # To be used together with rabbitmq_producer.py
+#
+# Features:
+# o If the RabbitMQ server closes the connection, this client re-opens it
+# o If the RabbitMQ server cancels the channel, this client shuts down cleanly
+# o Each client instance runs in a separate thread
+# o Messages are distributed across all connected clients
+# o Each client processes one message at a time
 
 import os
 import sys
@@ -11,6 +18,7 @@ import logging
 import pika
 import threading
 import json
+import time
 from workflow_client import WorkflowManagerClient
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
@@ -47,7 +55,7 @@ class RabbitmqConsumer(threading.Thread):
         
         # initialize Thread
         threading.Thread.__init__(self, group=group, target=target, name=name, verbose=verbose)
-        
+                
         self._wmgrClient = wmgrClient
         self._connection = None
         self._channel = None
@@ -376,25 +384,37 @@ def main(workflow_event, num_workflow_clients):
     # RABBITMQ_URL (defaults to guest/guest @ localhost)
     rabbitmqUrl = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')
     
-    try:
+    # list of all consumers to wait for
+    rmqConsumers = []
+    
+    # instantiate and start all RabbitMQ consumers
+    # the consumer threads would normally never terminate
+    for i in range(num_workflow_clients):
         
-        # loop over requested number of radditmq instances
-        for i in range(num_workflow_clients):
+        # instantiate Workflow Manager client
+        # IMPORTANT: xmlrpclib is NOT thread safe in Python 2.7
+        # so must create one WorkflowManagerClient to be used in each thread
+        wmgrClient = WorkflowManagerClient(workflow_event)
+
+        # instantiate RabbitMQ client instance
+        rmqConsumer = RabbitmqConsumer(rabbitmqUrl, workflow_event, wmgrClient)
+        rmqConsumer.setDaemon(True) # use dameon Threads so that main program does not block
+        rmqConsumers.append(rmqConsumer)
+
+        # Thread.start() --> rmqConsumer.run()
+        rmqConsumer.start()
+        
+    # wait forver (since each consumer listens indefinitely)
+    try:
+        while True: time.sleep(100)
+        
+    # but stop if ^C is issued
+    except (KeyboardInterrupt, SystemExit):
+                
+        for rmqConsumer in rmqConsumers:   
+            LOGGER.info('Stopping consumer: %s' % rmqConsumer)
+            rmqConsumer.stop()
             
-            # instantiate Workflow Manager client
-            # IMPORTANT: xmlrpclib is NOT thread safe in Python 2.7
-            # so must create one WorkflowManagerClient to be used in each thread
-            wmgrClient = WorkflowManagerClient(workflow_event)
-
-            # instantiate RabbitMQ client instance
-            rmqConsumer = RabbitmqConsumer(rabbitmqUrl, workflow_event, wmgrClient)
-
-            # Thread.start() --> rmqConsumer.run()
-            rmqConsumer.start()
-            
-    except KeyboardInterrupt:
-        rmqConsumer.stop()
-
 
 if __name__ == '__main__':
     

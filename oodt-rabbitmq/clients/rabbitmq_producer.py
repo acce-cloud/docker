@@ -327,6 +327,9 @@ class RabbitmqProducer(object):
 
         self._message_number += 1
         
+        # add a message counter
+        self._msg_dict['message_counter'] = self._message_number
+        
         properties = pika.BasicProperties(app_id=self.PRODUCER_ID,
                                           content_type='application/json',
                                           headers=self._msg_dict)
