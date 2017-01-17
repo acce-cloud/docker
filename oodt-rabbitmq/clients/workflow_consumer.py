@@ -45,7 +45,7 @@ class RabbitmqConsumer(threading.Thread):
                                 
         # connect to queue for given workflow
         self.queue_name = workflow_event
-        self.channel.queue_declare(queue=self.queue_name, durable=True)
+        self.channel.queue_declare(queue=self.queue_name, durable=True) # make queue persist server reboots
                  
     def run(self):
         logging.debug("Listening for messages...")

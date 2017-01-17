@@ -3,6 +3,7 @@
 # http://pika.readthedocs.io/en/0.10.0/examples/asynchronous_consumer_example.html
 #
 # Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>
+# To be used together with rabbitmq_producer.py
 
 import os
 import sys
@@ -33,6 +34,7 @@ class RabbitmqConsumer(threading.Thread):
     
     EXCHANGE = 'oodt-exchange'
     EXCHANGE_TYPE = 'direct'
+    PREFETCH_COUNT = 1 # number of concurrent messages to be sent to this consumer
     
     def __init__(self, amqp_url, workflow_event, wmgrClient,
                  group=None, target=None, name=None, verbose=None): # Thread parent class arguments
@@ -143,6 +145,8 @@ class RabbitmqConsumer(threading.Thread):
         LOGGER.info('Channel opened')
         self._channel = channel
         self.add_on_channel_close_callback()
+        # process 1 message at a time from this queue
+        self._channel.basic_qos(prefetch_count=self.PREFETCH_COUNT)
         self.setup_exchange(self.EXCHANGE)
 
     def add_on_channel_close_callback(self):
@@ -178,9 +182,10 @@ class RabbitmqConsumer(threading.Thread):
 
         """
         LOGGER.info('Declaring exchange %s', exchange_name)
-        self._channel.exchange_declare(self.on_exchange_declareok,
-                                       exchange_name,
-                                       self.EXCHANGE_TYPE)
+        self._channel.exchange_declare(callback=self.on_exchange_declareok,
+                                       exchange=exchange_name,
+                                       exchange_type=self.EXCHANGE_TYPE,
+                                       durable=True)
 
     def on_exchange_declareok(self, unused_frame):
         """Invoked by pika when RabbitMQ has finished the Exchange.Declare RPC
@@ -201,7 +206,7 @@ class RabbitmqConsumer(threading.Thread):
 
         """
         LOGGER.info('Declaring queue %s', queue_name)
-        self._channel.queue_declare(self.on_queue_declareok, queue_name)
+        self._channel.queue_declare(self.on_queue_declareok, queue_name, durable=True)
 
     def on_queue_declareok(self, method_frame):
         """Method invoked by pika when the Queue.Declare RPC call made in

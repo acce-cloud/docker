@@ -8,6 +8,7 @@
 # o Shuts down if RabbitMQ server closes the channel
 #
 # Usage: python rabbitmq_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]
+# To be used together with rabbitmq_consumer.py
 
 import logging
 import pika
@@ -193,9 +194,10 @@ class RabbitmqProducer(object):
 
         """
         LOGGER.info('Declaring exchange %s', exchange_name)
-        self._channel.exchange_declare(self.on_exchange_declareok,
-                                       exchange_name,
-                                       self.EXCHANGE_TYPE)
+        self._channel.exchange_declare(callback=self.on_exchange_declareok,
+                                       exchange=exchange_name,
+                                       exchange_type=self.EXCHANGE_TYPE,
+                                       durable=True) # survive server reboots
 
     def on_exchange_declareok(self, unused_frame):
         """Invoked by pika when RabbitMQ has finished the Exchange.Declare RPC
@@ -216,7 +218,7 @@ class RabbitmqProducer(object):
 
         """
         LOGGER.info('Declaring queue %s', queue_name)
-        self._channel.queue_declare(self.on_queue_declareok, queue_name)
+        self._channel.queue_declare(self.on_queue_declareok, queue_name, durable=True) # make queue persist server reboots
 
     def on_queue_declareok(self, method_frame):
         """Method invoked by pika when the Queue.Declare RPC call made in
@@ -389,16 +391,19 @@ def wait():
     
     LOGGER.info("Waiting for all messages to be processed...")
             
+    num_messages = -1
     num_ready_messages = -1
     num_unack_messages = -1
     # FIXME
     url = 'http://oodt-admin:changeit@localhost:15672/api/queues/%2f/test-workflow'
-    while num_ready_messages != 0 or num_unack_messages != 0:
+    while num_messages != 0:
         resp = requests.get(url=url)
         data = json.loads(resp.text)
+        num_messages = data['messages']
         num_ready_messages = data['messages_ready']
         num_unack_messages = data['messages_unacknowledged']
-        logging.critical("Number of ready messages: %s, number of unacked messages: %s" % (num_ready_messages, num_unack_messages))
+        logging.critical("Number of messages: ready=%s unacked= %s total=%s" % 
+                         (num_ready_messages, num_unack_messages, num_messages))
         time.sleep(1)
 
 def main(workflow_event, num_events, msg_dict):
