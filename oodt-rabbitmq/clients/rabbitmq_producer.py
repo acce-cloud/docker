@@ -18,6 +18,7 @@ import sys
 import datetime
 import requests
 import time
+import uuid
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
@@ -40,7 +41,7 @@ class RabbitmqProducer(object):
     EXCHANGE = 'oodt-exchange' 
     EXCHANGE_TYPE = 'direct'
     PUBLISH_INTERVAL = 1
-    PRODUCER_ID = 'oodt-producer' # FIXME:make unique ?
+    PRODUCER_ID = str(uuid.uuid4()) # unique producer identifer
     
 
     def __init__(self, amqp_url, workflow_event, num_messages, msg_dict):
@@ -293,8 +294,9 @@ class RabbitmqProducer(object):
                     self._message_number, len(self._deliveries),
                     self._acked, self._nacked)
         
-        # FIXME: stop processing
+        # close connection and channel all messages have been delivered successfully
         if self._acked == self._num_messages:
+            LOGGER.info("RabbitMQ producer shutting down...")
             self.stop()
 
     def schedule_next_message(self):

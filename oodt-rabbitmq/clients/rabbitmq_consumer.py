@@ -292,7 +292,7 @@ class RabbitmqConsumer(threading.Thread):
         :param str|unicode body: The message body
 
         """
-        LOGGER.info('Received message # %s from %s: %s, submitting workflow...',
+        LOGGER.info('Received message # %s from producer %s: %s, submitting workflow...',
                     basic_deliver.delivery_tag, properties.app_id, body)
                 
         # parse message body into metadata dictionary
