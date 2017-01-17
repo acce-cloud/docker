@@ -15,6 +15,8 @@ import json
 import os
 import sys
 import datetime
+import requests
+import time
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
@@ -40,7 +42,7 @@ class RabbitmqProducer(object):
     PRODUCER_ID = 'oodt-producer' # FIXME:make unique ?
     
 
-    def __init__(self, amqp_url, workflow_event, num_messages, message):
+    def __init__(self, amqp_url, workflow_event, num_messages, msg_dict):
         """Setup the example publisher object, passing in the URL we will use
         to connect to RabbitMQ.
 
@@ -59,7 +61,7 @@ class RabbitmqProducer(object):
         self._queue = workflow_event
         self._routing_key = workflow_event
         self._num_messages = num_messages
-        self._message = message
+        self._msg_dict = msg_dict
 
 
     def connect(self):
@@ -287,6 +289,10 @@ class RabbitmqProducer(object):
                     '%i were acked and %i were nacked',
                     self._message_number, len(self._deliveries),
                     self._acked, self._nacked)
+        
+        # FIXME: stop processing
+        if self._acked == self._num_messages:
+            self.stop()
 
     def schedule_next_message(self):
         """If we are not closing our connection to RabbitMQ, schedule another
@@ -323,11 +329,11 @@ class RabbitmqProducer(object):
 
         properties = pika.BasicProperties(app_id=self.PRODUCER_ID,
                                           content_type='application/json',
-                                          headers=message)
+                                          headers=self._msg_dict)
 
         self._channel.basic_publish(self.EXCHANGE, self._routing_key,
-                                    self._message,
-                                    #json.dumps(message, ensure_ascii=False),
+                                    # transforms dictionary into string
+                                    json.dumps(self._msg_dict, ensure_ascii=False),
                                     properties)
         
         self._deliveries.append(self._message_number)
@@ -336,6 +342,34 @@ class RabbitmqProducer(object):
         # stop publishing after num_messages
         if self._message_number < self._num_messages:
             self.schedule_next_message()
+        #else:
+        #    self.wait_for_completion()
+    
+    def wait_for_completion(self):
+        '''
+        Method that waits until the number of 'unack messages is 0
+        (signaling that all workflows have been completed).
+        
+        '''
+                
+        # wait for 'Ready Messages' = 0 (i.e. all messages have been sent)
+        #num_msgs = -1
+        #while num_msgs !=0 :
+        #    num_msgs = self._channel.queue_declare(self.do_nothing, queue=self._queue, passive=True).method.message_count
+        #    LOGGER.info("Number of ready messages: %s" % num_msgs)
+        #    time.sleep(1)
+            
+        # then wait for the 'Unack Messages = 0' (i.e. all messages have been acknowldged)
+        num_unack_messages = -1
+        # FIXME
+        url = 'http://oodt-admin:changeit@localhost:15672/api/queues/%2f/test-workflow'
+        while num_unack_messages != 0:
+            resp = requests.get(url=url)
+            data = json.loads(resp.text)
+            print data
+            num_unack_messages = data['messages_unacknowledged']
+            LOGGER.info("Number of unack messages: %s" % num_unack_messages)
+            time.sleep(1)
 
     def close_channel(self):
         """Invoke this command to close the channel with RabbitMQ by sending
@@ -369,6 +403,7 @@ class RabbitmqProducer(object):
         self._connection.ioloop.start()
         LOGGER.info('Stopped')
 
+
     def close_connection(self):
         """This method closes the connection to RabbitMQ."""
         LOGGER.info('Closing connection')
@@ -376,7 +411,7 @@ class RabbitmqProducer(object):
         self._connection.close()
 
 
-def main(workflow_event, num_events, message):
+def main(workflow_event, num_events, msg_dict):
     
     logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
     
@@ -389,18 +424,12 @@ def main(workflow_event, num_events, message):
     rabbitmqUrl = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost/%2f')
 
     # instantiate producer
-    rabbitmqProducer = RabbitmqProducer(rabbitmqUrl + '?connection_attempts=3&heartbeat_interval=3600', 
-                                        workflow_event, num_events, message)
+    rmqProducer = RabbitmqProducer(rabbitmqUrl + '?connection_attempts=3&heartbeat_interval=3600', 
+                                        workflow_event, num_events, msg_dict)
     
-    try:
-        # publish N messages
-        rabbitmqProducer.run()
-        
-        # wait for completion    
-        
-    except KeyboardInterrupt:
-        rabbitmqProducer.stop()
-        
+    # publish N messages
+    rmqProducer.run()
+                        
     stopTime = datetime.datetime.now()
     logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
     logging.critical("Elapsed Time: %s secs" % (stopTime-startTime).seconds )
@@ -416,7 +445,12 @@ if __name__ == '__main__':
     else:
       workflow_event = sys.argv[1]
       num_events = int( sys.argv[2] )
-      message = ' '.join(sys.argv[3:]) or ''
+      # parse remaning arguments into a dictionary
+      msg_dict = {}
+      for arg in sys.argv[3:]:
+          key, val = arg.split('=')
+          msg_dict[key]=val
 
-    main(workflow_event, num_events, message)
+    print msg_dict
+    main(workflow_event, num_events, msg_dict)
     

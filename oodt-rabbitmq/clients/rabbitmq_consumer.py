@@ -9,6 +9,7 @@ import sys
 import logging
 import pika
 import threading
+import json
 from workflow_client import WorkflowManagerClient
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
@@ -33,7 +34,7 @@ class RabbitmqConsumer(threading.Thread):
     EXCHANGE = 'oodt-exchange'
     EXCHANGE_TYPE = 'direct'
     
-    def __init__(self, amqp_url, workflow_event,
+    def __init__(self, amqp_url, workflow_event, wmgrClient,
                  group=None, target=None, name=None, verbose=None): # Thread parent class arguments
         """Create a new instance of the consumer class, passing in the AMQP
         URL used to connect to RabbitMQ.
@@ -45,6 +46,7 @@ class RabbitmqConsumer(threading.Thread):
         # initialize Thread
         threading.Thread.__init__(self, group=group, target=target, name=name, verbose=verbose)
         
+        self._wmgrClient = wmgrClient
         self._connection = None
         self._channel = None
         self._closing = False
@@ -277,9 +279,20 @@ class RabbitmqConsumer(threading.Thread):
         :param str|unicode body: The message body
 
         """
-        LOGGER.info('Received message # %s from %s: %s',
+        LOGGER.info('Received message # %s from %s: %s, submitting workflow...',
                     basic_deliver.delivery_tag, properties.app_id, body)
+                
+        # parse message body into metadata dictionary
+        metadata = json.loads(body)
+        print 'metadata=%s' % metadata
+                
+        # submit workflow, then wait for its completeion
+        status = self._wmgrClient.executeWorkflow(metadata)      
+        logging.info('Worfklow ended with status: %s' % status)
+        
+        # send acknowledgment to RabbitMQ server
         self.acknowledge_message(basic_deliver.delivery_tag)
+
 
     def acknowledge_message(self, delivery_tag):
         """Acknowledge the message delivery from RabbitMQ by sending a
@@ -360,10 +373,16 @@ def main(workflow_event, num_workflow_clients):
     
     try:
         
-        # instantiate N RabbitMQ clients
+        # loop over requested number of radditmq instances
         for i in range(num_workflow_clients):
             
-            rmqConsumer = RabbitmqConsumer(rabbitmqUrl, workflow_event)
+            # instantiate Workflow Manager client
+            # IMPORTANT: xmlrpclib is NOT thread safe in Python 2.7
+            # so must create one WorkflowManagerClient to be used in each thread
+            wmgrClient = WorkflowManagerClient(workflow_event)
+
+            # instantiate RabbitMQ client instance
+            rmqConsumer = RabbitmqConsumer(rabbitmqUrl, workflow_event, wmgrClient)
 
             # Thread.start() --> rmqConsumer.run()
             rmqConsumer.start()
