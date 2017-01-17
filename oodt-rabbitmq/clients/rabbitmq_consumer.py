@@ -5,6 +5,8 @@
 # Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>
 # To be used together with rabbitmq_producer.py
 #
+# All the custom logic is contained in the method on_message()
+#
 # Features:
 # o If the RabbitMQ server closes the connection, this client re-opens it
 # o If the RabbitMQ server cancels the channel, this client shuts down cleanly
@@ -297,7 +299,6 @@ class RabbitmqConsumer(threading.Thread):
                 
         # parse message body into metadata dictionary
         metadata = json.loads(body)
-        print 'metadata=%s' % metadata
                 
         # submit workflow, then wait for its completeion
         status = self._wmgrClient.executeWorkflow(metadata)      
@@ -425,5 +426,4 @@ if __name__ == '__main__':
       workflow_event = sys.argv[1]
       num_workflow_clients = int(sys.argv[2])
 
-    
     main(workflow_event, num_workflow_clients)
