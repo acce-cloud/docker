@@ -26,4 +26,4 @@ EXPOSE 9001
 VOLUME $OODT_STAGING
 VOLUME $OODT_ARCHIVE
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord-workflow.conf"]
+CMD ["/usr/local/bin/supervisord", "-c", "/etc/supervisor/supervisord-workflow.conf"]

@@ -27,7 +27,7 @@ pushit=${1:-false}
 wrkdir=`pwd`
 
 # loop over ordered list of OODT images
-images=('oodt-node' 'oodt-filemgr' 'oodt-wmgr' 'oodt-resmgr' 'oodt-fmprod' 'oodt-crawler')
+images=('oodt-node' 'oodt-filemgr' 'oodt-wmgr' 'oodt-resmgr' 'oodt-fmprod' 'oodt-crawler' 'oodt-rabbitmq')
 
 for img in ${images[*]}; do
    cd "$wrkdir/$img"

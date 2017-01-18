@@ -2,16 +2,12 @@
 
 version: '2'
 
-networks:
-  mynetwork:
-    driver: bridge
-
 services:
 
   # OODT file manager
   oodt_filemgr_app:
     image: oodthub/oodt-filemgr
-    container_name: myfilemgr
+    container_name: filemgr
     expose:
       - "9000"
       - "8983"
@@ -21,45 +17,44 @@ services:
     volumes_from:
       - oodt_test_workflow_app
     networks:
-      default: {}
-      mynetwork:
+      default:
         aliases:
           - oodt.filemgr.host
 
   # OODT workflow manager
   oodt_wmgr_app:
     image: oodthub/oodt-wmgr
-    #container_name: mywmgr
+    #container_name: wmgr
     expose:
       - "9001"
     ports:
       - "9001"
     volumes_from:
       - oodt_test_workflow_app
+      - oodt_rabbitmq_app
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
+      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
     networks:
-      default: {}
-      mynetwork:
+      default:
         aliases:
           - oodt.wmgr.host
+    entrypoint: ["/usr/local/bin/start.sh", "test-workflow", "2"]
 
   # workflow manager container used as client to workflow manager server instances
-  oodt_wmgr_client_app:
-    image: oodthub/oodt-wmgr
-    container_name: mywmgr_client
-    environment:
-      - "WORKFLOW_URL=http://oodt.wmgr.host:9001"
+  #oodt_wmgr_client_app:
+  #  image: oodthub/oodt-wmgr
+  #  container_name: mywmgr_client
+  #  environment:
+  #    - "WORKFLOW_URL=http://oodt.wmgr.host:9001"
     # keep container running
-    entrypoint: ["tail", "-f", "/dev/null"]
-    networks:
-      default: {}
-      mynetwork: {}
+  #  entrypoint: ["tail", "-f", "/dev/null"]
 
   # OODT product server
   oodt_fmprod_app:
     image: oodthub/oodt-fmprod
-    container_name: myfmprod
+    container_name: fmprod
     expose:
       - "8080"
     ports:
@@ -69,11 +64,26 @@ services:
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
     networks:
-      default: {}
-      mynetwork:
+      default:
         aliases:
           - oodt.fmprod.host
 
+  # RabbitMQ server
+  oodt_rabbitmq_app:
+    image: oodthub/oodt-rabbitmq
+    container_name: rabbitmq
+    expose:
+      - "5672"
+      - "15672"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      default:
+        aliases:
+          - oodt.rabbitmq.host
+
+  # image with specific test-workflow configuration
   oodt_test_workflow_app:
     image: oodthub/oodt-example-compose
     container_name: myapp
