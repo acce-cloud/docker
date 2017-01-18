@@ -4,7 +4,7 @@ FROM oodthub/oodt-node
 
 #
 # Usage:
-# docker build -t oodt-hub/spdm-services \
+# docker build -t oodthub/spdm-services \
 #		--build-arg jpl_git_user=${JPL_GIT_USER} \
 #        	--build-arg jpl_git_token=${JPL_GIT_TOKEN} \
 #		--build-arg spdm_db_user=${SPDM_DB_USER} \
