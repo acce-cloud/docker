@@ -1,0 +1,51 @@
+Working directory: docker/smap/docker-spdm
+
+Step 0: gather credentials
+ JPL_GIT_USER
+ JPL_GIT_TOKEN
+ SPDM_DB_USER
+ SPDM_DB_PASS
+
+Step 1: build docker images and starts container
+
+Two ways:
+
+#1
+% setenv JPL_GIT_USER
+% setenv JPL_GIT_TOKEN
+% setenv SPDM_DB_USER
+% setenv SPDM_DB_PASS
+% docker build -t oodt-hub/spdm-services \
+              --build-arg jpl_git_user=${JPL_GIT_USER} \
+              --build-arg jpl_git_token=${JPL_GIT_TOKEN} \
+              --build-arg spdm_db_user=${SPDM_DB_USER} \
+              --build-arg spdm_db_pass=${SPDM_DB_PASS} .
+
+#2
+% vi build/credentials.sh
+[set credentials accordingly]
+% sh build/build-docker-spdm.sh
+
+Step 2: Initiate docker container with oodt-hub/spdm-services image
+
+%docker run -it oodt-hub/spdm-services
+
+Step 3: Prepare for L0-L3 Regression Test Run 
+
+% sh scripts/prep_regression.sh
+
+Step 4: Kick off L0-L2 Test Run
+
+% sh scripts/L0-L2_regression.sh
+
+Step 5: Kick off L3 Test Run
+
+% sh scripts/L3_regression.sh
+
+Step 6: Verify products generated 
+
+Check if L2_SM_AP products and L3 products are generated. Give some time for products to appear!
+
+% sh scripts/verifyProducts.sh
+or
+% sh scripts/listProducts.sh
