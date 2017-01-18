@@ -40,7 +40,7 @@ class RabbitmqProducer(object):
     """
     EXCHANGE = 'oodt-exchange' 
     EXCHANGE_TYPE = 'direct'
-    PUBLISH_INTERVAL = 1
+    PUBLISH_INTERVAL = 0.1
     PRODUCER_ID = str(uuid.uuid4()) # unique producer identifer
     
 
