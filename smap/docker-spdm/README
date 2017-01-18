@@ -22,8 +22,9 @@ Two ways:
               --build-arg spdm_db_pass=${SPDM_DB_PASS} .
 
 #2
-% vi build/credentials.sh
+% cp build/credentials.sh credentials.sh
 [set credentials accordingly]
+# run build/build-docker-spdm.sh with credentials.sh in the current directory
 % sh build/build-docker-spdm.sh
 
 Step 2: Initiate docker container with oodt-hub/spdm-services image

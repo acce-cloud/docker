@@ -1,9 +1,7 @@
 #!/bin/sh
-if [ -r credentials.sh ] ; then 
-   . credentials.sh
+if [ -r ./credentials.sh ] ; then 
+   . ./credentials.sh
 fi
-DOCKER_DIR=docker/smap/docker-spdm
-cd ${DOCKER_DIR}
 docker build -t oodt-hub/spdm-services \
               --build-arg jpl_git_user=${JPL_GIT_USER} \
               --build-arg jpl_git_token=${JPL_GIT_TOKEN} \
