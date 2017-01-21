@@ -334,6 +334,7 @@ class RabbitmqProducer(object):
         
         properties = pika.BasicProperties(app_id=self.PRODUCER_ID,
                                           content_type='application/json',
+                                          delivery_mode=2,       # make message persistent
                                           headers=self._msg_dict)
 
         self._channel.basic_publish(self.EXCHANGE, self._routing_key,
