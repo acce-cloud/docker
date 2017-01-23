@@ -15,8 +15,17 @@ COPY wmgr_config/test-workflow/ $OODT_CONFIG/test-workflow/
 
 # install custom PGEs
 RUN mkdir -p $PGE_ROOT/test-workflow
-COPY pges/test-workflow/ $PGE_ROOT/test-workflow/
+COPY wmgr_config/pges/test-workflow/ $PGE_ROOT/test-workflow/
+
+# install RabbitMQ client scripts (prodicers and conumers)
+COPY wmgr_config/rabbitmq_clients/ /usr/local/oodt/rabbitmq/
+
+# install start/stop scripts
+COPY wmgr_config/scripts/ /usr/local/bin/
 
 VOLUME $OODT_CONFIG
 VOLUME $PGE_ROOT
 VOLUME $OODT_ARCHIVE
+
+# override oodthub/oodt-wmgr entrypoint to start rabbitmq clients
+ENTRYPOINT ["/usr/local/bin/start.sh", "test-workflow", "2"]
