@@ -2,12 +2,12 @@
 # node: acce-build1.dyndns.org
 # Submits the OODT "test-workflow" (twice), then queries the Solr catalog
 
-wmgr_client_id=`docker ps | grep wmgr-client | awk '{print $1}'`
+rabbitmq_id=`docker ps | grep rabbitmq | awk '{print $1}'`
 
-docker exec -it ${wmgr_client_id} sh -c "cd /usr/local/oodt/cas-workflow/bin; ./wmgr-client --url http://wmgr:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123 --key Run 1"
+docker exec -it ${rabbitmq_id} sh -c "cd /usr/local/oodt/rabbitmq; python rabbitmq_producer.py test-workflow 10 Dataset=abc Project=123 Run=1"
+
 sleep 3
+docker exec -it ${rabbitmq_id} sh -c "cd /usr/local/oodt/rabbitmq; python rabbitmq_producer.py test-workflow 10 Dataset=abc Project=123 Run=2"
 
-docker exec -it ${wmgr_client_id} sh -c "cd /usr/local/oodt/cas-workflow/bin; ./wmgr-client --url http://wmgr:9001 --operation --sendEvent --eventName test-workflow --metaData --key Dataset abc --key Project 123 --key Run 2"
-sleep 3
-
+sleep 10
 curl "http://${MANAGER_IP}:8983/solr/oodt-fm/select?q=*%3A*&wt=json&indent=true&rows=0"
