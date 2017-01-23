@@ -40,7 +40,7 @@
     <requiredMetFields>
       <metfield name="Dataset" />
       <metfield name="Project" />
-      <metfield name="Run" />
+      <metfield name="message_counter" />
     </requiredMetFields>
     
   </task>
