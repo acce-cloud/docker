@@ -8,3 +8,5 @@ docker exec -it ${rabbitmq_id} sh -c "cd /usr/local/oodt/rabbitmq; python rabbit
 
 sleep 10
 curl "http://${MANAGER_IP}:8983/solr/oodt-fm/select?q=*%3A*&wt=json&indent=true&rows=0"
+# to delete all records:
+# curl "http://${MANAGER_IP}:8983/solr/oodt-fm/update?stream.body=<delete><query>*:*</query></delete>&commit=true"
