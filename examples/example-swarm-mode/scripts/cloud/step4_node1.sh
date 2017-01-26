@@ -22,8 +22,6 @@ docker service create --replicas 1 --name wmgr -p 9001:9001 --network swarm-netw
                       --env 'FILEMGR_URL=http://filemgr:9000/' oodthub/test-wmgr
 docker service scale wmgr=2
 
-#docker service create --replicas 1 --name wmgr-client --network swarm-network  --constraint 'node.labels.oodt_type==filemgr' oodthub/test-wmgr-client
-
 docker service ls
 docker service ps filemgr
 docker service ps wmgr
