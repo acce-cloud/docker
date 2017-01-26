@@ -36,7 +36,7 @@ export CRAWLER_FAILURE_DIR=/project/spdm/staging/failureDir
 #
 # Crawler master wait time in seconds
 #
-export CRAWLER_MASTER_WAIT=300
+export CRAWLER_MASTER_WAIT=120
 export PAN_PDRD_CRAWLER_WAIT=600
 export GDS_CRAWLER_WAIT=${CRAWLER_MASTER_WAIT}
 export L1_EXT_CRAWLER_WAIT=${CRAWLER_MASTER_WAIT}
@@ -96,7 +96,7 @@ export L4_PDRD_CRAWLER_DAEMON_PORT=9025
 
 #--- Database information ---
 #--- Do not include the domain name in the DB_HOST
-export DB_HOST=jplis-dta-ecostrsd
+export DB_HOST=jplis-dta-ecostrsd.jpl.nasa.gov
 export DB_PORT=1521
 export DB_INSTANT=ECOSTRSD
 

@@ -18,7 +18,7 @@ fi
 echo "Checking & making SPDM required directory layout..."
 for dir in ${SDS_HOME} ${LOM_HOME} ${SPDM_WORKSPACE} \
         ${ANALYSIS_HOME} ${FAILED_TASK_HOME} ${REPORT_HOME} \
-        ${PID_HOME} ${WORKFLOW_LUCENE_HOME} \
+        ${PID_HOME} ${WORKFLOW_LUCENE_HOME}/index \
         ${CRAWLER_SUCCESS_DIR} ${CRAWLER_FAILURE_DIR} \
         ${GDS_CRAWLER_PATH} ${L1_EXT_CRAWLER_PATH} \
         ${ANTAZ_CRAWLER_PATH} \ ${L2PP_CRAWLER_PATH} \
@@ -35,4 +35,3 @@ do
       mkdir -p ${dir}
    fi
 done
-

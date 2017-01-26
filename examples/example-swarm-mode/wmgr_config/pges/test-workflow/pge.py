@@ -81,8 +81,7 @@ def execute(input_file_name=None, output_file_name=None, output_size_in_mb=1, he
      logging.info("Writing output file: %s" % output_file_path)
 
      # use Unix utility to write file of given size
-     #os.system("dd if=/dev/urandom of=%s bs=1m count=%s" % (output_file_path, output_size_in_mb))
-     os.system("dd if=/dev/urandom of=%s bs=1M count=%s" % (output_file_path, output_size_in_mb))
+     os.system("dd if=/dev/urandom of=%s bs=1048576 count=%s" % (output_file_path, output_size_in_mb))
 
      # each loop iteration will write out 1 KB of data
      #output_file = open(output_file_path, 'wb')

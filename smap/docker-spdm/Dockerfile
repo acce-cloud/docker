@@ -2,10 +2,20 @@
 
 FROM oodthub/oodt-node
 
+#
+# Usage:
+# docker build -t oodthub/spdm-services \
+#		--build-arg jpl_git_user=${JPL_GIT_USER} \
+#        	--build-arg jpl_git_token=${JPL_GIT_TOKEN} \
+#		--build-arg spdm_db_user=${SPDM_DB_USER} \
+#		--build-arg spdm_db_pass=${SPDM_DB_PASS} .
+#
 # Required arguments
-ARG spdm_git_user=
-ARG spdm_git_token=
-
+#
+ARG jpl_git_user=
+ARG jpl_git_token=
+ARG spdm_db_user=
+ARG spdm_db_pass=
 #
 # install sqlplus
 #
@@ -15,6 +25,9 @@ COPY build/apps/oracle-instantclient12.1-sqlplus-12.1.0.2.0-1.x86_64.rpm /tmp/.
 RUN yum -y install libaio
 RUN cd /tmp; rpm -ivh oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.rpm
 RUN cd /tmp; rpm -ivh oracle-instantclient12.1-sqlplus-12.1.0.2.0-1.x86_64.rpm
+#
+# install tree command
+RUN yum -y install tree
 #
 ENV ORACLE_HOME /usr/lib/oracle/12.1/client64
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.1/client64/lib:${LD_LIBRARY_PATH}
@@ -33,9 +46,9 @@ ENV SPDM_BUILD /usr/local/spdm/build
 RUN mkdir -p $SPDM_HOME
 RUN mkdir -p $SPDM_BUILD
 #
-# compile SPDM
+# compile & deploy SPDM with test profile
 #
-RUN cd $SPDM_BUILD; curl -fsSL --user $spdm_git_user:$spdm_git_token https://github.jpl.nasa.gov/SPDM/spdm/archive/${SPDM_VERSION}.tar.gz | tar -xvz
+RUN cd $SPDM_BUILD; curl -fsSL --user ${jpl_git_user}:${jpl_git_token} https://github.jpl.nasa.gov/SPDM/spdm/archive/${SPDM_VERSION}.tar.gz | tar -xvz
 COPY build/spdm.properties ${SPDM_BUILD}/spdm-${SPDM_VERSION}
 RUN cd ${SPDM_BUILD}/spdm-${SPDM_VERSION}; mvn install -Pspdm-dev -Dmaven.test.skip=true
 #
@@ -46,11 +59,24 @@ RUN cd $SPDM_BUILD/spdm-${SPDM_VERSION}/spdm-distribution-${SPDM_VERSION}; sh in
 #
 # setup & configure SPDM with pre-set property file, setenv.sh
 #
+COPY build/upd_setenv.sh ${SPDM_BUILD}/.
+COPY config/setenv.sh ${SPDM_BUILD}/.
+RUN cd ${SPDM_BUILD}; sh upd_setenv.sh ${spdm_db_user} ${spdm_db_pass}
 RUN cd ${SPDM_HOME}/spdm-main/bin; mv setenv.sh setenv.sh.orig
-COPY config/setenv.sh ${SPDM_HOME}/spdm-main/bin/.
+RUN cp -p ${SPDM_BUILD}/setenv.sh ${SPDM_HOME}/spdm-main/bin/.
+#
+# build directory structures required for spdm operation
+#
 COPY build/setupSPDMdir.sh ${SPDM_BUILD}/.
 RUN cd ${SPDM_BUILD}; sh setupSPDMdir.sh
 RUN cd $SPDM_BUILD/spdm-${SPDM_VERSION}/spdm-distribution-${SPDM_VERSION}; sh configure.sh
+# 
+# patch test scripts with your test environment
+#
+RUN cd ${SPDM_HOME}/spdm-pge/conf/L01_Radar; mv L1C_S0_HiRes_PgeConfig.xml L1C_S0_HiRes_PgeConfig.xml.orig
+COPY config/test/L1C_S0_HiRes_PgeConfig.xml ${SPDM_HOME}/spdm-pge/conf/L01_Radar/.
+RUN cd ${SPDM_HOME}/spdm-main/bin/test/regression; mv regression_testSetup.sh regression_testSetup.sh.orig
+COPY config/test/regression_testSetup.sh ${SPDM_HOME}/spdm-main/bin/test/regression/.
 #
 # Retart services automatically
 #
