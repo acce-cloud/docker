@@ -41,6 +41,9 @@
       <metfield name="Dataset" />
       <metfield name="Project" />
       <metfield name="message_counter" />
+      <metfield name="heap" />
+      <metfield name="time" />
+      <metfield name="size" />
     </requiredMetFields>
     
   </task>
@@ -67,6 +70,9 @@
       <metfield name="Dataset" />
       <metfield name="Project" />
       <metfield name="message_counter" />
+      <metfield name="heap" />
+      <metfield name="time" />
+      <metfield name="size" />
     </requiredMetFields>
 
   </task>
