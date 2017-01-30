@@ -7,8 +7,8 @@
 #
 # Example:
 # python multi_pges.py
-# python multi_pges.py --run 1 --task 1 --pges 10
-# python multi_pges.py --run 1 --task 2 --pges 10
+# python multi_pges.py --run 1 --task 1 --pges 10 --heap 1 --size 10 --time 10
+# python multi_pges.py --run 1 --task 2 --pges 10 --heap 1 --size 10 --time 10
 #
 # Note: if task_number>1: it is assumed that as many input files already exist from the previous task,
 # to be read at the beginning of this task
@@ -19,9 +19,9 @@ import argparse
 import logging
 import multiprocessing
 
-SIZE_IN_MB = 10
-HEAP_IN_MB = 1
-EXEC_TIME = 10
+DEFAULT_SIZE_IN_MB = 10
+DEFAULT_HEAP_IN_MB = 1
+DEFAULT_TIME_IN_SECS = 10
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # set log level
@@ -30,19 +30,19 @@ logging.basicConfig(level=logging.DEBUG,
                     )
 
 
-def worker(output_file_name, input_file_name):
+def worker(output_file_name, input_file_name, size_mb=DEFAULT_SIZE_IN_MB, heap_mb=DEFAULT_HEAP_IN_MB, time_secs=DEFAULT_TIME_IN_SECS):
     """sub-process worker function"""
 
     logging.info("Starting worker: %s" % multiprocessing.current_process().name)
 
     pge_file_path = os.path.join(DIR_PATH, "pge.py")
-    command = "python %s --heap %s --time %s" % (pge_file_path, HEAP_IN_MB, EXEC_TIME)
+    command = "python %s --heap %s --time %s" % (pge_file_path, heap_mb, time_secs)
 
     if input_file_name is not None:
        command += " --in %s" % input_file_name
 
     if output_file_name is not None:
-       command += " --out %s --size %s" % (output_file_name, SIZE_IN_MB)
+       command += " --out %s --size %s" % (output_file_name, size_mb)
  
     # execute command in a subshell, wait for command return status
     logging.info("Executing system command: %s" % command)
@@ -55,14 +55,21 @@ def worker(output_file_name, input_file_name):
 if __name__ == '__main__':
 
     # parse command line arguments
+    # for simplicity, use the same heap/size/time options for all PGEs
     parser = argparse.ArgumentParser(description="Python Script that submits multiple simulated PGEs")
     parser.add_argument('--pges', type=int, help="Number of PGEs (optional, default: 1)",  default=1)
     parser.add_argument('--run', type=int, help="Run number (optional, default: 1)",  default=1)
     parser.add_argument('--task', type=int, help="Task number (optional, default: 1)",  default=1)
+    parser.add_argument('--heap', type=int, help="Heap allocated in MB (optional, default: 1)",  default=1)
+    parser.add_argument('--size', type=int, help="Output size in MB (optional, default: 10)",  default=10)
+    parser.add_argument('--time', type=int, help="Time elapsed in seconds (optional, default: 10)",  default=10)
     args_dict = vars( parser.parse_args() )
     run_number = int(args_dict['run'])
     task_number = int(args_dict['task'])
     number_pges = int(args_dict['pges'])
+    heap_mb = int(args_dict['heap'])
+    size_mb = int(args_dict['size'])
+    time_secs = int(args_dict['time'])
 
     jobs = []
     # start all sub-processes
@@ -76,7 +83,10 @@ if __name__ == '__main__':
            input_file_name = 'output_run%s_task%s_pge%s.out' % (run_number, task_number-1, i)
 
         pname = "Process_run%s_task%s_pge%s" % (run_number, task_number, i)
-        p = multiprocessing.Process(target=worker, args=(output_file_name, input_file_name), name=pname)
+        p = multiprocessing.Process(target=worker, 
+                                    args=(output_file_name, input_file_name), 
+                                    kwargs={'heap_mb':heap_mb, 'size_mb':size_mb, 'time_secs':time_secs},
+                                    name=pname)
         #p.daemon = True # run as daemon, main program may exit before sub-process is over
         jobs.append(p)
         p.start()
