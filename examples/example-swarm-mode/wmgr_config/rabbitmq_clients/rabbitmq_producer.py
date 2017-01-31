@@ -398,7 +398,7 @@ def wait(queue_name):
     '''
     
     LOGGER.info("Waiting for all messages to be processed...")
-    time.sleep(3) # wait for queue to be ready
+    time.sleep(5) # wait for queue to be ready
             
     num_messages = -1
     num_ready_messages = -1
