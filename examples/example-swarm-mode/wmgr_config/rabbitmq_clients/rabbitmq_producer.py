@@ -436,14 +436,14 @@ def main(workflow_event, num_events, msg_dict):
     rabbitmqUrl = os.environ.get('RABBITMQ_USER_URL', 'amqp://guest:guest@localhost/%2f')
 
     # instantiate producer
-    #rmqProducer = RabbitmqProducer(rabbitmqUrl + '?connection_attempts=3&heartbeat_interval=3600', 
-    #                                    workflow_event, num_events, msg_dict)
+    rmqProducer = RabbitmqProducer(rabbitmqUrl + '?connection_attempts=3&heartbeat_interval=3600', 
+                                        workflow_event, num_events, msg_dict)
     
     # publish N messages
-    #rmqProducer.run()
+    rmqProducer.run()
     
     # wait for RabbitMQ server to process all messages in given queue
-    #wait(workflow_event)
+    wait(workflow_event)
                         
     stopTime = datetime.datetime.now()
     logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
