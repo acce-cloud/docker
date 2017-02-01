@@ -16,6 +16,9 @@ docker service create --replicas 1 --name rabbitmq -p 5672:5672 -p 15672:15672 -
                       --env 'RABBITMQ_USER_URL=amqp://oodt-user:changeit@localhost/%2f' --env 'RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672'\
                       oodthub/oodt-rabbitmq
 
+# wait for rabbitmq server to become available
+sleep 5
+
 docker service create --replicas 1 --name wmgr -p 9001:9001 --network swarm-network --constraint 'node.labels.oodt_type==wmgr'\
                       --mount type=bind,src=/usr/local/adeploy/archive,dst=/usr/local/oodt/archive\
                       --env 'RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f' --env 'RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672'\
