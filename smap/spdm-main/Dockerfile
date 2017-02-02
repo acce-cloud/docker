@@ -77,6 +77,8 @@ RUN cd ${SPDM_HOME}/spdm-pge/conf/L01_Radar; mv L1C_S0_HiRes_PgeConfig.xml L1C_S
 COPY config/test/L1C_S0_HiRes_PgeConfig.xml ${SPDM_HOME}/spdm-pge/conf/L01_Radar/.
 RUN cd ${SPDM_HOME}/spdm-main/bin/test/regression; mv regression_testSetup.sh regression_testSetup.sh.orig
 COPY config/test/regression_testSetup.sh ${SPDM_HOME}/spdm-main/bin/test/regression/.
+COPY config/nodes.xml ${SPDM_HOME}/spdm-resource/policy/dev/.
+COPY config/node-to-queue-mapping.xml ${SPDM_HOME}/spdm-resource/policy/dev/.
 #
 # Retart services automatically
 #

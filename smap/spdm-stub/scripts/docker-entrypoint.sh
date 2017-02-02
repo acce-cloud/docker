@@ -1,7 +1,7 @@
 #!/bin/sh
 cd ${SPDM_HOME}/spdm-main/bin
 #
-sh spdm_shutdown.sh all
+sh spdm_shutdown.sh all-batchstub
 #
 # Ensure to start batchstub
 #

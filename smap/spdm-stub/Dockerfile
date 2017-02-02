@@ -1,6 +1,5 @@
 # Docker image for SMAP SPDM installation. Includes:
 
-FROM oodthub/oodt-node
 FROM oodthub/spdm-services:0.3
 
 MAINTAINER Cynthia L. Wong <cynthia.l.wong@jpl.nasa.gov>
