@@ -1,4 +1,4 @@
-Working directory: docker/smap/docker-spdm
+Working directory: docker/smap/spdm-main
 
 Step 0: [optional]: gather credentials & build docker images
 ========
