@@ -1,0 +1,20 @@
+<cas:node-to-queue-mapping xmlns:cas="http://oodt.jpl.nasa.gov/1.0/cas">
+	<node id="spdm-stub">
+		<queues>
+			<queue name="CommonQueue"/>
+			<queue name="PPQueue"/>
+            <queue name="RadarQueue"/>
+            <queue name="RadiometerQueue"/>
+            <queue name="L1ARadarQueue"/>
+			<queue name="L1CRadarQueue"/>
+			<queue name="L2L3Queue"/>
+			<queue name="ReprocCommonQueue"/>
+			<queue name="ReprocPPQueue"/>
+            <queue name="ReprocRadarQueue"/>
+            <queue name="ReprocRadiometerQueue"/>
+            <queue name="ReprocL1ARadarQueue"/>
+			<queue name="ReprocL1CRadarQueue"/>
+            <queue name="ReprocL2L3Queue"/>
+		</queues>
+	</node>
+</cas:node-to-queue-mapping>

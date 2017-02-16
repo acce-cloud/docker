@@ -1,4 +1,4 @@
-Working directory: docker/smap/docker-spdm
+Working directory: docker/smap/spdm-main
 
 Step 0: [optional]: gather credentials & build docker images
 ========
@@ -22,10 +22,13 @@ Two ways to build docker images:
               --build-arg spdm_db_pass=${SPDM_DB_PASS} .
 
 #2
+
+Copy credentials.sh template to where build-docker-spdm.sh directory is
 % cp build/credentials.sh credentials.sh
 [set credentials accordingly]
-# run build/build-docker-spdm.sh with credentials.sh in the current directory
-% sh build/build-docker-spdm.sh
+
+Run build-docker-spdm.sh with credentials.sh in the current directory
+% sh build-docker-spdm.sh
 
 Push docker image to https://hub.docker.com/u/oodthub/
 
