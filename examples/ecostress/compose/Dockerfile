@@ -23,6 +23,9 @@ COPY wmgr_config/pge-configs/ $OODT_CONFIG/ecostress/pge-configs/
 RUN mkdir -p $PGE_ROOT/ecostress/
 COPY wmgr_config/pges/ $PGE_ROOT/ecostress/
 
+# install rabbitmq clients
+COPY rabbitmq_clients/ $OODT_HOME/rabbitmq/
+
 # FIXME: install custom scripts to start/stop workflow manager and rabbitmq clients
 COPY scripts/ /usr/local/bin/
 
