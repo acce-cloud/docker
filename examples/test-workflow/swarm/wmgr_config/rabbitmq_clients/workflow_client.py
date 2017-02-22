@@ -28,7 +28,6 @@ class WorkflowManagerClient(object):
         self.workflowManagerServerProxy = xmlrpclib.ServerProxy(workflowManagerUrl, verbose=verbose)
         
         # retrieve workflow definition
-        logging.info('Workflow event: %s' % workflow_event)
         self.workflowTasks = self._getWorkflowTasks(workflow_event)
         logging.info('Workflow tasks: %s' % self.workflowTasks)
     

@@ -1,0 +1,82 @@
+# docker-compose file for executing the ECOSTRESS mock workflows
+
+version: '2'
+
+services:
+
+  # OODT file manager
+  filemgr:
+    image: oodthub/oodt-filemgr
+    container_name: filemgr
+    expose:
+      - "9000"
+      - "8983"
+    ports:
+      - "8983:8983"
+      - "9000:9000"
+    volumes_from:
+      - ecostress
+    networks:
+      default:
+        aliases:
+          - oodt.filemgr.host
+
+  # OODT workflow manager
+  wmgr:
+    image: oodthub/oodt-wmgr
+    #container_name: wmgr
+    expose:
+      - "9001"
+    ports:
+      - "9001"
+    volumes_from:
+      # /usr/local/oodt/rabbitmq/ contains the RabbitMQ producer and consumer clients
+      - rabbitmq
+      # /usr/local/bin/start/stop.sh are the scripts to start/stop the WM and RAbbitMQ consumers
+      - ecostress
+    environment:
+      - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
+      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
+    networks:
+      default:
+        aliases:
+          - oodt.wmgr.host
+    entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3a-workflow", "2"]
+
+  # OODT product server
+  fmprod:
+    image: oodthub/oodt-fmprod
+    container_name: fmprod
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    volumes_from:
+      - ecostress
+    environment:
+      - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+    networks:
+      default:
+        aliases:
+          - oodt.fmprod.host
+
+  # RabbitMQ server
+  rabbitmq:
+    image: oodthub/oodt-rabbitmq
+    container_name: rabbitmq
+    expose:
+      - "5672"
+      - "15672"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      default:
+        aliases:
+          - oodt.rabbitmq.host
+
+  # image with specific test-workflow configuration
+  ecostress:
+    image: oodthub/oodt-example-ecostress
+    container_name: ecostress
