@@ -22,43 +22,43 @@ services:
           - oodt.filemgr.host
 
   # OODT workflow managers: one for L3a and one for L3b processing
-  wmgr_L3a:
-    image: oodthub/oodt-wmgr
-    expose:
-      - "9001"
-    ports:
-      - "9001"
-    volumes_from:
-      # /usr/local/oodt/rabbitmq/ contains the RabbitMQ producer and consumer clients
-      - rabbitmq
-      # /usr/local/bin/start/stop.sh are the scripts to start/stop the WM and RAbbitMQ consumers
-      - ecostress
-    environment:
-      - "FILEMGR_URL=http://oodt.filemgr.host:9000"
-      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
-      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
-    networks:
-      default:
-    entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3a-workflow", "2"]
+  #wmgr_L3a:
+  #  image: oodthub/oodt-wmgr
+  #  expose:
+  #    - "9001"
+  #  ports:
+  #    - "9001"
+  #  volumes_from:
+  #    # /usr/local/oodt/rabbitmq/ contains the RabbitMQ producer and consumer clients
+  #    - rabbitmq
+  #    # /usr/local/bin/start/stop.sh are the scripts to start/stop the WM and RAbbitMQ consumers
+  #    - ecostress
+  #  environment:
+  #   - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+  #    - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
+  #    - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
+  #  networks:
+  #    default:
+  #  entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3a-workflow", "2"]
 
-  wmgr_L3b:
-    image: oodthub/oodt-wmgr
-    expose:
-      - "9001"
-    ports:
-      - "9001"
-    volumes_from:
-      # /usr/local/oodt/rabbitmq/ contains the RabbitMQ producer and consumer clients
-      - rabbitmq
-      # /usr/local/bin/start/stop.sh are the scripts to start/stop the WM and RAbbitMQ consumers
-      - ecostress
-    environment:
-      - "FILEMGR_URL=http://oodt.filemgr.host:9000"
-      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
-      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
-    networks:
-      default:
-    entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3b-workflow", "2"]
+  #wmgr_L3b:
+  #  image: oodthub/oodt-wmgr
+  #  expose:
+  #    - "9001"
+  #  ports:
+  #    - "9001"
+  #  volumes_from:
+  #    # /usr/local/oodt/rabbitmq/ contains the RabbitMQ producer and consumer clients
+  #    - rabbitmq
+  #    # /usr/local/bin/start/stop.sh are the scripts to start/stop the WM and RAbbitMQ consumers
+  #    - ecostress
+  #  environment:
+  #    - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+  #    - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
+  #    - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
+  #  networks:
+  #    default:
+  #  entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3b-workflow", "2"]
 
   # OODT product server
   fmprod:

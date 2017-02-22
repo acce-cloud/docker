@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-# Python workflow producer client:
-# sends a message to the RabbitMQ server to start a workflow
+# Python script that sends messages to the RabbitMQ server to trigger execution of OODT workflows.
 # Usage: python workflow_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]
+#
+# Example: python workflow_producer.py ecostress-L3a-workflow 1 orbit=1 task=L3a scene=7 size=1 heap=1 time=5
+#
 # To be used together with workflow_consumer.py
 
 import sys
@@ -11,11 +13,16 @@ import logging
 import time
 import json
 import requests
-import datetime
+import uuid
 
 logging.basicConfig(level=logging.CRITICAL)
 
+
 class RabbitmqProducer(object):
+    
+    EXCHANGE_NAME = 'oodt-exchange' 
+    EXCHANGE_TYPE = 'direct'
+    PRODUCER_ID = str(uuid.uuid4()) # unique producer identifer
     
     def __init__(self, workflow_event):
 
@@ -26,23 +33,43 @@ class RabbitmqProducer(object):
         self.connection = pika.BlockingConnection(params)
         self.channel = self.connection.channel()
         
-        # use default exchange, one queue per workflow
-        self.queue_name = workflow_event
-        self.channel.queue_declare(queue=self.queue_name, durable=True) # make queue persist server reboots
+        # declare exchange
+        logging.info('Declaring exchange: %s', self.EXCHANGE_NAME)
+        self.channel.exchange_declare(exchange=self.EXCHANGE_NAME,
+                                      exchange_type=self.EXCHANGE_TYPE,
+                                      durable=True) # survive server reboots
 
-    def produce(self, message):
+        
+        # declare queue, one per workflow
+        self.queue_name = workflow_event
+        logging.info('Declaring queue: %s', self.queue_name)
+        self.channel.queue_declare(queue=self.queue_name, durable=True) # make queue persist server reboots
+        
+        # bind queue to exchange
+        self.routing_key = workflow_event
+        logging.info('Binding %s to %s with %s',
+                    self.EXCHANGE_NAME, self.queue_name, self.routing_key)
+        self.channel.queue_bind(self.queue_name, self.EXCHANGE_NAME, self.routing_key)
+        
+
+    def produce(self, msg_dict):
         '''
         Sends a message that will trigger a workflow submission.
         '''
         
         # make message persist if RabbitMQ server goes down
-        self.channel.basic_publish(exchange='',
-                      routing_key=self.queue_name,
-                      body=message,
-                      properties=pika.BasicProperties(delivery_mode=2) # make message persistent
-                      )
+        msg_properties = pika.BasicProperties(app_id=self.PRODUCER_ID,
+                                              content_type='application/json',
+                                              delivery_mode=2,       # make message persistent
+                                              headers=msg_dict)
 
-        logging.critical("Sent workflow message %r: %r" % (workflow_event, message))
+        self.channel.basic_publish(exchange=self.EXCHANGE_NAME,
+                                   routing_key=self.routing_key,
+                                   body=json.dumps(msg_dict, ensure_ascii=False),
+                                   properties=msg_properties
+                                   )
+
+        logging.critical("Sent workflow message %r: %r" % (workflow_event, msg_dict))
         
     def wait_for_completion(self):
         '''
@@ -85,34 +112,30 @@ class RabbitmqProducer(object):
 
 if __name__ == '__main__':
     ''' Command line invocation method. '''
-    
-    startTime = datetime.datetime.now()
-    logging.critical("Start Time: %s" % startTime.strftime("%Y-%m-%d %H:%M:%S") )
- 
+     
     # parse command line arguments
     if len(sys.argv) < 3:
-      raise Exception("Usage: python workflow_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
+        raise Exception("Usage: python workflow_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
     else:
-      workflow_event = sys.argv[1]
-      num_events = int( sys.argv[2] )
-      message = ' '.join(sys.argv[3:]) or ''
-
+        workflow_event = sys.argv[1]
+        num_events = int( sys.argv[2] )
+        # parse remaining arguments into a dictionary
+        msg_dict = {}
+        for arg in sys.argv[3:]:
+            key, val = arg.split('=')
+            msg_dict[key]=val
 
     # connect to RabbitMQ server on given queue
     rmqProducer = RabbitmqProducer(workflow_event)
     
     # send messages
     for i in range(num_events):
-        rmqProducer.produce(message)
+        rmqProducer.produce(msg_dict)
         
     # wait a little for messages to be logged
-    time.sleep(3)
+    #time.sleep(3)
     # then wait for all messages to be acknowledged
-    rmqProducer.wait_for_completion()
+    #rmqProducer.wait_for_completion()
     
     # shut down
     rmqProducer.close()
-    
-    stopTime = datetime.datetime.now()
-    logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
-    logging.critical("Elapsed Time: %s secs" % (stopTime-startTime).seconds )

@@ -39,6 +39,35 @@
     </configuration>
 
     <requiredMetFields>
+      <metfield name="orbit" />
+      <metfield name="task" />
+      <metfield name="scene" />
+      <metfield name="heap" />
+      <metfield name="time" />
+      <metfield name="size" />
+    </requiredMetFields>
+
+  </task>
+
+  <task id="urn:oodt:EcostressL3aWorkflowTask2" name="Ecostress L3a Workflow Task 2" class="org.apache.oodt.cas.pge.StdPGETaskInstance">
+
+    <conditions />
+
+    <configuration>
+      <property name="PGETask_Name" value="EcostressL3aWorkflowTask2" />
+      <property name="PGETask_ConfigFilePath"
+        value="[OODT_CONFIG]/ecostress/pge-configs/ecostress-L3a-workflow-task2-config.pgeconfig.xml"
+        envReplace="true" />
+      <property name="PGETask_DumpMetadata" value="true" />
+      <property name="PCS_WorkflowManagerUrl" value="[WORKFLOW_URL]" envReplace="true" />
+      <property name="PCS_FileManagerUrl" value="[FILEMGR_URL]" envReplace="true" />
+      <property name="PCS_MetFileExtension" value="met" />
+      <property name="PCS_ClientTransferServiceFactory" value="org.apache.oodt.cas.filemgr.datatransfer.LocalDataTransferFactory" />
+      <property name="PCS_ActionRepoFile" value="file:[OODT_HOME]/cas-crawler/policy/crawler-config.xml"
+        envReplace="true" />
+    </configuration>
+
+    <requiredMetFields>
       <metfield name="Dataset" />
       <metfield name="Project" />
       <metfield name="message_counter" />
@@ -48,6 +77,7 @@
     </requiredMetFields>
 
   </task>
+
 
 
   <!-- EcostressL3bWorkflow tasks -->

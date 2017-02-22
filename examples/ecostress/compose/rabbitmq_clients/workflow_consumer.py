@@ -3,15 +3,17 @@
 # Python workflow consumer client:
 # receives messages from the RabbitMQ server to start OODT workflows
 # Usage: # Usage: python workflow_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>
+#
+# Example: python workflow_consumer.py ecostress-L3a-workflow  2
+#
 # To be used together with workflow_producer.py
 
 import sys
 import os
 import pika
-import xmlrpclib
-import time
 import threading
 import logging
+import json
 from workflow_client import WorkflowManagerClient
 
 logging.basicConfig(level=logging.INFO, format='(%(threadName)-10s) %(message)s')
@@ -65,15 +67,13 @@ class RabbitmqConsumer(threading.Thread):
         '''Callback method invoked when a RabbitMQ message is received.'''
 
         # parse message body into metadata dictionary
-        # from: 'Dataset=abc Project=123'
-        # to: { 'Dataset':'abc', 'Project': '123' }
-        metadata = dict(word.split('=') for word in body.split())
-                
+        metadata = json.loads(body)
+
         # submit workflow, then wait for its completeion
         logging.info("Received message: %r: %r, submitting workflow..." % (method.routing_key, metadata))
-        #time.sleep(10)
-        status = self.wmgrClient.executeWorkflow(metadata)      
-        logging.info('Worfklow ended with status: %s' % status)
+        # FIXME
+        #status = self.wmgrClient.executeWorkflow(metadata)      
+        #logging.info('Worfklow ended with status: %s' % status)
         
         # send acknowledgment to RabbitMQ server
         ch.basic_ack(delivery_tag = method.delivery_tag)
@@ -84,10 +84,10 @@ if __name__ == '__main__':
     
     # parse command line argument
     if len(sys.argv) < 3:
-      raise Exception("Usage: python workflow_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>")
+        raise Exception("Usage: python workflow_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>")
     else:
-      workflow_event = sys.argv[1]
-      num_workflow_clients = int(sys.argv[2])
+        workflow_event = sys.argv[1]
+        num_workflow_clients = int(sys.argv[2])
       
     # instantiate N RabbitMQ clients
     for i in range(num_workflow_clients):
@@ -95,7 +95,9 @@ if __name__ == '__main__':
         # instantiate Workflow Manager client
         # IMPORTANT: xmlrpclib is NOT thread safe in Python 2.7
         # so must create one WorkflowManagerClient to be used in each thread
-        wmgrClient = WorkflowManagerClient(workflow_event)
+        # FIXME
+        #wmgrClient = WorkflowManagerClient(workflow_event)
+        wmgrClient = None
         
         rmqConsumer = RabbitmqConsumer(workflow_event, wmgrClient)
     

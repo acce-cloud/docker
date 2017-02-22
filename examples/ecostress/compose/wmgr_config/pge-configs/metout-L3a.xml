@@ -2,7 +2,8 @@
 <metadataList>
 
     <metadata key="ProductType" val="EcostressL3aFile"/>
-    <metadata key="Dataset" val="[Dataset]"/>
-    <metadata key="Project" val="[Project]"/>
+    <metadata key="Orbit" val="[orbit]"/>
+    <metadata key="Task" val="[task]"/>
+    <metadata key="Scene" val="[scene]"/>
     
 </metadataList>
