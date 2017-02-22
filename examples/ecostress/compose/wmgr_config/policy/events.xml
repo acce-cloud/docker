@@ -16,12 +16,12 @@
 -->
 <cas:workflowevents xmlns:cas="http://oodt.jpl.nasa.gov/1.0/cas">
 
-  <event name="test-workflow">
-    <workflow id="urn:oodt:TestWorkflow" />
-  </event>
-
   <event name="ecostress-L3a-workflow">
     <workflow id="urn:oodt:EcostressL3aWorkflow" />
+  </event>
+
+  <event name="ecostress-L3b-workflow">
+    <workflow id="urn:oodt:EcostressL3bWorkflow" />
   </event>
 
 </cas:workflowevents>

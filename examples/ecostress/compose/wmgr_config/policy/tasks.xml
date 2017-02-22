@@ -19,31 +19,7 @@
 <cas:tasks xmlns:cas="http://oodt.jpl.nasa.gov/1.0/cas">
 
 
-  <task id="urn:oodt:TestWorkflowTask1" name="Test Workflow Task 1" class="org.apache.oodt.cas.pge.StdPGETaskInstance">
-  
-    <conditions />
-  
-    <configuration>
-      <property name="PGETask_Name" value="TestWorkflowTask1" />
-      <property name="PGETask_ConfigFilePath"
-        value="[OODT_CONFIG]/test-workflow/pge-configs/test-workflow-task1-config.pgeconfig.xml"
-        envReplace="true" />
-      <property name="PGETask_DumpMetadata" value="true" />
-      <property name="PCS_WorkflowManagerUrl" value="[WORKFLOW_URL]" envReplace="true" />
-      <property name="PCS_FileManagerUrl" value="[FILEMGR_URL]" envReplace="true" />
-      <property name="PCS_MetFileExtension" value="met" />
-      <property name="PCS_ClientTransferServiceFactory" value="org.apache.oodt.cas.filemgr.datatransfer.LocalDataTransferFactory" />
-      <property name="PCS_ActionRepoFile" value="file:[OODT_HOME]/cas-crawler/policy/crawler-config.xml"
-        envReplace="true" />
-    </configuration>
-
-    <requiredMetFields>
-      <metfield name="Dataset" />
-      <metfield name="Project" />
-    </requiredMetFields>
-    
-  </task>
-
+  <!-- EcostressL3aWorkflow tasks -->
   <task id="urn:oodt:EcostressL3aWorkflowTask1" name="Ecostress L3a Workflow Task 1" class="org.apache.oodt.cas.pge.StdPGETaskInstance">
 
     <conditions />
@@ -65,8 +41,44 @@
     <requiredMetFields>
       <metfield name="Dataset" />
       <metfield name="Project" />
+      <metfield name="message_counter" />
+      <metfield name="heap" />
+      <metfield name="time" />
+      <metfield name="size" />
     </requiredMetFields>
 
   </task>
+
+
+  <!-- EcostressL3bWorkflow tasks -->
+  <task id="urn:oodt:EcostressL3bWorkflowTask1" name="Ecostress L3b Workflow Task 1" class="org.apache.oodt.cas.pge.StdPGETaskInstance">
+
+    <conditions />
+
+    <configuration>
+      <property name="PGETask_Name" value="EcostressL3bWorkflowTask1" />
+      <property name="PGETask_ConfigFilePath"
+        value="[OODT_CONFIG]/ecostress/pge-configs/ecostress-L3b-workflow-task1-config.pgeconfig.xml"
+        envReplace="true" />
+      <property name="PGETask_DumpMetadata" value="true" />
+      <property name="PCS_WorkflowManagerUrl" value="[WORKFLOW_URL]" envReplace="true" />
+      <property name="PCS_FileManagerUrl" value="[FILEMGR_URL]" envReplace="true" />
+      <property name="PCS_MetFileExtension" value="met" />
+      <property name="PCS_ClientTransferServiceFactory" value="org.apache.oodt.cas.filemgr.datatransfer.LocalDataTransferFactory" />
+      <property name="PCS_ActionRepoFile" value="file:[OODT_HOME]/cas-crawler/policy/crawler-config.xml"
+        envReplace="true" />
+    </configuration>
+
+    <requiredMetFields>
+      <metfield name="Dataset" />
+      <metfield name="Project" />
+      <metfield name="message_counter" />
+      <metfield name="heap" />
+      <metfield name="time" />
+      <metfield name="size" />
+    </requiredMetFields>
+
+  </task>
+
 
 </cas:tasks>
