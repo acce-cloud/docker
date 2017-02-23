@@ -68,12 +68,9 @@
     </configuration>
 
     <requiredMetFields>
-      <metfield name="Dataset" />
-      <metfield name="Project" />
-      <metfield name="message_counter" />
-      <metfield name="heap" />
-      <metfield name="time" />
-      <metfield name="size" />
+      <metfield name="orbit" />
+      <metfield name="task" />
+      <metfield name="scene" />
     </requiredMetFields>
 
   </task>
@@ -100,9 +97,9 @@
     </configuration>
 
     <requiredMetFields>
-      <metfield name="Dataset" />
-      <metfield name="Project" />
-      <metfield name="message_counter" />
+      <metfield name="orbit" />
+      <metfield name="task" />
+      <metfield name="scene" />
       <metfield name="heap" />
       <metfield name="time" />
       <metfield name="size" />

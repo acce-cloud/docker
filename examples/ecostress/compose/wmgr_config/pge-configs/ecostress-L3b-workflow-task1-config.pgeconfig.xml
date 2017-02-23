@@ -3,9 +3,9 @@
 
 	<!-- PGE commands -->
 	<exe dir="[JobDir]" shell="/bin/bash">
-		<cmd>cd [JobDir]</cmd>
-                <cmd>export PATH=/usr/local/bin:$PATH</cmd>
-                <cmd>python [PGE_ROOT]/ecostress/multi_pges.py --run [message_counter] --task 1 --pges 2 --size [size] --heap [heap] --time [time]</cmd>
+      <cmd>cd [JobDir]</cmd>
+      <cmd>export PATH=/usr/local/bin:$PATH</cmd>
+      <cmd>python [PGE_ROOT]/ecostress/pge.py --in [OODT_ARCHIVE]/ecostress/L3a/orbit_[orbit]_task_L3a_scene_[scene].out/orbit_[orbit]_task_L3a_scene_[scene].out --out orbit_[orbit]_task_[task]_scene_[scene].out --size [size] --heap [heap] --time [time]</cmd>
 	</exe>
 
 	<customMetadata>
@@ -16,7 +16,7 @@
 	<!-- CAS Crawler directives -->
 	<output>
 	  <dir path="[JobDir]" createBeforeExe="false">
-            <files regExp="output.*\.out" 
+            <files regExp=".*\.out" 
                    metFileWriterClass="org.apache.oodt.cas.pge.writers.metlist.MetadataListPcsMetFileWriter" 
                    args="[OODT_CONFIG]/ecostress/pge-configs/metout-L3b.xml" />
           </dir>
