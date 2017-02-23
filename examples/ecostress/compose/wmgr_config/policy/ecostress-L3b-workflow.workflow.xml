@@ -5,6 +5,7 @@
   <tasks>
   	
     <task id="urn:oodt:EcostressL3bWorkflowTask1" />
+    <task id="urn:oodt:EcostressL3bWorkflowTask2" />
     
   </tasks>
 

@@ -1,0 +1,11 @@
+<cas:workflow xmlns:cas="http://oodt.jpl.nasa.gov/1.0/cas" 
+              name="Ecostress L4 Workflow" 
+              id="urn:oodt:EcostressL4Workflow">
+
+  <tasks>
+  	
+    <task id="urn:oodt:EcostressL4WorkflowTask1" />
+    
+  </tasks>
+
+</cas:workflow>

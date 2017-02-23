@@ -18,7 +18,8 @@ NUM_SCENES_PER_DAY = 142
 
 FIRST_WORKFLOW = 'ecostress-L3a-workflow' # first workflow to be executed for each scene
 FIRST_TASK = 'L3a' # first stask to be executed
-LAST_WORKFLOW = 'ecostress-L3b-workflow' # last workflow to be executed for each scene
+SECOND_WORKFLOW = 'ecostress-L3b-workflow' # last workflow to be executed for each scene
+THIRD_WORKFLOW = 'ecostress-L4-workflow' # last workflow to be executed for each scene
 
 # benchmarking data
 
@@ -62,7 +63,8 @@ def main(number_of_orbits):
     
     # wait for RabbitMQ server to process all messages in given queue
     wait_until_empty(FIRST_WORKFLOW, delay_secs=10)
-    wait_until_empty(LAST_WORKFLOW, delay_secs=10)
+    wait_until_empty(SECOND_WORKFLOW, delay_secs=10)
+    wait_until_empty(THIRD_WORKFLOW, delay_secs=10)
     
     stopTime = datetime.datetime.now()
     logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
