@@ -22,7 +22,7 @@ services:
           - oodt.filemgr.host
 
   # OODT workflow managers: one for L3a and one for L3b processing
-  wmgr_L3a:
+  wmgr_head_node:
     image: oodthub/oodt-wmgr
     expose:
       - "9001"
@@ -39,9 +39,9 @@ services:
       - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
     networks:
       default:
-    entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3a-workflow", "2"]
+    entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3a-workflow"]
 
-  wmgr_L3b:
+  wmgr_compute_node:
     image: oodthub/oodt-wmgr
     expose:
       - "9001"
@@ -58,7 +58,7 @@ services:
       - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
     networks:
       default:
-    entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3b-workflow", "2"]
+    entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3b-workflow", "ecostress-L4-workflow"]
 
   # OODT product server
   fmprod:
