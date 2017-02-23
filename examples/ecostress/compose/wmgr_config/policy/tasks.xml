@@ -42,9 +42,6 @@
       <metfield name="orbit" />
       <metfield name="task" />
       <metfield name="scene" />
-      <metfield name="heap" />
-      <metfield name="time" />
-      <metfield name="size" />
     </requiredMetFields>
 
   </task>
@@ -100,9 +97,6 @@
       <metfield name="orbit" />
       <metfield name="task" />
       <metfield name="scene" />
-      <metfield name="heap" />
-      <metfield name="time" />
-      <metfield name="size" />
     </requiredMetFields>
 
   </task>

@@ -4,14 +4,9 @@
 # Usage: python ecostress_driver.py <number_of_orbits>
 
 import logging
-import pika
-import json
-import os
 import sys
 import datetime
-import requests
-import time
-import uuid
+from rabbitmq_producer import publish_messages, wait_until_empty
 
 LOG_FORMAT = '%(levelname)s: %(message)s'
 LOGGER = logging.getLogger(__name__)
@@ -25,10 +20,17 @@ FIRST_WORKFLOW = 'ecostress-L3a-workflow' # first workflow to be executed for ea
 FIRST_TASK = 'L3a' # first stask to be executed
 LAST_WORKFLOW = 'ecostress-L3b-workflow' # last workflow to be executed for each scene
 
-from rabbitmq_producer import publish_messages, wait_until_empty
+# benchmarking data
+
+# L3a (pre-processing and reprojection)
+# output: 7.9GB
+# time: 8mins on eco-scf head node
+
+# L3b (ET with SEBS 100 iterations)
+# output: 0.7GB
+# time: 18mins on eco-scf compute node
 
         
-
 def main(number_of_orbits):
     
     logging.basicConfig(level=logging.CRITICAL, format=LOG_FORMAT)
@@ -52,8 +54,7 @@ def main(number_of_orbits):
             num_scenes = 10  # even-number orbits
             
         for iscene in range(1, num_scenes + 1):
-            msg_dict = { 'orbit':iorbit, 'task':FIRST_TASK, 'scene':iscene, 
-                         'size':1, 'heap':1, 'time':5 }
+            msg_dict = { 'orbit':iorbit, 'task':FIRST_TASK, 'scene':iscene }
             publish_messages(msg_queue, num_msgs, msg_dict)
             
             number_of_scenes_total += 1

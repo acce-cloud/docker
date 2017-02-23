@@ -2,10 +2,12 @@
 <pgeConfig>
 
 	<!-- PGE commands -->
+    <!-- output: 0.7GB = 700MB  -->
+    <!-- time: 18mins = 1080secs -->
 	<exe dir="[JobDir]" shell="/bin/bash">
       <cmd>cd [JobDir]</cmd>
       <cmd>export PATH=/usr/local/bin:$PATH</cmd>
-      <cmd>python [PGE_ROOT]/ecostress/pge.py --in [OODT_ARCHIVE]/ecostress/L3a/orbit_[orbit]_task_L3a_scene_[scene].out/orbit_[orbit]_task_L3a_scene_[scene].out --out orbit_[orbit]_task_[task]_scene_[scene].out --size [size] --heap [heap] --time [time]</cmd>
+      <cmd>python [PGE_ROOT]/ecostress/pge.py --in [OODT_ARCHIVE]/ecostress/L3a/orbit_[orbit]_task_L3a_scene_[scene].out/orbit_[orbit]_task_L3a_scene_[scene].out --out orbit_[orbit]_task_[task]_scene_[scene].out --size 1 --heap 1 --time 18</cmd>
 	</exe>
 
 	<customMetadata>

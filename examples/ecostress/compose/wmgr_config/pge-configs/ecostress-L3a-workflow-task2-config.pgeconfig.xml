@@ -5,7 +5,7 @@
 	<exe dir="[JobDir]" shell="/bin/bash">
       <cmd>cd [JobDir]</cmd>
       <cmd>export PATH=/usr/local/bin:$PATH</cmd>
-      <cmd>python [OODT_HOME]/rabbitmq/rabbitmq_producer.py ecostress-L3b-workflow 1 orbit=[orbit] task=L3b scene=[scene] size=1 heap=1 time=5</cmd>
+      <cmd>python [OODT_HOME]/rabbitmq/rabbitmq_producer.py ecostress-L3b-workflow 1 orbit=[orbit] task=L3b scene=[scene]</cmd>
 	</exe>
 
 	<customMetadata>
