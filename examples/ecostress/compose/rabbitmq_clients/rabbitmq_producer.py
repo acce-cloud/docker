@@ -394,7 +394,7 @@ def wait_until_empty(queue_name, delay_secs=0):
     Use ^C to stop waiting before all messages have been processed.
     '''
     
-    LOGGER.info("Waiting for all messages to be processed in queue: %s" % queue_name)
+    LOGGER.critical("Waiting for all messages to be processed in queue: %s" % queue_name)
     time.sleep(delay_secs) # wait for queue to be ready
             
     num_messages = -1
