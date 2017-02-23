@@ -1,0 +1,72 @@
+# Python script to drive the ECOSTRESS mock data processing pipeline:
+# will start workflows for N orbits and wait until all workflows are completed.
+#
+# Usage: python ecostress_driver.py <number_of_orbits>
+
+import logging
+import pika
+import json
+import os
+import sys
+import datetime
+import requests
+import time
+import uuid
+
+LOG_FORMAT = '%(levelname)s: %(message)s'
+LOGGER = logging.getLogger(__name__)
+LOG_FILE = "rabbitmq_producer.log" # in current directory
+
+NUM_SCENES_PER_ORBIT = 5
+FIRST_WORKFLOW = 'ecostress-L3a-workflow' # first workflow to be executed for each scene
+FIRST_TASK = 'L3a' # first stask to be executed
+LAST_WORKFLOW = 'ecostress-L3b-workflow' # last workflow to be executed for each scene
+
+from rabbitmq_producer import publish_messages, wait_until_empty
+
+        
+
+def main(number_of_orbits):
+    
+    logging.basicConfig(level=logging.CRITICAL, format=LOG_FORMAT)
+        
+    startTime = datetime.datetime.now()
+    logging.critical("Start Time: %s" % startTime.strftime("%Y-%m-%d %H:%M:%S") )
+
+    
+    # start workflows by sending 1 message for each (orbit, scene) combination
+    for iorbit in range(1, number_of_orbits+1):
+        LOGGER.info("Submitting messages for orbit #: %s" % iorbit)
+        
+        msg_queue = FIRST_WORKFLOW
+        num_msgs = 1
+        
+        for iscene in range(1, NUM_SCENES_PER_ORBIT + 1):
+            msg_dict = { 'orbit':iorbit, 'task':FIRST_TASK, 'scene':iscene, 
+                         'size':1, 'heap':1, 'time':5 }
+            publish_messages(msg_queue, num_msgs, msg_dict)
+        
+    
+    # wait for RabbitMQ server to process all messages in given queue
+    wait_until_empty(FIRST_WORKFLOW, delay_secs=10)
+    wait_until_empty(LAST_WORKFLOW, delay_secs=10)
+    
+    stopTime = datetime.datetime.now()
+    logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
+    logging.critical("Elapsed Time: %s secs" % (stopTime-startTime).seconds )
+
+    # write log file (append to existing file)
+    with open(LOG_FILE, 'a') as log_file:
+        log_file.write('number_of_orbits=%s\t' % number_of_orbits)
+        log_file.write('elapsed_time=%s\n' % (stopTime-startTime).seconds)
+                        
+
+if __name__ == '__main__':
+    """ Parse command line arguments. """
+    
+    if len(sys.argv) < 1:
+        raise Exception("Usage: python ecostress_driver.py <number_of_orbits>")
+    else:
+        number_of_orbits = int( sys.argv[1] )
+
+    main(number_of_orbits)

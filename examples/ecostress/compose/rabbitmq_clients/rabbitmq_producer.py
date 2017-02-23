@@ -341,7 +341,7 @@ class RabbitmqProducer(object):
                                     properties)
         
         self._deliveries.append(self._message_number)
-        LOGGER.critical('Published message # %i to workflow: %s with metadata: %s' % (self._message_number, self._routing_key, self._msg_dict))
+        LOGGER.critical('Published message to workflow: %s with metadata: %s' % (self._routing_key, self._msg_dict))
         
         # stop publishing after num_messages
         if self._message_number < self._num_messages:
@@ -387,15 +387,15 @@ class RabbitmqProducer(object):
         self._closing = True
         self._connection.close()
 
-def wait(queue_name):
+def wait_until_empty(queue_name, delay_secs=0):
     '''
-    Method that waits until the number of 'ready' messages and 'unacked' messages is 0
+    Method that waits until the number of 'ready' messages and 'unacked' messages in the queue is 0
     (signaling that all workflows have been completed).
     Use ^C to stop waiting before all messages have been processed.
     '''
     
-    LOGGER.info("Waiting for all messages to be processed...")
-    time.sleep(5) # wait for queue to be ready
+    LOGGER.info("Waiting for all messages to be processed in queue: %s" % queue_name)
+    time.sleep(delay_secs) # wait for queue to be ready
             
     num_messages = -1
     num_ready_messages = -1
@@ -420,7 +420,7 @@ def wait(queue_name):
             break
         
 
-def main(workflow_event, num_events, msg_dict):
+def publish_messages(msg_queue, num_msgs, msg_dict):
     
     logging.basicConfig(level=logging.CRITICAL, format=LOG_FORMAT)
         
@@ -430,7 +430,7 @@ def main(workflow_event, num_events, msg_dict):
 
     # instantiate producer
     rmqProducer = RabbitmqProducer(rabbitmqUrl + '?connection_attempts=3&heartbeat_interval=3600', 
-                                        workflow_event, num_events, msg_dict)
+                                        msg_queue, num_msgs, msg_dict)
     
     # publish N messages
     rmqProducer.run()
@@ -440,9 +440,7 @@ def main(workflow_event, num_events, msg_dict):
                         
 
 if __name__ == '__main__':
-    """ Parse command line arguments.
-    
-    """
+    """ Parse command line arguments."""
     
     if len(sys.argv) < 3:
         raise Exception("Usage: python rabbitmq_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
@@ -455,4 +453,4 @@ if __name__ == '__main__':
             key, val = arg.split('=')
             msg_dict[key]=val
 
-    main(workflow_event, num_events, msg_dict)
+    publish_messages(workflow_event, num_events, msg_dict)
