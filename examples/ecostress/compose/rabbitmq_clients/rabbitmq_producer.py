@@ -20,8 +20,8 @@ import requests
 import time
 import uuid
 
-LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
-              '-35s %(lineno) -5d: %(message)s')
+#LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) -35s %(lineno) -5d: %(message)s')
+LOG_FORMAT = '%(levelname)s: %(message)s'
 LOGGER = logging.getLogger(__name__)
 LOG_FILE = "rabbitmq_producer.log" # in current directory
 
@@ -329,10 +329,7 @@ class RabbitmqProducer(object):
             return
 
         self._message_number += 1
-        
-        # add a message counter
-        self._msg_dict['message_counter'] = self._message_number
-        
+                
         properties = pika.BasicProperties(app_id=self.PRODUCER_ID,
                                           content_type='application/json',
                                           delivery_mode=2,       # make message persistent
@@ -344,7 +341,7 @@ class RabbitmqProducer(object):
                                     properties)
         
         self._deliveries.append(self._message_number)
-        LOGGER.info('Published message # %i', self._message_number)
+        LOGGER.critical('Published message # %i to workflow: %s with metadata: %s' % (self._message_number, self._routing_key, self._msg_dict))
         
         # stop publishing after num_messages
         if self._message_number < self._num_messages:
@@ -425,12 +422,8 @@ def wait(queue_name):
 
 def main(workflow_event, num_events, msg_dict):
     
-    logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
-    
-    startTime = datetime.datetime.now()
-    logging.critical("Start Time: %s" % startTime.strftime("%Y-%m-%d %H:%M:%S") )
-
-    
+    logging.basicConfig(level=logging.CRITICAL, format=LOG_FORMAT)
+        
     # RABBITMQ_USER_URL (defaults to guest/guest @ localhost)
     # connect to virtual host "/" (%2F)
     rabbitmqUrl = os.environ.get('RABBITMQ_USER_URL', 'amqp://guest:guest@localhost/%2f')
@@ -443,20 +436,8 @@ def main(workflow_event, num_events, msg_dict):
     rmqProducer.run()
     
     # wait for RabbitMQ server to process all messages in given queue
-    wait(workflow_event)
+    #wait(workflow_event)
                         
-    stopTime = datetime.datetime.now()
-    logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
-    logging.critical("Elapsed Time: %s secs" % (stopTime-startTime).seconds )
-
-    # write log file (append to existing file)
-    with open(LOG_FILE, 'a') as log_file:
-    	log_file.write('workflow_event=%s\t' % workflow_event)
-    	log_file.write('num_events=%s\t' % num_events)
-        for key in sorted(msg_dict):
-	   log_file.write('%s=%s\t' % (key, msg_dict[key]) )
-        log_file.write('elapsed_time=%s\n' % (stopTime-startTime).seconds)
-
 
 if __name__ == '__main__':
     """ Parse command line arguments.
@@ -464,15 +445,14 @@ if __name__ == '__main__':
     """
     
     if len(sys.argv) < 3:
-      raise Exception("Usage: python rabbitmq_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
+        raise Exception("Usage: python rabbitmq_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
     else:
-      workflow_event = sys.argv[1]
-      num_events = int( sys.argv[2] )
-      # parse remaning arguments into a dictionary
-      msg_dict = {}
-      for arg in sys.argv[3:]:
-          key, val = arg.split('=')
-          msg_dict[key]=val
+        workflow_event = sys.argv[1]
+        num_events = int( sys.argv[2] )
+        # parse remaning arguments into a dictionary
+        msg_dict = {}
+        for arg in sys.argv[3:]:
+            key, val = arg.split('=')
+            msg_dict[key]=val
 
     main(workflow_event, num_events, msg_dict)
-    

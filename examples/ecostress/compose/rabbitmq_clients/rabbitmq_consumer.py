@@ -300,7 +300,7 @@ class RabbitmqConsumer(threading.Thread):
         # parse message body into metadata dictionary
         metadata = json.loads(body)
                 
-        # submit workflow, then wait for its completeion
+        # submit workflow, then wait for its completion
         status = self._wmgrClient.executeWorkflow(metadata)      
         logging.info('Worfklow ended with status: %s' % status)
         
@@ -405,7 +405,7 @@ def main(workflow_event, num_workflow_clients):
         # Thread.start() --> rmqConsumer.run()
         rmqConsumer.start()
         
-    # wait forver (since each consumer listens indefinitely)
+    # wait forever (since each consumer listens indefinitely)
     try:
         while True: time.sleep(100)
         
@@ -421,9 +421,9 @@ if __name__ == '__main__':
     
     # parse command line argument
     if len(sys.argv) < 3:
-      raise Exception("Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>")
+        raise Exception("Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>")
     else:
-      workflow_event = sys.argv[1]
-      num_workflow_clients = int(sys.argv[2])
+        workflow_event = sys.argv[1]
+        num_workflow_clients = int(sys.argv[2])
 
     main(workflow_event, num_workflow_clients)
