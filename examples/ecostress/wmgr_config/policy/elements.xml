@@ -7,13 +7,8 @@
 <cas:elements xmlns:cas="http://oodt.jpl.nasa.gov/1.0/cas">
 
   <!-- Example elements -->
-  <element id="Dataset" name="Dataset">
-    <description>Unique name for dataset used in this study</description>
-    <dcElement />
-  </element>
-  
-  <element id="Project" name="Project">
-    <description>Research project prodiving funding, context for this dataset</description>
+  <element id="ProcessingLevel" name="ProcessingLevel">
+    <description>Processing Level for these data products</description>
     <dcElement />
   </element>
   

@@ -1,10 +1,9 @@
-# Docker image for running the 'test-workflow' in a docker-compose environment.
-# This image can be used to add custom configuration onto existing File Manager and Workflow Manager services.
+# Docker image for running the ECOSTRESS workflow.
 #
-# Note: this image extends the core oodthub/oodt-node (which has no OODT services installed).
-# Note: the published files will be of product type "TestFile".
+# This image extends oodthub/oodt-wmgr by adding the ECOSTRESS specific configuration
+# for data types (File Manager) and workflows (Workflow Manager)
 
-FROM oodthub/oodt-node
+FROM oodthub/oodt-wmgr
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
@@ -33,3 +32,6 @@ VOLUME $OODT_CONFIG
 VOLUME $PGE_ROOT
 VOLUME $OODT_ARCHIVE
 VOLUME /usr/local/bin
+
+# start the workflow manager (but no rabbitmq consumers)
+ENTRYPOINT ["/usr/local/bin/start.sh"]
