@@ -34,7 +34,7 @@ docker service create --replicas 1 --name wmgr_compute_node --network swarm-netw
                       --env 'RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f' --env 'RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672'\
                       --env 'FILEMGR_URL=http://filemgr:9000/' oodthub/ecostress-wmgr ecostress-L3b-workflow ecostress-L4-workflow
 
-#docker service scale wmgr_compute_node=2
+docker service scale wmgr_compute_node=2
 
 docker service ls
 docker service ps filemgr
