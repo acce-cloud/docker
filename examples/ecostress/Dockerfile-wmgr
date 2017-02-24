@@ -1,15 +1,11 @@
-# Docker image for running the ECOSTRESS workflow.
+# Docker image for running the ECOSTRESS workflows.
 #
-# This image extends oodthub/oodt-wmgr by adding the ECOSTRESS specific configuration
-# for data types (File Manager) and workflows (Workflow Manager)
+# This image extends oodthub/oodt-wmgr 
+# by adding the ECOSTRESS specific configuration for the Workflow Manager
 
 FROM oodthub/oodt-wmgr
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
-
-# install custom OODT File Manager configuration
-RUN mkdir -p $OODT_CONFIG/ecostress
-COPY filemgr_config/policy/ $OODT_CONFIG/ecostress/policy/
 
 # create final OODT archive directory
 RUN mkdir -p  $OODT_ARCHIVE/ecostress

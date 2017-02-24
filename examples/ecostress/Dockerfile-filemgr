@@ -1,0 +1,15 @@
+# Docker image for running the ECOSTRESS File Manager.
+#
+# This image extends oodthub/oodt-filemgr 
+# by adding the ECOSTRESS specific data types.
+
+FROM oodthub/oodt-filemgr
+
+MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
+
+# install custom OODT File Manager configuration
+RUN mkdir -p $OODT_CONFIG/ecostress
+COPY filemgr_config/policy/ $OODT_CONFIG/ecostress/policy/
+
+# create archive directory
+RUN mkdir -p  $OODT_ARCHIVE/ecostress
