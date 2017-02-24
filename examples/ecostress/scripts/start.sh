@@ -5,7 +5,7 @@ cd $OODT_HOME/cas-workflow/bin
 ./wmgr start
 
 # wait for rabbitmq server to finish initialization of OODT user accounts
-sleep 5
+sleep 10
 
 # start the rabbitmq consumers
 # one consumer per workflow specified as script argument

@@ -14,25 +14,26 @@ services:
     ports:
       - "8983:8983"
       - "9000:9000"
-    volumes_from:
-      - ecostress
+    volumes:
+     - oodt_archive:/usr/local/oodt/archive
+     - oodt_config:/usr/local/oodt/workflows
     networks:
       default:
         aliases:
           - oodt.filemgr.host
 
   # OODT workflow managers: one for L3a and one for L3b processing
-  wmgr_head_node:
-    image: oodthub/oodt-wmgr
+  head_node:
+    image: oodthub/ecostress-node
     expose:
       - "9001"
     ports:
       - "9001"
-    volumes_from:
-      # /usr/local/oodt/rabbitmq/ contains the RabbitMQ producer and consumer clients
+    volumes:
+     - oodt_archive:/usr/local/oodt/archive
+     - oodt_config:/usr/local/oodt/workflows
+    depends_on:
       - rabbitmq
-      # /usr/local/bin/start/stop.sh are the scripts to start/stop the WM and RAbbitMQ consumers
-      - ecostress
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
       - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
@@ -41,17 +42,17 @@ services:
       default:
     entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3a-workflow"]
 
-  wmgr_compute_node:
-    image: oodthub/oodt-wmgr
+  compute_node:
+    image: oodthub/ecostress-node
     expose:
       - "9001"
     ports:
       - "9001"
-    volumes_from:
-      # /usr/local/oodt/rabbitmq/ contains the RabbitMQ producer and consumer clients
+    volumes:
+     - oodt_archive:/usr/local/oodt/archive
+     - oodt_config:/usr/local/oodt/workflows
+    depends_on:
       - rabbitmq
-      # /usr/local/bin/start/stop.sh are the scripts to start/stop the WM and RAbbitMQ consumers
-      - ecostress
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
       - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
@@ -68,8 +69,8 @@ services:
       - "8080"
     ports:
       - "8080:8080"
-    volumes_from:
-      - ecostress
+    volumes:
+     - oodt_archive:/usr/local/oodt/archive
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
     networks:
@@ -92,7 +93,9 @@ services:
         aliases:
           - oodt.rabbitmq.host
 
-  # image with specific test-workflow configuration
-  ecostress:
-    image: oodthub/oodt-example-ecostress
-    container_name: ecostress
+# persistent data volumes
+volumes:
+  # permanent data storage
+  oodt_archive:
+  # FM and WM configuration, part of oodthub/ecostress-node
+  oodt_config:
