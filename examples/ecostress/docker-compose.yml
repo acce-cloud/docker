@@ -6,7 +6,7 @@ services:
 
   # OODT file manager
   filemgr:
-    image: oodthub/oodt-filemgr
+    image: oodthub/ecostress-filemgr
     container_name: filemgr
     expose:
       - "9000"
@@ -22,9 +22,9 @@ services:
         aliases:
           - oodt.filemgr.host
 
-  # OODT workflow managers: one for L3a and one for L3b processing
-  head_node:
-    image: oodthub/ecostress-node
+  # OODT workflow manager for ECOSTRESS head node
+  wmgr_head_node:
+    image: oodthub/ecostress-wmgr
     expose:
       - "9001"
     ports:
@@ -42,8 +42,9 @@ services:
       default:
     entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3a-workflow"]
 
-  compute_node:
-    image: oodthub/ecostress-node
+  # OODT workflow manager for ECOSTRESS compute node
+  wmgr_compute_node:
+    image: oodthub/ecostress-wmgr
     expose:
       - "9001"
     ports:
