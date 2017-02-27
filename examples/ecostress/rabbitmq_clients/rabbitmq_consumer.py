@@ -31,6 +31,9 @@ LOGGER = logging.getLogger(__name__)
 class RabbitmqConsumer(threading.Thread):
     """This is an example consumer that will handle unexpected interactions
     with RabbitMQ such as channel and connection closures.
+    
+    Initially, the consumer will attempt to connect indefinitely, waiting a certain
+    time in between connection attempts.
 
     If RabbitMQ closes the connection, it will reopen it. You should
     look at the output, as there are limited reasons why the connection may
@@ -44,7 +47,7 @@ class RabbitmqConsumer(threading.Thread):
     
     EXCHANGE = 'oodt-exchange'
     EXCHANGE_TYPE = 'direct'
-    
+        
     def __init__(self, amqp_url, workflow_event, wmgrClient,
                  prefetch_count=0, # number of concurrent messages to be sent to this consumer
                  group=None, target=None, name=None, verbose=None): # Thread parent class arguments
@@ -67,7 +70,7 @@ class RabbitmqConsumer(threading.Thread):
         self._queue = workflow_event
         self._routing_key = workflow_event
         self._prefetch_count = prefetch_count
-
+        
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
         When the connection is established, the on_connection_open method
@@ -76,10 +79,21 @@ class RabbitmqConsumer(threading.Thread):
         :rtype: pika.SelectConnection
 
         """
-        LOGGER.info('Connecting to %s', self._url)
-        return pika.SelectConnection(pika.URLParameters(self._url),
-                                     self.on_connection_open,
-                                     stop_ioloop_on_close=False)
+        
+        # try to connect indefinitely, until successful
+        while True:
+            
+            try:
+                LOGGER.info('Connecting to %s', self._url)
+                return pika.SelectConnection(pika.URLParameters(self._url),
+                                             self.on_connection_open,
+                                             stop_ioloop_on_close=False)
+            except Exception as e:
+                
+                LOGGER.warn("Could not connect, waiting before trying again...")
+                LOGGER.warn(e)
+                time.sleep(5)
+                
 
     def on_connection_open(self, unused_connection):
         """This method is called by pika once the connection to RabbitMQ has
