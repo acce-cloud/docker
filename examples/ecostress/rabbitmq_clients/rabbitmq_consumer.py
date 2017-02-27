@@ -47,9 +47,9 @@ class RabbitmqConsumer(threading.Thread):
     
     EXCHANGE = 'oodt-exchange'
     EXCHANGE_TYPE = 'direct'
+    PREFETCH_COUNT = 1 # number of concurrent messages to be sent to this consumer
         
     def __init__(self, amqp_url, workflow_event, wmgrClient,
-                 prefetch_count=0, # number of concurrent messages to be sent to this consumer
                  group=None, target=None, name=None, verbose=None): # Thread parent class arguments
         """Create a new instance of the consumer class, passing in the AMQP
         URL used to connect to RabbitMQ.
@@ -69,7 +69,6 @@ class RabbitmqConsumer(threading.Thread):
         self._url = amqp_url        
         self._queue = workflow_event
         self._routing_key = workflow_event
-        self._prefetch_count = prefetch_count
         
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
@@ -171,7 +170,7 @@ class RabbitmqConsumer(threading.Thread):
         self._channel = channel
         self.add_on_channel_close_callback()
         # process 1 message at a time from this queue
-        self._channel.basic_qos(prefetch_count=self._prefetch_count)
+        self._channel.basic_qos(prefetch_count=self.PREFETCH_COUNT)
         self.setup_exchange(self.EXCHANGE)
 
     def add_on_channel_close_callback(self):
@@ -315,7 +314,9 @@ class RabbitmqConsumer(threading.Thread):
         # parse message body into metadata dictionary
         metadata = json.loads(body)
                 
-        # submit workflow, then wait for its completion
+        # submit workflow, then block to wait for its completion
+        # IMPORTANT: message will not be acknowledged until the workflow is completed
+        # so next message will not be sent until then
         status = self._wmgrClient.executeWorkflow(metadata)      
         logging.info('Worfklow ended with status: %s' % status)
         
@@ -393,27 +394,32 @@ class RabbitmqConsumer(threading.Thread):
         self._connection.close()
 
 
-def main(workflow_event, prefetch_count):
+def main(workflow_event, num_workflow_clients):
     
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
     
     # RABBITMQ_USER_URL (defaults to guest/guest @ localhost)
     rabbitmqUrl = os.environ.get('RABBITMQ_USER_URL', 'amqp://guest:guest@localhost/%2f')
+    
+    # list of all consumers to wait for
+    rmqConsumers = []
+    
+    # instantiate and start all RabbitMQ consumers
+    # the consumer threads would normally never terminate
+    for i in range(num_workflow_clients):
         
-    # instantiate and start the RabbitMQ consumer
-    # the consumer thread would normally never terminate
-        
-    # instantiate Workflow Manager client
-    # IMPORTANT: xmlrpclib is NOT thread safe in Python 2.7
-    # so must create one WorkflowManagerClient to be used in each thread
-    wmgrClient = WorkflowManagerClient(workflow_event)
+        # instantiate Workflow Manager client
+        # IMPORTANT: xmlrpclib is NOT thread safe in Python 2.7
+        # so must create one WorkflowManagerClient to be used in each thread
+        wmgrClient = WorkflowManagerClient(workflow_event)
 
-    # instantiate RabbitMQ client instance
-    rmqConsumer = RabbitmqConsumer(rabbitmqUrl, workflow_event, wmgrClient, prefetch_count=prefetch_count)
-    rmqConsumer.setDaemon(True) # use daemon Thread so that main program does not block
+        # instantiate RabbitMQ client instance
+        rmqConsumer = RabbitmqConsumer(rabbitmqUrl, workflow_event, wmgrClient)
+        rmqConsumer.setDaemon(True) # use daemon Threads so that main program does not block
+        rmqConsumers.append(rmqConsumer)
 
-    # Thread.start() --> rmqConsumer.run()
-    rmqConsumer.start()
+        # Thread.start() --> rmqConsumer.run()
+        rmqConsumer.start()
         
     # wait forever (since each consumer listens indefinitely)
     try:
@@ -421,18 +427,19 @@ def main(workflow_event, prefetch_count):
         
     # but stop if ^C is issued
     except (KeyboardInterrupt, SystemExit):
-                 
-        LOGGER.info('Stopping consumer: %s' % rmqConsumer)
-        rmqConsumer.stop()
+                
+        for rmqConsumer in rmqConsumers:   
+            LOGGER.info('Stopping consumer: %s' % rmqConsumer)
+            rmqConsumer.stop()
             
 
 if __name__ == '__main__':
     
     # parse command line argument
     if len(sys.argv) < 3:
-        raise Exception("Usage: python rabbitmq_consumer.py <workflow_event> <prefetch_count>")
+        raise Exception("Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>")
     else:
         workflow_event = sys.argv[1]
-        prefetch_count = int(sys.argv[2])
+        num_workflow_clients = int(sys.argv[2])
 
-    main(workflow_event, prefetch_count)
+    main(workflow_event, num_workflow_clients)
