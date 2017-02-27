@@ -386,10 +386,10 @@ class RabbitmqProducer(object):
         LOGGER.info('Closing connection')
         self._closing = True
         self._connection.close()
-
-def wait_until_empty(queue_name, delay_secs=0):
+        
+def wait_for_queue(queue_name, delay_secs=0):
     '''
-    Method that waits until the number of 'ready' messages and 'unacked' messages in the queue is 0
+    Method that waits until the number of 'ready' messages and 'unacked' messages in a specific queue is 0
     (signaling that all workflows have been completed).
     Use ^C to stop waiting before all messages have been processed.
     '''
@@ -415,6 +415,49 @@ def wait_until_empty(queue_name, delay_secs=0):
             logging.critical("Number of messages: ready=%s unacked= %s total=%s" % 
                              (num_ready_messages, num_unack_messages, num_messages))
             time.sleep(1) 
+        except KeyboardInterrupt:
+            LOGGER.info("Breaking out of wait mode...")
+            break
+        
+
+def wait_for_queues(delay_secs=0):
+    '''
+    Method that waits until the number of 'ready' messages and 'unacked' messages in all the queues is 0
+    (signaling that all workflows have been completed).
+    Use ^C to stop waiting before all messages have been processed.
+    '''
+    
+    LOGGER.critical("Waiting for all messages to be processed in all queues...")
+    time.sleep(delay_secs) # wait for queue to be ready
+            
+    num_messages = -1
+    num_ready_messages = -1
+    num_unack_messages = -1
+    
+    # must connect to RabbitMQ server with administrator privileges
+    # RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672
+    url = os.environ.get('RABBITMQ_ADMIN_URL', 'http://guest:guest@localhost:15672') + "/api/queues"
+    
+    while num_messages != 0:
+        try:
+            resp = requests.get(url=url)
+            all_data = json.loads(resp.text)
+            
+            # loop over queues
+            for queue_data in all_data:
+                queue_name = queue_data['name']
+                num_messages = queue_data['messages_persistent']
+                num_ready_messages = queue_data['messages_ready']
+                num_unack_messages = queue_data['messages_unacknowledged']
+                
+                # wait for this queue
+                if num_messages > 0:
+                    logging.critical("Queue=%s number of messages: ready=%s unacked= %s total=%s" % 
+                                     (queue_name, num_ready_messages, num_unack_messages, num_messages))
+                    time.sleep(1)
+                    if num_messages > 0:
+                        break # skip remaining queues, query again all queues for updated status
+                
         except KeyboardInterrupt:
             LOGGER.info("Breaking out of wait mode...")
             break

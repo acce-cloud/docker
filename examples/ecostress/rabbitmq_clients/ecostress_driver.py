@@ -6,7 +6,7 @@
 import logging
 import sys
 import datetime
-from rabbitmq_producer import publish_messages, wait_until_empty
+from rabbitmq_producer import publish_messages, wait_for_queues
 
 LOG_FORMAT = '%(levelname)s: %(message)s'
 LOGGER = logging.getLogger(__name__)
@@ -61,10 +61,8 @@ def main(number_of_orbits):
             number_of_scenes_total += 1
         
     
-    # wait for RabbitMQ server to process all messages in given queue
-    wait_until_empty(FIRST_WORKFLOW, delay_secs=10)
-    wait_until_empty(SECOND_WORKFLOW, delay_secs=10)
-    wait_until_empty(THIRD_WORKFLOW, delay_secs=10)
+    # wait for RabbitMQ server to process all messages in all queues
+    wait_for_queues(delay_secs=10)
     
     stopTime = datetime.datetime.now()
     logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
