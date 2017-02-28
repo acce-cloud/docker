@@ -7,7 +7,7 @@
 	<exe dir="[JobDir]" shell="/bin/bash">
       <cmd>cd [JobDir]</cmd>
       <cmd>export PATH=/usr/local/bin:$PATH</cmd>
-      <cmd>python [PGE_ROOT]/ecostress/pge.py --in [OODT_ARCHIVE]/ecostress/L3a/orbit_[orbit]_task_L3a_scene_[scene].out --out orbit_[orbit]_task_[task]_scene_[scene].out --size 7 --heap 1 --time 108</cmd>
+      <cmd>python [PGE_ROOT]/ecostress/pge.py --in [OODT_ARCHIVE]/ecostress/L3a/orbit_[orbit]_task_L3a_scene_[scene].out --out orbit_[orbit]_task_[task]_scene_[scene].out --size 7 --heap 1 --time 1080</cmd>
 	</exe>
 
 	<customMetadata>

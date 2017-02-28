@@ -6,6 +6,7 @@
 import logging
 import sys
 import datetime
+import time
 from rabbitmq_producer import publish_messages, wait_for_queues
 
 LOG_FORMAT = '%(levelname)s: %(message)s'
@@ -59,6 +60,9 @@ def main(number_of_orbits):
             publish_messages(msg_queue, num_msgs, msg_dict)
             
             number_of_scenes_total += 1
+            
+        # wait before submitting the next orbit
+        time.sleep(5)
         
     
     # wait for RabbitMQ server to process all messages in all queues
