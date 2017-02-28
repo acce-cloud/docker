@@ -31,17 +31,31 @@ class RabbitmqClient(threading.Thread):
         self.wmgrClient = wmgrClient
         
         # RABBITMQ_USER_URL (defaults to guest/guest @ localhost)
-        rabbitmqUrl = os.environ.get('RABBITMQ_USER_URL', 'amqp://guest:guest@localhost/%2f')
+        self.rabbitmqUrl = os.environ.get('RABBITMQ_USER_URL', 'amqp://guest:guest@localhost/%2f')
+                                        
+        # rabbitmq queue name = OODT workflow event
+        self.queue_name = workflow_event
+
+        # connections to the EabbitMQ server
+        self.connection = None
+        self.channel = None
+        
+    def connect(self):
+        '''Method to open a connection to the RabbitMQ server.'''
         
         # connect to RabbitMQ server
-        params = pika.URLParameters(rabbitmqUrl)
-        params.socket_timeout = 5
-        connection = pika.BlockingConnection(params)
-        self.channel = connection.channel()
-                                
-        # connect to queue for given workflow
-        self.queue_name = workflow_event
-        self.channel.queue_declare(queue=self.queue_name, durable=True) # make queue persist server reboots
+        if self.connection is None or self.connection.is_closed:
+            params = pika.URLParameters(self.rabbitmqUrl)
+            params.socket_timeout = 10
+            self.connection = pika.BlockingConnection(params)
+            self.channel = self.connection.channel()
+            self.channel.queue_declare(queue=self.queue_name, durable=True) # make queue persist server reboots
+        
+    def disconnect(self):
+        '''Method to close the connection to the RabbitMQ server.'''
+        
+        if self.connection.is_open:
+            self.connection.close()
         
     def run(self):
         raise NotImplementedError
@@ -64,6 +78,9 @@ class RabbitmqPushClient(RabbitmqClient):
         '''Method to listen for messages from the RabbitMQ server.'''
         
         logging.debug("Listening for messages from RabbitMQ server...")
+        
+        # open connection
+        self.connect()
         
         # process 1 message at a time from this queue
         self.channel.basic_qos(prefetch_count=1)
@@ -110,7 +127,11 @@ class RabbitmqPullClient(RabbitmqClient):
         
         while True:
             try: 
+                
                 logging.debug("Pulling next message from queue: %s" % self.queue_name)
+                
+                # open connection if necessary
+                self.connect()
                 method_frame, header_frame, body = self.channel.basic_get( self.queue_name )
             
                 if method_frame:
@@ -123,6 +144,9 @@ class RabbitmqPullClient(RabbitmqClient):
                     # send message acknowledgment
                     self.channel.basic_ack(method_frame.delivery_tag)
                     
+                    # disconnect before submitting the workflow
+                    self.disconnect()
+                    
                     # submit workflow, then block to wait for its completion
                     metadata = json.loads(body)
                     logging.info("Submitting workflow")
@@ -133,6 +157,7 @@ class RabbitmqPullClient(RabbitmqClient):
                     logging.info('Worfklow ended with status: %s' % status)
                     
                 else:
+                    # leave the connection open for the next pull
                     logging.debug('No message returned')
                     
                 # wait till next pull
@@ -141,6 +166,7 @@ class RabbitmqPullClient(RabbitmqClient):
             # but stop if ^C is issued
             except (KeyboardInterrupt, SystemExit):
                 logging.info("Stopping rabbitmq client...")       
+                self.disconnect()
 
 
 if __name__ == '__main__':
