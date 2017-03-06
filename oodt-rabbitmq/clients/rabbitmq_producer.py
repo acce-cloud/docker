@@ -20,8 +20,8 @@ import requests
 import time
 import uuid
 
-LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
-              '-35s %(lineno) -5d: %(message)s')
+#LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) -35s %(lineno) -5d: %(message)s')
+LOG_FORMAT = '%(levelname)s: %(message)s'
 LOGGER = logging.getLogger(__name__)
 LOG_FILE = "rabbitmq_producer.log" # in current directory
 
@@ -329,10 +329,7 @@ class RabbitmqProducer(object):
             return
 
         self._message_number += 1
-        
-        # add a message counter
-        self._msg_dict['message_counter'] = self._message_number
-        
+                
         properties = pika.BasicProperties(app_id=self.PRODUCER_ID,
                                           content_type='application/json',
                                           delivery_mode=2,       # make message persistent
@@ -344,7 +341,7 @@ class RabbitmqProducer(object):
                                     properties)
         
         self._deliveries.append(self._message_number)
-        LOGGER.info('Published message # %i', self._message_number)
+        LOGGER.critical('Published message to workflow: %s with metadata: %s' % (self._routing_key, self._msg_dict))
         
         # stop publishing after num_messages
         if self._message_number < self._num_messages:
@@ -389,16 +386,16 @@ class RabbitmqProducer(object):
         LOGGER.info('Closing connection')
         self._closing = True
         self._connection.close()
-
-def wait(queue_name):
+        
+def wait_for_queue(queue_name, delay_secs=0):
     '''
-    Method that waits until the number of 'ready' messages and 'unacked' messages is 0
+    Method that waits until the number of 'ready' messages and 'unacked' messages in a specific queue is 0
     (signaling that all workflows have been completed).
     Use ^C to stop waiting before all messages have been processed.
     '''
     
-    LOGGER.info("Waiting for all messages to be processed...")
-    time.sleep(5) # wait for queue to be ready
+    LOGGER.critical("Waiting for all messages to be processed in queue: %s" % queue_name)
+    time.sleep(delay_secs) # wait for queue to be ready
             
     num_messages = -1
     num_ready_messages = -1
@@ -423,56 +420,80 @@ def wait(queue_name):
             break
         
 
-def main(workflow_event, num_events, msg_dict):
+def wait_for_queues(delay_secs=0):
+    '''
+    Method that waits until the number of 'ready' messages and 'unacked' messages in all the queues is 0
+    (signaling that all workflows have been completed).
+    Use ^C to stop waiting before all messages have been processed.
+    '''
     
-    logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
+    LOGGER.critical("Waiting for all messages to be processed in all queues...")
+    time.sleep(delay_secs) # wait for queue to be ready
+            
+    num_messages = -1
+    num_ready_messages = -1
+    num_unack_messages = -1
     
-    startTime = datetime.datetime.now()
-    logging.critical("Start Time: %s" % startTime.strftime("%Y-%m-%d %H:%M:%S") )
+    # must connect to RabbitMQ server with administrator privileges
+    # RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672
+    url = os.environ.get('RABBITMQ_ADMIN_URL', 'http://guest:guest@localhost:15672') + "/api/queues"
+    
+    while num_messages != 0:
+        try:
+            resp = requests.get(url=url)
+            all_data = json.loads(resp.text)
+            
+            # loop over queues
+            for queue_data in all_data:
+                queue_name = queue_data['name']
+                num_messages = queue_data['messages_persistent']
+                num_ready_messages = queue_data['messages_ready']
+                num_unack_messages = queue_data['messages_unacknowledged']
+                
+                # wait for this queue
+                if num_messages > 0:
+                    logging.critical("Queue=%s number of messages: ready=%s unacked= %s total=%s" % 
+                                     (queue_name, num_ready_messages, num_unack_messages, num_messages))
+                    time.sleep(1)
+                    if num_messages > 0:
+                        break # skip remaining queues, query again all queues for updated status
+                
+        except KeyboardInterrupt:
+            LOGGER.info("Breaking out of wait mode...")
+            break
+        
 
+def publish_messages(msg_queue, num_msgs, msg_dict):
     
+    logging.basicConfig(level=logging.CRITICAL, format=LOG_FORMAT)
+        
     # RABBITMQ_USER_URL (defaults to guest/guest @ localhost)
     # connect to virtual host "/" (%2F)
     rabbitmqUrl = os.environ.get('RABBITMQ_USER_URL', 'amqp://guest:guest@localhost/%2f')
 
     # instantiate producer
     rmqProducer = RabbitmqProducer(rabbitmqUrl + '?connection_attempts=3&heartbeat_interval=3600', 
-                                        workflow_event, num_events, msg_dict)
+                                        msg_queue, num_msgs, msg_dict)
     
     # publish N messages
     rmqProducer.run()
     
     # wait for RabbitMQ server to process all messages in given queue
-    wait(workflow_event)
+    #wait(workflow_event)
                         
-    stopTime = datetime.datetime.now()
-    logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
-    logging.critical("Elapsed Time: %s secs" % (stopTime-startTime).seconds )
-
-    # write log file (append to existing file)
-    with open(LOG_FILE, 'a') as log_file:
-    	log_file.write('workflow_event=%s\t' % workflow_event)
-    	log_file.write('num_events=%s\t' % num_events)
-        for key in sorted(msg_dict):
-	   log_file.write('%s=%s\t' % (key, msg_dict[key]) )
-        log_file.write('elapsed_time=%s\n' % (stopTime-startTime).seconds)
-
 
 if __name__ == '__main__':
-    """ Parse command line arguments.
-    
-    """
+    """ Parse command line arguments."""
     
     if len(sys.argv) < 3:
-      raise Exception("Usage: python rabbitmq_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
+        raise Exception("Usage: python rabbitmq_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]")
     else:
-      workflow_event = sys.argv[1]
-      num_events = int( sys.argv[2] )
-      # parse remaning arguments into a dictionary
-      msg_dict = {}
-      for arg in sys.argv[3:]:
-          key, val = arg.split('=')
-          msg_dict[key]=val
+        workflow_event = sys.argv[1]
+        num_events = int( sys.argv[2] )
+        # parse remaning arguments into a dictionary
+        msg_dict = {}
+        for arg in sys.argv[3:]:
+            key, val = arg.split('=')
+            msg_dict[key]=val
 
-    main(workflow_event, num_events, msg_dict)
-    
+    publish_messages(workflow_event, num_events, msg_dict)
