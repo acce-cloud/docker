@@ -31,6 +31,9 @@ LOGGER = logging.getLogger(__name__)
 class RabbitmqConsumer(threading.Thread):
     """This is an example consumer that will handle unexpected interactions
     with RabbitMQ such as channel and connection closures.
+    
+    Initially, the consumer will attempt to connect indefinitely, waiting a certain
+    time in between connection attempts.
 
     If RabbitMQ closes the connection, it will reopen it. You should
     look at the output, as there are limited reasons why the connection may
@@ -45,7 +48,7 @@ class RabbitmqConsumer(threading.Thread):
     EXCHANGE = 'oodt-exchange'
     EXCHANGE_TYPE = 'direct'
     PREFETCH_COUNT = 1 # number of concurrent messages to be sent to this consumer
-    
+        
     def __init__(self, amqp_url, workflow_event, wmgrClient,
                  group=None, target=None, name=None, verbose=None): # Thread parent class arguments
         """Create a new instance of the consumer class, passing in the AMQP
@@ -66,7 +69,7 @@ class RabbitmqConsumer(threading.Thread):
         self._url = amqp_url        
         self._queue = workflow_event
         self._routing_key = workflow_event
-
+        
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
         When the connection is established, the on_connection_open method
@@ -75,10 +78,21 @@ class RabbitmqConsumer(threading.Thread):
         :rtype: pika.SelectConnection
 
         """
-        LOGGER.info('Connecting to %s', self._url)
-        return pika.SelectConnection(pika.URLParameters(self._url),
-                                     self.on_connection_open,
-                                     stop_ioloop_on_close=False)
+        
+        # try to connect indefinitely, until successful
+        while True:
+            
+            try:
+                LOGGER.info('Connecting to %s', self._url)
+                return pika.SelectConnection(pika.URLParameters(self._url),
+                                             self.on_connection_open,
+                                             stop_ioloop_on_close=False)
+            except Exception as e:
+                
+                LOGGER.warn("Could not connect, waiting before trying again...")
+                LOGGER.warn(e)
+                time.sleep(5)
+                
 
     def on_connection_open(self, unused_connection):
         """This method is called by pika once the connection to RabbitMQ has
@@ -300,7 +314,9 @@ class RabbitmqConsumer(threading.Thread):
         # parse message body into metadata dictionary
         metadata = json.loads(body)
                 
-        # submit workflow, then wait for its completeion
+        # submit workflow, then block to wait for its completion
+        # IMPORTANT: message will not be acknowledged until the workflow is completed
+        # so next message will not be sent until then
         status = self._wmgrClient.executeWorkflow(metadata)      
         logging.info('Worfklow ended with status: %s' % status)
         
@@ -399,13 +415,13 @@ def main(workflow_event, num_workflow_clients):
 
         # instantiate RabbitMQ client instance
         rmqConsumer = RabbitmqConsumer(rabbitmqUrl, workflow_event, wmgrClient)
-        rmqConsumer.setDaemon(True) # use dameon Threads so that main program does not block
+        rmqConsumer.setDaemon(True) # use daemon Threads so that main program does not block
         rmqConsumers.append(rmqConsumer)
 
         # Thread.start() --> rmqConsumer.run()
         rmqConsumer.start()
         
-    # wait forver (since each consumer listens indefinitely)
+    # wait forever (since each consumer listens indefinitely)
     try:
         while True: time.sleep(100)
         
@@ -421,9 +437,9 @@ if __name__ == '__main__':
     
     # parse command line argument
     if len(sys.argv) < 3:
-      raise Exception("Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>")
+        raise Exception("Usage: python rabbitmq_consumer.py <workflow_event> <number_of_concurrent_workflows_per_engine>")
     else:
-      workflow_event = sys.argv[1]
-      num_workflow_clients = int(sys.argv[2])
+        workflow_event = sys.argv[1]
+        num_workflow_clients = int(sys.argv[2])
 
     main(workflow_event, num_workflow_clients)
