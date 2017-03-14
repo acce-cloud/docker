@@ -2,6 +2,8 @@
 # node: eco-p32
 # Makes this ndoe join the swarm. It needs the swarm worker token as input.
 
+alias docker='sudo docker'
+
 token_worker=$1
 if [ $token_worker = '' ]; then
    echo "Worker token is null, exiting"

@@ -2,6 +2,8 @@
 # node: eco-p31
 # Initializes the swarm, starts swarm visualizer tool.
 
+alias docker='sudo docker'
+
 export MANAGER_IP=172.30.4.62
 docker swarm init --advertise-addr $MANAGER_IP
 token_worker=`docker swarm join-token --quiet worker`

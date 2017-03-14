@@ -3,7 +3,7 @@
 # Instantiates services on the swarm.
 # Note that each service mounts a shared local directory.
 
-docker service scale wmgr_L4=2
+alias docker='sudo docker'
 
 docker node update --label-add ecostress_type=head_node eco-p31.tir
 docker node update --label-add ecostress_type=compute_node eco-p32.tir
@@ -27,7 +27,6 @@ docker service create --replicas 1 --name wmgr_L3a --network swarm-network --con
                       --mount type=bind,src=/scratch/oodt/archive,dst=/usr/local/oodt/archive\
                       --env 'RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f' --env 'RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672'\
                       --env 'FILEMGR_URL=http://filemgr:9000/' oodthub/ecostress-wmgr ecostress-L3a-workflow
-sleep 5
 docker service scale wmgr_L3a=2
 
 # start workflow managers on compute nodes
@@ -36,14 +35,12 @@ docker service create --replicas 1 --name wmgr_L3b --network swarm-network --con
                       --mount type=bind,src=/scratch/oodt/archive,dst=/usr/local/oodt/archive\
                       --env 'RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f' --env 'RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672'\
                       --env 'FILEMGR_URL=http://filemgr:9000/' oodthub/ecostress-wmgr ecostress-L3b-workflow
-sleep 5
 docker service scale wmgr_L3b=2
 
 docker service create --replicas 1 --name wmgr_L4 --network swarm-network --constraint 'node.labels.ecostress_type==compute_node'\
                       --mount type=bind,src=/scratch/oodt/archive,dst=/usr/local/oodt/archive\
                       --env 'RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f' --env 'RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672'\
                       --env 'FILEMGR_URL=http://filemgr:9000/' oodthub/ecostress-wmgr ecostress-L4-workflow
-sleep 5
 docker service scale wmgr_L4=2
 
 docker service ls
