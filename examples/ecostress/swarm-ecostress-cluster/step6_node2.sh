@@ -1,5 +1,5 @@
 #!/bin/sh
-# node: acce-build2.dyndns.org
+# node: eco-p32
 # Makes the node leave the swarm
 
 docker swarm leave

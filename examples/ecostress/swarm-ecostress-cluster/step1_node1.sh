@@ -1,8 +1,8 @@
 #!/bin/sh
-# node: acce-build1.dyndns.org
+# node: eco-p31
 # Initializes the swarm, starts swarm visualizer tool.
 
-export MANAGER_IP=172.31.4.166
+export MANAGER_IP=172.30.4.62
 docker swarm init --advertise-addr $MANAGER_IP
 token_worker=`docker swarm join-token --quiet worker`
 echo $token_worker
