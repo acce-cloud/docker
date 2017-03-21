@@ -128,37 +128,43 @@ class RabbitmqPullClient(RabbitmqClient):
         while True:
             try: 
                 
-                logging.debug("Pulling next message from queue: %s" % self.queue_name)
+                logging.debug("Trying to pull next message from queue: %s" % self.queue_name)
                 
-                # open connection if necessary
-                self.connect()
-                method_frame, header_frame, body = self.channel.basic_get( self.queue_name )
-            
-                if method_frame:
-                    
-                    logging.info("Message found:")
-                    logging.info(method_frame)
-                    logging.info(header_frame)
-                    logging.info(body)
-                    
-                    # send message acknowledgment
-                    self.channel.basic_ack(method_frame.delivery_tag)
-                    
-                    # disconnect before submitting the workflow
-                    self.disconnect()
-                    
-                    # submit workflow, then block to wait for its completion
-                    metadata = json.loads(body)
-                    logging.info("Submitting workflow")
-                            
-                    # IMPORTANT: message will not be acknowledged until the workflow is completed
-                    # so next message will not be sent until then
-                    status = self.wmgrClient.executeWorkflow(metadata)      
-                    logging.info('Worfklow ended with status: %s' % status)
-                    
-                else:
-                    # leave the connection open for the next pull
-                    logging.debug('No message returned')
+                try :
+                    # open connection if necessary
+                    self.connect()
+                    method_frame, header_frame, body = self.channel.basic_get( self.queue_name )
+                
+                    if method_frame:
+                        
+                        logging.info("Message found:")
+                        logging.info(method_frame)
+                        logging.info(header_frame)
+                        logging.info(body)
+                        
+                        # send message acknowledgment
+                        self.channel.basic_ack(method_frame.delivery_tag)
+                        
+                        # disconnect before submitting the workflow
+                        self.disconnect()
+                        
+                        # submit workflow, then block to wait for its completion
+                        metadata = json.loads(body)
+                        logging.info("Submitting workflow")
+                                
+                        # IMPORTANT: message will not be acknowledged until the workflow is completed
+                        # so next message will not be sent until then
+                        status = self.wmgrClient.executeWorkflow(metadata)      
+                        logging.info('Worfklow ended with status: %s' % status)
+                        
+                    else:
+                        # leave the connection open for the next pull
+                        logging.debug('No message returned')
+                        
+                except (pika.exceptions.ConnectionClosed, pika.exceptions.ProbableAuthenticationError) as e:
+                    # do nothing, wqit for next attempt
+                    logging.info("Connection error, will retry...")
+                    logging.warn(e)
                     
                 # wait till next pull
                 time.sleep(self.TIME_INTERVAL)
