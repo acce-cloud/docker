@@ -18,8 +18,6 @@ services:
      - oodt_archive:/usr/local/oodt/archive
     networks:
       default:
-        aliases:
-          - oodt.filemgr.host
 
   # OODT workflow manager for ECOSTRESS L3a workflow
   wmgr_L3a:
@@ -34,8 +32,8 @@ services:
       - rabbitmq
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
-      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
-      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
+      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f"
+      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672"
     networks:
       default:
     entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3a-workflow"]
@@ -53,8 +51,8 @@ services:
       - rabbitmq
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
-      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
-      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
+      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f"
+      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672"
     networks:
       default:
     entrypoint: ["/usr/local/bin/start.sh", "ecostress-L3b-workflow"]
@@ -72,29 +70,29 @@ services:
       - rabbitmq
     environment:
       - "FILEMGR_URL=http://oodt.filemgr.host:9000"
-      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@oodt.rabbitmq.host/%2f"
-      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672"
+      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f"
+      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672"
     networks:
       default:
     entrypoint: ["/usr/local/bin/start.sh", "ecostress-L4-workflow"]
 
 
   # OODT product server
-  fmprod:
-    image: oodthub/oodt-fmprod
-    container_name: fmprod
-    expose:
-      - "8080"
-    ports:
-      - "8080:8080"
-    volumes:
-     - oodt_archive:/usr/local/oodt/archive
-    environment:
-      - "FILEMGR_URL=http://oodt.filemgr.host:9000"
-    networks:
-      default:
-        aliases:
-          - oodt.fmprod.host
+  #fmprod:
+  #  image: oodthub/oodt-fmprod
+  #  container_name: fmprod
+  #  expose:
+  #    - "8080"
+  #  ports:
+  #    - "8080:8080"
+  #  volumes:
+  #   - oodt_archive:/usr/local/oodt/archive
+  #  environment:
+  #    - "FILEMGR_URL=http://oodt.filemgr.host:9000"
+  #  networks:
+  #    default:
+  #      aliases:
+  #        - oodt.fmprod.host
 
   # RabbitMQ server
   rabbitmq:
@@ -108,8 +106,6 @@ services:
       - "15672:15672"
     networks:
       default:
-        aliases:
-          - oodt.rabbitmq.host
 
 # persistent data volumes
 volumes:
