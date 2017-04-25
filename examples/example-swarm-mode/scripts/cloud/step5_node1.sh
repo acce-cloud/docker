@@ -4,6 +4,7 @@
 
 rabbitmq_id=`docker ps | grep rabbitmq | awk '{print $1}'`
 
+# execute python client inside RabbitMQ container
 docker exec -it ${rabbitmq_id} sh -c "cd /usr/local/oodt/rabbitmq; python rabbitmq_producer.py test-workflow 100 Dataset=abc Project=123 heap=1 size=10 time=10"
 
 sleep 10

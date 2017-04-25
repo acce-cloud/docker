@@ -23,6 +23,7 @@ import uuid
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
 LOGGER = logging.getLogger(__name__)
+LOG_FILE = "rabbitmq_producer.log" # in current directory
 
 
 class RabbitmqProducer(object):
@@ -397,7 +398,7 @@ def wait(queue_name):
     '''
     
     LOGGER.info("Waiting for all messages to be processed...")
-    time.sleep(3) # wait for queue to be ready
+    time.sleep(5) # wait for queue to be ready
             
     num_messages = -1
     num_ready_messages = -1
@@ -447,6 +448,14 @@ def main(workflow_event, num_events, msg_dict):
     stopTime = datetime.datetime.now()
     logging.critical("Stop Time: %s" % stopTime.strftime("%Y-%m-%d %H:%M:%S") )
     logging.critical("Elapsed Time: %s secs" % (stopTime-startTime).seconds )
+
+    # write log file (append to existing file)
+    with open(LOG_FILE, 'a') as log_file:
+    	log_file.write('workflow_event=%s\t' % workflow_event)
+    	log_file.write('num_events=%s\t' % num_events)
+        for key in sorted(msg_dict):
+	   log_file.write('%s=%s\t' % (key, msg_dict[key]) )
+        log_file.write('elapsed_time=%s\n' % (stopTime-startTime).seconds)
 
 
 if __name__ == '__main__':
