@@ -1,0 +1,8 @@
+Working directory: docker/smap/spdm-stub
+
+#1 build stub docker image
+% docker build -t oodthub/spdm-stub:0.3
+
+#2
+# Push docker image to https://hub.docker.com/u/oodthub/
+% docker push oodthub/spdm-stub:0.3
