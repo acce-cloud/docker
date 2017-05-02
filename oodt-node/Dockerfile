@@ -66,7 +66,7 @@ RUN mkdir -p /usr/share/maven \
        | tar -xzC /usr/share/maven --strip-components=1 \
     && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 ENV MAVEN_HOME /usr/share/maven
-VOLUME /root/.m2
+#VOLUME /root/.m2
 
 # install Supervisor
 # /usr/local/bin/python ==> installs executable under /usr/local/bin/supervisord

@@ -25,7 +25,7 @@ COPY rabbitmq_clients/ $OODT_HOME/rabbitmq/
 COPY scripts/ /usr/local/bin/
 
 VOLUME $OODT_CONFIG
-VOLUME $PGE_ROOT
+#VOLUME $PGE_ROOT
 VOLUME $OODT_ARCHIVE
 VOLUME /usr/local/bin
 
