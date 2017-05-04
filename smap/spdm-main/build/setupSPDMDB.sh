@@ -15,17 +15,18 @@ cd ${SPDM_HOME}/spdm-filemgr/bin
 if [ ! -d $SPDM_HOME/spdm-filemgr/policy/sql-repo ]; then
   mkdir $SPDM_HOME/spdm-filemgr/policy/sql-repo
 fi
+echo "${FILEMGR_DB_USER}/${FILEMGR_DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_INSTANT}"
 sh updateColumnBasedDB -propFile ../etc/filemgr.properties -cmd create-schema -commit
-#
-#
+
+
 cd $SPDM_HOME/spdm-filemgr/bin/sql
-sqlplus ${FILEMGR_DB_USER}/${FILEMGR_DB_PASS}@i${DB_HOST}:${DB_PORT}/${DB_INSANT} << EOF
-@createColdSkyTable.sql;
-@createDailyStatusTable.sql;
-@createLutHistoryTable.sql;
-@createOrbitsStatusTable.sql;
-@createOrbitsTable.sql;
-@createProcessStatusTable.sql;
-@createTimersTable.sql;
+sqlplus ${FILEMGR_DB_USER}/${FILEMGR_DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_INSTANT} << EOF
+@createColdSkyTable.sql
+@createDailyStatusTable.sql
+@createLutHistoryTable.sql
+@createOrbitsStatusTable.sql
+@createOrbitsTable.sql
+@createProcessStatusTable.sql
+@createTimersTable.sql
 /
 EOF

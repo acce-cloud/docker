@@ -37,4 +37,5 @@ docker service create --replicas 1 --name orcldb -p 8080:8080 -p 1521:1521 \
 
 # use this command to scale instances
 #docker service scale spdmstub=2
+sleep 20
 docker service ls
