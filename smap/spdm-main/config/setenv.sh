@@ -96,9 +96,9 @@ export L4_PDRD_CRAWLER_DAEMON_PORT=9025
 
 #--- Database information ---
 #--- Do not include the domain name in the DB_HOST
-export DB_HOST=jplis-dta-ecostrsd.jpl.nasa.gov
-export DB_PORT=1521
-export DB_INSTANT=ECOSTRSD
+export DB_HOST=
+export DB_PORT=
+export DB_INSTANT=
 
 #--- Database username and password ---
 export FILEMGR_DB_USER=

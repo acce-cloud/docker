@@ -87,4 +87,5 @@ Run cp -p ${SPDM_HOME}/spdm-main/bin/setenv.sh ${SPDM_HOME}/spdm-filemgr/bin/.
 # Retart services automatically
 #
 COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY build/setupSPDMDB.sh ${SPDM_BUILD}/.
 CMD ["/usr/local/bin/docker-entrypoint.sh"]

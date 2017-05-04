@@ -111,7 +111,7 @@ sh sentinelPipeline_testSetup.sh
 username=${FILEMGR_DB_USER}
 password=${FILEMGR_DB_PASS}
 
-sqlplus $username/$password@${DB_HOST}:${DB_PORT}/${DB_INSTANT}.JPL.NASA.GOV << EOF
+sqlplus $username/$password@${DB_HOST}:${DB_PORT}/${DB_INSTANT} << EOF
 delete from ORBITS;
 truncate table LUT_HISTORY;
 truncate table ORBITSSTATUS;

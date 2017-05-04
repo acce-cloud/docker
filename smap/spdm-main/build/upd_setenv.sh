@@ -26,7 +26,10 @@ NEWFILE=./setenv.sh.new
 [ -e ${ORIGFILE}.orig ] && mv ${ORIGFILE}.orig ${ORIGFILE}
 # update with your credentials
 sed 's/FILEMGR_DB_USER=/FILEMGR_DB_USER='${SPDM_DB_USER}'/' ${ORIGFILE} |  \
-sed 's/FILEMGR_DB_PASS=/FILEMGR_DB_PASS='${SPDM_DB_PASS}'/' > ${NEWFILE}
+sed 's/FILEMGR_DB_PASS=/FILEMGR_DB_PASS='${SPDM_DB_PASS}'/' > ${NEWFILE} \
+sed 's/DB_HOST=/DB_HOST='${DB_HOST}'/' > ${NEWFILE} \
+sed 's/DB_PORT=/DB_PORT='${DB_PORT}'/' > ${NEWFILE} \
+sed 's/DB_INSTANT=/DB_INSTANT='${DB_INSTANT}'/' > ${NEWFILE} 
 mv ${ORIGFILE} ${ORIGFILE}.orig
 mv ${NEWFILE} ${ORIGFILE}
 grep FILEMGR_DB ${ORIGFILE}
