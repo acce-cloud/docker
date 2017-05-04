@@ -80,6 +80,10 @@ COPY config/test/regression_testSetup.sh ${SPDM_HOME}/spdm-main/bin/test/regress
 COPY config/nodes.xml ${SPDM_HOME}/spdm-resource/policy/dev/.
 COPY config/node-to-queue-mapping.xml ${SPDM_HOME}/spdm-resource/policy/dev/.
 #
+# update environments for filemgr component
+# 
+Run cp -p ${SPDM_HOME}/spdm-main/bin/setenv.sh ${SPDM_HOME}/spdm-filemgr/bin/.
+#
 # Retart services automatically
 #
 COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

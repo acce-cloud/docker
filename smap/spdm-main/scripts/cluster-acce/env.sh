@@ -6,3 +6,5 @@ NODE2=acce-build3.dyndns.org
 NODE_LIST="${NODE1} ${NODE2}"
 SHARED_DIR=/usr/local/adeploy/smap/spdmops
 SWARM_NETWORK=spdm-swarm
+ORCL_DB_USER=system
+ORCL_DB_PASS=oracle
