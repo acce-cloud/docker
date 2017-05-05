@@ -1,0 +1,267 @@
+{
+  "requiresAttributes": [],
+  "taskDefinitionArn": "arn:aws:ecs:us-west-2:031003439974:task-definition/EcostressFullStackTask:8",
+  "networkMode": "bridge",
+  "status": "ACTIVE",
+  "revision": 8,
+  "taskRoleArn": null,
+  "containerDefinitions": [
+    {
+      "volumesFrom": [],
+      "memory": 2048,
+      "extraHosts": null,
+      "dnsServers": null,
+      "disableNetworking": null,
+      "dnsSearchDomains": null,
+      "portMappings": [
+        {
+          "hostPort": 9000,
+          "containerPort": 9000,
+          "protocol": "tcp"
+        },
+        {
+          "hostPort": 8983,
+          "containerPort": 8983,
+          "protocol": "tcp"
+        }
+      ],
+      "hostname": null,
+      "essential": true,
+      "entryPoint": null,
+      "mountPoints": [
+        {
+          "containerPath": "/usr/local/oodt/archive",
+          "sourceVolume": "oodt_archive",
+          "readOnly": null
+        }
+      ],
+      "name": "filemgr",
+      "ulimits": null,
+      "dockerSecurityOptions": null,
+      "environment": [],
+      "links": [],
+      "workingDirectory": null,
+      "readonlyRootFilesystem": null,
+      "image": "oodthub/ecostress-filemgr",
+      "command": null,
+      "user": null,
+      "dockerLabels": null,
+      "logConfiguration": null,
+      "cpu": 0,
+      "privileged": null,
+      "memoryReservation": null
+    },
+    {
+      "volumesFrom": [],
+      "memory": 512,
+      "extraHosts": null,
+      "dnsServers": null,
+      "disableNetworking": null,
+      "dnsSearchDomains": null,
+      "portMappings": [
+        {
+          "hostPort": 5672,
+          "containerPort": 5672,
+          "protocol": "tcp"
+        },
+        {
+          "hostPort": 15672,
+          "containerPort": 15672,
+          "protocol": "tcp"
+        }
+      ],
+      "hostname": null,
+      "essential": true,
+      "entryPoint": null,
+      "mountPoints": [],
+      "name": "rabbitmq",
+      "ulimits": null,
+      "dockerSecurityOptions": null,
+      "environment": [
+        {
+          "name": "RABBITMQ_ADMIN_URL",
+          "value": "http://oodt-admin:changeit@localhost:15672"
+        },
+        {
+          "name": "RABBITMQ_USER_URL",
+          "value": "amqp://oodt-user:changeit@localhost/%2f"
+        }
+      ],
+      "links": [
+        "wmgr_L3a",
+        "wmgr_L3b",
+        "wmgr_L4"
+      ],
+      "workingDirectory": null,
+      "readonlyRootFilesystem": null,
+      "image": "oodthub/oodt-rabbitmq",
+      "command": null,
+      "user": null,
+      "dockerLabels": null,
+      "logConfiguration": null,
+      "cpu": 0,
+      "privileged": null,
+      "memoryReservation": null
+    },
+    {
+      "volumesFrom": [],
+      "memory": 512,
+      "extraHosts": null,
+      "dnsServers": null,
+      "disableNetworking": null,
+      "dnsSearchDomains": null,
+      "portMappings": [],
+      "hostname": null,
+      "essential": true,
+      "entryPoint": null,
+      "mountPoints": [
+        {
+          "containerPath": "/usr/local/oodt/archive",
+          "sourceVolume": "oodt_archive",
+          "readOnly": null
+        }
+      ],
+      "name": "wmgr_L3a",
+      "ulimits": null,
+      "dockerSecurityOptions": null,
+      "environment": [
+        {
+          "name": "FILEMGR_URL",
+          "value": "http://filemgr:9000/"
+        },
+        {
+          "name": "RABBITMQ_ADMIN_URL",
+          "value": "http://oodt-admin:changeit@rabbitmq:15672"
+        },
+        {
+          "name": "RABBITMQ_USER_URL",
+          "value": "amqp://oodt-user:changeit@rabbitmq/%2f"
+        }
+      ],
+      "links": [
+        "filemgr",
+        "rabbitmq"
+      ],
+      "workingDirectory": null,
+      "readonlyRootFilesystem": null,
+      "image": "oodthub/ecostress-wmgr",
+      "command": null,
+      "user": null,
+      "dockerLabels": null,
+      "logConfiguration": null,
+      "cpu": 0,
+      "privileged": null,
+      "memoryReservation": null
+    },
+    {
+      "volumesFrom": [],
+      "memory": 512,
+      "extraHosts": null,
+      "dnsServers": null,
+      "disableNetworking": null,
+      "dnsSearchDomains": null,
+      "portMappings": [],
+      "hostname": null,
+      "essential": true,
+      "entryPoint": null,
+      "mountPoints": [
+        {
+          "containerPath": "/usr/local/oodt/archive",
+          "sourceVolume": "oodt_archive",
+          "readOnly": null
+        }
+      ],
+      "name": "wmgr_L3b",
+      "ulimits": null,
+      "dockerSecurityOptions": null,
+      "environment": [
+        {
+          "name": "FILEMGR_URL",
+          "value": "http://filemgr:9000/"
+        },
+        {
+          "name": "RABBITMQ_ADMIN_URL",
+          "value": "http://oodt-admin:changeit@rabbitmq:15672"
+        },
+        {
+          "name": "RABBITMQ_USER_URL",
+          "value": "amqp://oodt-user:changeit@rabbitmq/%2f"
+        }
+      ],
+      "links": [
+        "filemgr",
+        "rabbitmq"
+      ],
+      "workingDirectory": null,
+      "readonlyRootFilesystem": null,
+      "image": "oodthub/ecostress-wmgr",
+      "command": null,
+      "user": null,
+      "dockerLabels": null,
+      "logConfiguration": null,
+      "cpu": 0,
+      "privileged": null,
+      "memoryReservation": null
+    },
+    {
+      "volumesFrom": [],
+      "memory": 512,
+      "extraHosts": null,
+      "dnsServers": null,
+      "disableNetworking": null,
+      "dnsSearchDomains": null,
+      "portMappings": [],
+      "hostname": null,
+      "essential": true,
+      "entryPoint": null,
+      "mountPoints": [
+        {
+          "containerPath": "/usr/local/oodt/archive",
+          "sourceVolume": "oodt_archive",
+          "readOnly": null
+        }
+      ],
+      "name": "wmgr_L4",
+      "ulimits": null,
+      "dockerSecurityOptions": null,
+      "environment": [
+        {
+          "name": "FILEMGR_URL",
+          "value": "http://filemgr:9000/"
+        },
+        {
+          "name": "RABBITMQ_ADMIN_URL",
+          "value": "http://oodt-admin:changeit@rabbitmq:15672"
+        },
+        {
+          "name": "RABBITMQ_USER_URL",
+          "value": "amqp://oodt-user:changeit@rabbitmq/%2f"
+        }
+      ],
+      "links": [
+        "filemgr",
+        "rabbitmq"
+      ],
+      "workingDirectory": null,
+      "readonlyRootFilesystem": null,
+      "image": "oodthub/ecostress-wmgr",
+      "command": null,
+      "user": null,
+      "dockerLabels": null,
+      "logConfiguration": null,
+      "cpu": 0,
+      "privileged": null,
+      "memoryReservation": null
+    }
+  ],
+  "placementConstraints": [],
+  "volumes": [
+    {
+      "host": {
+        "sourcePath": "/home/ec2-user/ecostress/archive"
+      },
+      "name": "oodt_archive"
+    }
+  ],
+  "family": "EcostressFullStackTask"
+}

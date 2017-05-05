@@ -451,9 +451,9 @@ def wait_for_queues(delay_secs=0):
                 num_unack_messages = queue_data['messages_unacknowledged']
                 
                 # wait for this queue
-                logging.critical("Queue=%s number of messages: ready=%s unacked= %s total=%s" % 
-                                 (queue_name, num_ready_messages, num_unack_messages, num_messages))
                 if num_messages > 0:
+                    logging.critical("Queue=%s number of messages: ready=%s unacked= %s total=%s" % 
+                                     (queue_name, num_ready_messages, num_unack_messages, num_messages))
                     time.sleep(1)
                     if num_messages > 0:
                         break # skip remaining queues, query again all queues for updated status
