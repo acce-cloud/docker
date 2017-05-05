@@ -1,0 +1,30 @@
+{
+    "cluster": "EcostressCluster", 
+    "serviceName": "EcostressFileManagerService", 
+    "taskDefinition": "EcostressFileManagerTask", 
+    "loadBalancers": [
+    ], 
+    "desiredCount": 1, 
+    "clientToken": "", 
+    "role": "", 
+    "deploymentConfiguration": {
+        "maximumPercent": 200, 
+        "minimumHealthyPercent": 50
+    }, 
+    "placementConstraints": [
+        {
+            "type": "memberOf", 
+            "expression": "attribute:ecostress_type==head_node"
+        }
+    ], 
+    "placementStrategy": [
+        {
+            "field": "attribute:ecs.availability-zone",
+            "type": "spread"
+        },
+        {
+             "field": "instanceId",
+             "type": "spread"
+        }
+    ]
+}
