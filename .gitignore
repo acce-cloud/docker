@@ -8,6 +8,7 @@
 **/*.met
 **/*.out
 **/*.pyc
+**/*.log
 .settings
 .project
 .pydevproject

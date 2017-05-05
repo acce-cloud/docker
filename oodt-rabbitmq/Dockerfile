@@ -32,7 +32,10 @@ RUN rpm -ivh rabbitmq-server-3.6.6-1.el6.noarch.rpm
 RUN rabbitmq-plugins --offline enable rabbitmq_management
 
 # customize environment
-COPY conf/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
+#COPY conf/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
+
+# customize configuration to keep connections to consumers alive
+COPY conf/rabbitmq.config /etc/rabbitmq/rabbitmq.config
 
 EXPOSE 5672 15672
 
