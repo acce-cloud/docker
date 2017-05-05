@@ -7,6 +7,9 @@ FROM oodthub/oodt-node
 # docker build -t oodthub/spdm-services \
 #		--build-arg jpl_git_user=${JPL_GIT_USER} \
 #        	--build-arg jpl_git_token=${JPL_GIT_TOKEN} \
+#		--build-arg spdm_db_host=${SPDM_DB_HOST} \
+#		--build-arg spdm_db_port=${SPDM_DB_PORT} \
+#		--build-arg spdm_db_instant=${SPDM_DB_INSTANT} \
 #		--build-arg spdm_db_user=${SPDM_DB_USER} \
 #		--build-arg spdm_db_pass=${SPDM_DB_PASS} .
 #
@@ -14,6 +17,9 @@ FROM oodthub/oodt-node
 #
 ARG jpl_git_user=
 ARG jpl_git_token=
+ARG spdm_db_host=
+ARG spdm_db_port=
+ARG spdm_db_instant=
 ARG spdm_db_user=
 ARG spdm_db_pass=
 #
@@ -61,7 +67,7 @@ RUN cd $SPDM_BUILD/spdm-${SPDM_VERSION}/spdm-distribution-${SPDM_VERSION}; sh in
 #
 COPY build/upd_setenv.sh ${SPDM_BUILD}/.
 COPY config/setenv.sh ${SPDM_BUILD}/.
-RUN cd ${SPDM_BUILD}; sh upd_setenv.sh ${spdm_db_user} ${spdm_db_pass}
+RUN cd ${SPDM_BUILD}; sh upd_setenv.sh ${spdm_db_host} ${spdm_db_port} ${spdm_db_instant} ${spdm_db_user} ${spdm_db_pass}
 RUN cd ${SPDM_HOME}/spdm-main/bin; mv setenv.sh setenv.sh.orig
 RUN cp -p ${SPDM_BUILD}/setenv.sh ${SPDM_HOME}/spdm-main/bin/.
 #
