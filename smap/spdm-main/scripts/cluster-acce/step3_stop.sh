@@ -8,4 +8,7 @@ fi
 # stop services
 #
 docker service rm spdmserver spdmnode orcldb
+rm ${SHARED_DIR}/workspace/pid/*.pid
+sleep 5
 docker service ls
+docker ps -a
