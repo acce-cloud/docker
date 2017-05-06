@@ -1,0 +1,30 @@
+{
+    "cluster": "EcostressCluster", 
+    "serviceName": "EcostressL3bWorkerService", 
+    "taskDefinition": "EcostressL3bWorkerTask", 
+    "loadBalancers": [
+    ], 
+    "desiredCount": 20, 
+    "clientToken": "", 
+    "role": "", 
+    "deploymentConfiguration": {
+        "maximumPercent": 200, 
+        "minimumHealthyPercent": 50
+    }, 
+    "placementConstraints": [
+        {
+            "type": "memberOf", 
+            "expression": "attribute:ecostress_type==compute_node"
+        }
+    ], 
+    "placementStrategy": [
+        {
+            "field": "attribute:ecs.availability-zone",
+            "type": "spread"
+        },
+        {
+             "field": "instanceId",
+             "type": "spread"
+        }
+    ]
+}
