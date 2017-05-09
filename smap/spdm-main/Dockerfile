@@ -7,21 +7,11 @@ FROM oodthub/oodt-node
 # docker build -t oodthub/spdm-services \
 #		--build-arg jpl_git_user=${JPL_GIT_USER} \
 #        	--build-arg jpl_git_token=${JPL_GIT_TOKEN} \
-#		--build-arg spdm_db_host=${SPDM_DB_HOST} \
-#		--build-arg spdm_db_port=${SPDM_DB_PORT} \
-#		--build-arg spdm_db_instant=${SPDM_DB_INSTANT} \
-#		--build-arg spdm_db_user=${SPDM_DB_USER} \
-#		--build-arg spdm_db_pass=${SPDM_DB_PASS} .
 #
 # Required arguments
 #
 ARG jpl_git_user=
 ARG jpl_git_token=
-ARG spdm_db_host=
-ARG spdm_db_port=
-ARG spdm_db_instant=
-ARG spdm_db_user=
-ARG spdm_db_pass=
 #
 # install sqlplus
 #
@@ -45,6 +35,7 @@ ENV PATH /usr/lib/oracle/12.1/client64/bin:${PATH}
 #
 ENV SPDM_VERSION 1.4.2
 ENV SPDM_HOME /usr/local/spdm/deploy
+ENV SPDM_BIN $SPDM_HOME/spdm-main/bin
 ENV SPDM_BUILD /usr/local/spdm/build
 #
 # default SPDM runtime environment
@@ -52,24 +43,28 @@ ENV SPDM_BUILD /usr/local/spdm/build
 RUN mkdir -p $SPDM_HOME
 RUN mkdir -p $SPDM_BUILD
 #
+#-- replaced begin
 # compile & deploy SPDM with test profile
 #
-RUN cd $SPDM_BUILD; curl -fsSL --user ${jpl_git_user}:${jpl_git_token} https://github.jpl.nasa.gov/SPDM/spdm/archive/${SPDM_VERSION}.tar.gz | tar -xvz
-COPY build/spdm.properties ${SPDM_BUILD}/spdm-${SPDM_VERSION}
-RUN cd ${SPDM_BUILD}/spdm-${SPDM_VERSION}; mvn install -Pspdm-dev -Dmaven.test.skip=true
+#RUN cd $SPDM_BUILD; curl -fsSL --user ${jpl_git_user}:${jpl_git_token} https://github.jpl.nasa.gov/SPDM/spdm/archive/${SPDM_VERSION}.tar.gz | tar -xvz
+#COPY build/spdm.properties ${SPDM_BUILD}/spdm-${SPDM_VERSION}
+#RUN cd ${SPDM_BUILD}/spdm-${SPDM_VERSION}; mvn install -Pspdm-dev -Dmaven.test.skip=true
 #
 # distrubte SPDM
 #
-RUN cd $SPDM_BUILD/spdm-${SPDM_VERSION}; tar xvfz spdm-distribution/target/spdm-distribution-${SPDM_VERSION}-dist.tar.gz
+#RUN cd $SPDM_BUILD/spdm-${SPDM_VERSION}; tar xvfz spdm-distribution/target/spdm-distribution-${SPDM_VERSION}-dist.tar.gz
+#
+# replaced end --
+## replaced with begin
+#RUN mkdir -p $SPDM_BUILD/spdm-${SPDM_VERSION}
+#COPY build/apps/spdm-distribution-${SPDM_VERSION}-dist.tar.gz $SPDM_BUILD/spdm-${SPDM_VERSION}/.
+#RUN cd $SPDM_BUILD/spdm-${SPDM_VERSION}; tar xvfz spdm-distribution-${SPDM_VERSION}-dist.tar.gz
+RUN mkdir -p $SPDM_BUILD/spdm-${SPDM_VERSION}/spdm-distribution-${SPDM_VERSION}
+COPY build/apps/spdm-distribution-${SPDM_VERSION}/ $SPDM_BUILD/spdm-${SPDM_VERSION}/spdm-distribution-${SPDM_VERSION}/
+#
+## replaced with end
+#
 RUN cd $SPDM_BUILD/spdm-${SPDM_VERSION}/spdm-distribution-${SPDM_VERSION}; sh install.sh
-#
-# setup & configure SPDM with pre-set property file, setenv.sh
-#
-COPY build/upd_setenv.sh ${SPDM_BUILD}/.
-COPY config/setenv.sh ${SPDM_BUILD}/.
-RUN cd ${SPDM_BUILD}; sh upd_setenv.sh ${spdm_db_host} ${spdm_db_port} ${spdm_db_instant} ${spdm_db_user} ${spdm_db_pass}
-RUN cd ${SPDM_HOME}/spdm-main/bin; mv setenv.sh setenv.sh.orig
-RUN cp -p ${SPDM_BUILD}/setenv.sh ${SPDM_HOME}/spdm-main/bin/.
 #
 # build directory structures required for spdm operation
 #
@@ -85,13 +80,15 @@ RUN cd ${SPDM_HOME}/spdm-main/bin/test/regression; mv regression_testSetup.sh re
 COPY config/test/regression_testSetup.sh ${SPDM_HOME}/spdm-main/bin/test/regression/.
 COPY config/nodes.xml ${SPDM_HOME}/spdm-resource/policy/dev/.
 COPY config/node-to-queue-mapping.xml ${SPDM_HOME}/spdm-resource/policy/dev/.
-#
-# update environments for filemgr component
-# 
-Run cp -p ${SPDM_HOME}/spdm-main/bin/setenv.sh ${SPDM_HOME}/spdm-filemgr/bin/.
+COPY config/distribution.properties ${SPDM_HOME}/spdm-sips/etc/.
 #
 # Retart services automatically
 #
 COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+#
+# copy scripts to setup configuration when container is created and started
+#
+COPY build/upd_setenv.sh ${SPDM_BUILD}/.
+COPY config/setenv.sh ${SPDM_BUILD}/.
 COPY build/setupSPDMDB.sh ${SPDM_BUILD}/.
 CMD ["/usr/local/bin/docker-entrypoint.sh"]

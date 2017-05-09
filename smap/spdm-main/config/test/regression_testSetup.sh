@@ -110,7 +110,10 @@ sh sentinelPipeline_testSetup.sh
 
 username=${FILEMGR_DB_USER}
 password=${FILEMGR_DB_PASS}
-
+if [ ! -z ${DB_DOMAIN} ] ; then
+  DB_INSTANT=${DB_INSTANT}${DB_DOMAIN}
+fi
+echo "$0: $username/$password@${DB_HOST}:${DB_PORT}/${DB_INSTANT}"
 sqlplus $username/$password@${DB_HOST}:${DB_PORT}/${DB_INSTANT} << EOF
 delete from ORBITS;
 truncate table LUT_HISTORY;
