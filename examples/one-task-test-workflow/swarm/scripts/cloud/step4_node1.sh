@@ -10,7 +10,7 @@ docker node update --label-add oodt_type=wmgr acce-build3.dyndns.org
 mkdir -p /usr/local/adeploy/archive
 
 docker service create --replicas 1 --name filemgr -p 9000:9000 -p 8983:8983 --network swarm-network  --constraint 'node.labels.oodt_type==filemgr'\
-                      --mount type=bind,src=/usr/local/adeploy/archive,dst=/usr/local/oodt/archive oodthub/test-filemgr
+                      --mount type=bind,src=/usr/local/adeploy/archive,dst=/usr/local/oodt/archive oodthub/one-task-test-filemgr
 
 docker service create --replicas 1 --name rabbitmq -p 5672:5672 -p 15672:15672 --network swarm-network  --constraint 'node.labels.oodt_type==filemgr'\
                       --env 'RABBITMQ_USER_URL=amqp://oodt-user:changeit@localhost/%2f' --env 'RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672'\
@@ -22,10 +22,14 @@ sleep 5
 docker service create --replicas 1 --name wmgr -p 9001:9001 --network swarm-network --constraint 'node.labels.oodt_type==wmgr'\
                       --mount type=bind,src=/usr/local/adeploy/archive,dst=/usr/local/oodt/archive\
                       --env 'RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f' --env 'RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672'\
-                      --env 'FILEMGR_URL=http://filemgr:9000/' oodthub/test-wmgr
+                      --env 'FILEMGR_URL=http://filemgr:9000/' oodthub/one-task-test-wmgr
 docker service scale wmgr=2
+
+# create a workflow manager client
+docker service create --replicas 1 --name wmgr-client --network swarm-network  --constraint 'node.labels.oodt_type==filemgr' oodthub/one-task-test-wmgr-client
 
 docker service ls
 docker service ps filemgr
 docker service ps wmgr
 docker service ps rabbitmq
+docker service ps wmgr-client

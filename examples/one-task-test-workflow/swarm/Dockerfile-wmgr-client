@@ -6,5 +6,8 @@ FROM oodthub/oodt-wmgr
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
+# add wmgr client script to run N workflows
+COPY wmgr_config/scripts/run_workflows.sh $OODT_HOME/cas-workflow/bin/run_workflows.sh
+
 # override entrypoint to avoid starting the Workflow manager, but keep the container running
 ENTRYPOINT ["tail", "-f", "/dev/null"]
