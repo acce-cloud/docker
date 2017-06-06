@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
-# Adapted from: 
-# http://pika.readthedocs.io/en/0.10.0/examples/asynchronous_publisher_example.html
+# Adapted from: http://pika.readthedocs.io/en/0.10.0/examples/asynchronous_publisher_example.html
+#
 # Features:
 # o Requests delivery confirmation from RabbitMQ server 
 #   and keeps tracks of which messages have been acknowledged or not acknowledged
 # o Reconnects if connection to RabbitMQ servers goes down for any reason
 # o Shuts down if RabbitMQ server closes the channel
+# 
+# Connection parameters are specified through the environmental variables:
+# o RABBITMQ_USER_URL (to send messages)
+# o RABBITMQ_ADMIN_URL (to monitor message delivery)
 #
 # Usage: python rabbitmq_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]
 # To be used together with rabbitmq_consumer.py
