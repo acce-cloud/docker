@@ -4,7 +4,7 @@
     "taskDefinition": "EcostressL3bWorkerTask", 
     "loadBalancers": [
     ], 
-    "desiredCount": 20, 
+    "desiredCount": 4, 
     "clientToken": "", 
     "role": "", 
     "deploymentConfiguration": {
