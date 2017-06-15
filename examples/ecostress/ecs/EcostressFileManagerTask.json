@@ -1,0 +1,70 @@
+{
+  "requiresAttributes": [],
+  "taskDefinitionArn": "arn:aws:ecs:us-west-2:031003439974:task-definition/EcostressFileManagerTask:9",
+  "networkMode": "bridge",
+  "status": "ACTIVE",
+  "revision": 9,
+  "taskRoleArn": null,
+  "containerDefinitions": [
+    {
+      "volumesFrom": [],
+      "memory": 2048,
+      "extraHosts": null,
+      "dnsServers": null,
+      "disableNetworking": null,
+      "dnsSearchDomains": null,
+      "portMappings": [
+        {
+          "hostPort": 9000,
+          "containerPort": 9000,
+          "protocol": "tcp"
+        },
+        {
+          "hostPort": 8983,
+          "containerPort": 8983,
+          "protocol": "tcp"
+        }
+      ],
+      "hostname": null,
+      "essential": true,
+      "entryPoint": null,
+      "mountPoints": [
+        {
+          "containerPath": "/usr/local/oodt/archive/ecostress",
+          "sourceVolume": "ecostress_archive",
+          "readOnly": null
+        }
+      ],
+      "name": "EcostressFileManager",
+      "ulimits": null,
+      "dockerSecurityOptions": null,
+      "environment": [],
+      "links": null,
+      "workingDirectory": null,
+      "readonlyRootFilesystem": null,
+      "image": "oodthub/ecostress-filemgr",
+      "command": null,
+      "user": null,
+      "dockerLabels": null,
+      "logConfiguration": null,
+      "cpu": 0,
+      "privileged": null,
+      "memoryReservation": null
+    }
+  ],
+  "placementConstraints": [
+    {
+      "expression": "attribute:ecostress_type == head_node",
+      "type": "memberOf"
+    }
+  ],
+  "volumes": [
+    {
+      "host": {
+        "sourcePath": "/ecostress_data/ecostress_archive"
+      },
+      "name": "ecostress_archive"
+    }
+  ],
+  "family": "EcostressFileManagerTask"
+}
