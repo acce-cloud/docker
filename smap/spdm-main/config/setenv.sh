@@ -5,7 +5,7 @@
 export SPDM_VERSION=1.4.2
 
 # Host machine for spdm services
-export SPDM_HOST=`hostname`
+export SPDM_HOST=localhost
 export SPDM_WS_URL=http://${SPDM_HOST}:8080/spdm-ws
 export WEBSERVER_URLS=http://{SPDM_HOST}:9080,http://${SPDM_HOST}:9080
 
