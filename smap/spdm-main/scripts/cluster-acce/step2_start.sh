@@ -25,6 +25,7 @@ docker service create --replicas 1 --name ${SPDM_HOST} -p 9000:9000 -p 9001:9001
 		--env FILEMGR_URL=http://${SPDM_HOST}:9000 \
 		--env WORKFLOW_URL=http://${SPDM_HOST}:9001 \
 		--env RESMGR_URL=http://${SPDM_HOST}:9002 \
+		--env NODE_CAPACITY=${NODE_CAPACITY} \
 		oodthub/spdm-services:0.3
 
 # ---> set --replicas number to create the # of containers
