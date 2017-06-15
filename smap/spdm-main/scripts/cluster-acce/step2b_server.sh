@@ -9,10 +9,9 @@ fi
 #
 docker service rm ${SPDM_HOST}
 #
-# ---> set SPDMNODE_01=<containerId>, SPDMNODE_02=<containerId>
+# ---> set SPDMNODE_01=<ip>, SPDMNODE_02=<ip>
 #
-SPDMNODE_01=localhost
-SPDMNODE_02=localhost
+IPs=(`docker inspect -f "{{range .NetworksAttachments}}{{if eq .Network.Spec.Name \"${SWARM_NETWORK}\"}}{{index .Addresses 0}}{{end}}{{end}}" $(docker service ps -q spdmnode) |  cut -d "/" -f1`)
 docker service create --replicas 1 --name ${SPDM_HOST} -p 9000:9000 -p 9001:9001 -p 9002:9002 \
 		--network ${SWARM_NETWORK}  --constraint 'node.labels.acce_type==spdm-services'\
 		--mount type=bind,src=${SHARED_DIR},dst=/project/spdm \
@@ -22,8 +21,8 @@ docker service create --replicas 1 --name ${SPDM_HOST} -p 9000:9000 -p 9001:9001
 		--env FILEMGR_URL=http://${SPDM_HOST}:9000 \
 		--env WORKFLOW_URL=http://${SPDM_HOST}:9001 \
 		--env RESMGR_URL=http://${SPDM_HOST}:9002 \
-		--env SPDMNODE_01=${SPDMNODE_01} \
-		--env SPDMNODE_02=${SPDMNODE_02} \
+		--env SPDMNODE_01=${IPs[0]} \
+		--env SPDMNODE_02=${IPs[1]} \
 		oodthub/spdm-services:0.3
 
 sleep 60

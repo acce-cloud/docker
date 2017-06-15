@@ -17,5 +17,10 @@ cp -p ${SPDM_BUILD}/setenv.sh ${SPDM_HOME}/spdm-filemgr/bin/.
 #   sh spdm_startup.sh ${service}
 #done
 echo "Execute ${SPDM_HOME}/spdm-resource/bin/stub_startup.sh"
-sh ${SPDM_HOME}/spdm-resource/bin/stub_startup.sh ${SPDM_HOME} `hostname`
+#sh ${SPDM_HOME}/spdm-resource/bin/stub_startup.sh ${SPDM_HOME} `hostname`
+
+HOST=`hostname`
+IP=`nslookup ${HOST} | awk '/^Address: / { print $2 }'`
+
+sh ${SPDM_HOME}/spdm-resource/bin/stub_startup.sh ${SPDM_HOME} ${IP}
 tail -f /dev/null
