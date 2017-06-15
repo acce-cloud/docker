@@ -11,3 +11,4 @@ DB_PORT=1521
 DB_INSTANT=xe
 DB_USER=system
 DB_PASS=oracle
+SPDM_HOST=spdmserver
