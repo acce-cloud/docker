@@ -1,4 +1,3 @@
 <cas:resourcenodes xmlns:cas="http://oodt.jpl.nasa.gov/1.0/cas">
-        <node nodeId="SPDMNODE_01" ip="http://[SPDMNODE_01]:[BATCH_STUB_PORT]" capacity="[NODE_CAPACITY]" envReplace="true" />
-        <node nodeId="SPDMNODE_02" ip="http://[SPDMNODE_02]:[BATCH_STUB_PORT]" capacity="[NODE_CAPACITY]" envReplace="true" />
+        <node nodeId="spdmnode.1" ip="http://[SPDMNODE_01]:[BATCH_STUB_PORT]" capacity="8" envReplace="true" />
 </cas:resourcenodes>

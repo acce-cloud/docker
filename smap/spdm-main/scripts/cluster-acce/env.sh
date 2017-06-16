@@ -12,4 +12,3 @@ DB_INSTANT=xe
 DB_USER=system
 DB_PASS=oracle
 SPDM_HOST=spdmserver
-NODE_CAPACITY=8
