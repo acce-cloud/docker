@@ -50,8 +50,10 @@ services:
     image: oodthub/oodt-resmgr:0.3
     expose:
       - "9002"
+      - "2001"
     ports:
       - "9002:9002"
+      - "2001:2001"
     volumes:
       - ./workflows/test-workflow/policy:/usr/local/oodt/workflows/policy
       - ./workflows/test-workflow/pge-configs:/usr/local/oodt/workflows/test-workflow/pge-configs
