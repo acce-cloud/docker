@@ -4,5 +4,6 @@
     <metadata key="ProductType" val="TestFile"/>
     <metadata key="Dataset" val="[Dataset]"/>
     <metadata key="Project" val="[Project]"/>
+    <metadata key="ProcessingNode" val="[ProcessingNode]"/>
     
 </metadataList>
