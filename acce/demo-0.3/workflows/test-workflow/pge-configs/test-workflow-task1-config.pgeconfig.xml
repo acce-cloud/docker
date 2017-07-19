@@ -4,7 +4,7 @@
 	<!-- PGE commands -->
 	<exe dir="[JobDir]" shell="/bin/bash">
 		<cmd>cd [JobDir]</cmd>
-		<cmd>python [PGE_ROOT]/test-workflow/multi_pges.py --run [Run] --task 1 --pges 2</cmd>
+                <cmd>python [PGE_ROOT]/test-workflow/pge.py --size 1 --heap 1 --time 1 --out output_Run_[Run]_Task_1_Node_[ProcessingNode].out</cmd>
 	</exe>
 
 	<customMetadata>

@@ -5,5 +5,6 @@
     <metadata key="Dataset" val="[Dataset]"/>
     <metadata key="Project" val="[Project]"/>
     <metadata key="ProcessingNode" val="[ProcessingNode]"/>
+    <metadata key="WorkflowManagerUrl" val="[WorkflowManagerUrl]"/>
     
 </metadataList>
