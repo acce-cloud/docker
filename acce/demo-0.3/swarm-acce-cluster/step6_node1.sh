@@ -1,14 +1,8 @@
 #!/bin/sh
 # node: acce-build1.dyndns.org
-# Counts the number of workflows per node, number of tasks per node
+# Removes all services from the swarm
 
-containers=$(docker ps | awk '{if(NR>1) print $NF}')
-host=$(hostname)
-
-# loop through all containers
-for container in $containers
-do
-  echo "Container: $container"
-done
-
-
+docker service rm oodt-filemgr oodt-worker
+docker service ls
+docker stop visualizer
+docker rm visualizer

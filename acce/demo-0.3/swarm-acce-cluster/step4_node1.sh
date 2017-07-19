@@ -32,6 +32,6 @@ docker service create --replicas 2 --name oodt-worker --network swarm-network \
                       --env 'RESMGR_URL=http://localhost:9002' \
                       --env 'RESMGR_HOME=/usr/local/oodt/cas-resource' \
                       oodthub/oodt-wmgr-resmgr:0.3
-#docker service scale oodt-worker=4
+docker service scale oodt-worker=4
 
 docker service ls

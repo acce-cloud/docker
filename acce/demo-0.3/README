@@ -1,0 +1,19 @@
+DEMO WORKFLOW WITH OODT-0.3 RUNNING ON ACCE CLUSTERS (3 SERVERS)
+
+
+o step1_node1.sh: initializes the Docker Swarm
+
+o step2_node2.sh, step3_node3.sh: make the other nodes join the swarm
+
+o step4_node1.sh: starts the OODT services on the proper nodes:
+	- 1 OODT FM on manager node
+	- 4 OODT Workers on worker nodes
+
+o step5_node2.sh: submits 10 workflows. 
+	- eahc workflow consists of 2 tasks, each writing an output file
+	- when all workflows are completed, there should be 10x2 files in the shared directory:
+          ls -l ~/pges/test-workflow/jobs/* | grep -i \.out$ | wc -l
+
+o step6_node1.sh: stops all services
+
+o step7_node3.sh, step8_node2.sh, step9_node1.sh: destroy the swarm

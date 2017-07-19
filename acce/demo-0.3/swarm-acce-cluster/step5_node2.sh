@@ -3,7 +3,7 @@
 # Cleans up directories from previous workflows.
 # Submits a new set of workflows.
 
-# idenity first worker container
+# identify the first worker container
 wrkr_ids=`docker ps | grep oodt-worker | awk '{print $1}' | awk '{print $1}'`
 wrkr_id=`echo $wrkr_ids | awk '{print $1;}'`
 echo $wrkr_id
