@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- 
 Author: Luca Cinquini 
-Description: Maven descriptor that installs the OODT Resource manager into $OODT_HOME
+Description: Maven descriptor that installs the OODT Workflow manager and Resource Manager into $OODT_HOME.
 Required env variables (set by calling client):
 - OODT_VERSION
 - OODT_HOME
@@ -34,6 +34,13 @@ Required env variables (set by calling client):
     <oodt.version>${env.OODT_VERSION}</oodt.version>
     <oodt.dir>${env.OODT_HOME}</oodt.dir>
     
+    <solr.version>5.3.1</solr.version>
+    <solr-jars.version>1.3.0</solr-jars.version>
+    
+    <!-- logging jars -->
+    <slf4j.version>1.7.7</slf4j.version>
+    <log4j.version>1.2.17</log4j.version>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     
    </properties>
@@ -41,20 +48,26 @@ Required env variables (set by calling client):
   <build>
     <plugins>
 
-      <!-- install OODT Resource Manager -->
+      <!-- install OODT Workflow Manager -->
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
-
           <!-- unpack OODT modules into installation directories -->
           <execution>
-            <id>install-oodt-resmgr</id>
+            <id>install-oodt-wmgr-resmgr</id>
             <phase>install</phase>
             <goals>
               <goal>unpack</goal>
             </goals>
             <configuration>
               <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-workflow</artifactId>
+                  <version>${oodt.version}</version>
+                  <classifier>dist</classifier>
+                  <type>tar.gz</type>
+                </artifactItem>
                 <artifactItem>
                   <groupId>org.apache.oodt</groupId>
                   <artifactId>cas-resource</artifactId>
@@ -68,9 +81,59 @@ Required env variables (set by calling client):
             </configuration>
           </execution>
 
+          <!-- install additional OODT jars into Workflow Manager -->
+          <execution>
+            <id>install-wmgr-jars</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-filemgr</artifactId>
+                  <version>${oodt.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-crawler</artifactId>
+                  <version>${oodt.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.oodt</groupId>
+                  <artifactId>cas-pge</artifactId>
+                  <version>${oodt.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <!-- solrJ + slf4j needed to query Solr File Manager back-end -->
+                <artifactItem>
+		  <groupId>org.apache.solr</groupId>
+		  <artifactId>solr-solrj</artifactId>
+		  <version>${solr-jars.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+		  <groupId>org.apache.solr</groupId>
+		  <artifactId>solr-common</artifactId>
+		  <version>${solr-jars.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-api</artifactId>
+                  <version>${slf4j.version}</version>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${oodt.dir}/cas-workflow-${oodt.version}/lib</outputDirectory>
+            </configuration>
+          </execution>
+
           <!-- install additional OODT jars into Resource Manager -->
           <execution>
-            <id>install-oodt-jars</id>
+            <id>install-resmgr-jars</id>
             <phase>install</phase>
             <goals>
               <goal>copy</goal>
@@ -136,7 +199,6 @@ Required env variables (set by calling client):
           </execution>
         </executions>
       </plugin>
-
 
     </plugins>
   </build>
