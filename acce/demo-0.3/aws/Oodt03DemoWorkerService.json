@@ -1,0 +1,26 @@
+{
+    "cluster": "EcostressCluster", 
+    "serviceName": "Oodt03DemoWorkerService", 
+    "taskDefinition": "Oodt03DemoWorkerTask", 
+    "loadBalancers": [
+    ], 
+    "desiredCount": 1, 
+    "clientToken": "", 
+    "role": "", 
+    "deploymentConfiguration": {
+        "maximumPercent": 200, 
+        "minimumHealthyPercent": 50
+    }, 
+    "placementConstraints": [
+    ], 
+    "placementStrategy": [
+        {
+            "field": "attribute:ecs.availability-zone",
+            "type": "spread"
+        },
+        {
+             "field": "instanceId",
+             "type": "spread"
+        }
+    ]
+}
