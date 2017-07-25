@@ -3,10 +3,16 @@
     "serviceName": "Oodt03DemoWorkerService", 
     "taskDefinition": "Oodt03DemoWorkerTask", 
     "loadBalancers": [
-    ], 
+        {
+            "targetGroupArn": "",
+            "loadBalancerName": "EsgfClassicLoadBalancer",
+            "containerName": "Oodt03DemoWorker",
+            "containerPort": 9001
+        }
+    ],
     "desiredCount": 1, 
     "clientToken": "", 
-    "role": "", 
+    "role": "ecsServiceRole", 
     "deploymentConfiguration": {
         "maximumPercent": 200, 
         "minimumHealthyPercent": 50
