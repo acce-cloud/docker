@@ -16,9 +16,13 @@ RUN cd $OODT_HOME && \
 
 # customize properties
 COPY conf/workflow.properties $OODT_HOME/cas-workflow/etc/workflow.properties
-COPY conf/resource.properties $OODT_HOME/cas-resource/etc/resource.properties
 COPY conf/logging.properties-wmgr $OODT_HOME/cas-workflow/etc/logging.properties
+
 COPY conf/logging.properties-resmgr $OODT_HOME/cas-resource/etc/logging.properties
+COPY conf/resource.properties $OODT_HOME/cas-resource/etc/resource.properties
+COPY conf/nodes.xml $OODT_HOME/cas-resource/policy/nodes.xml
+COPY conf/node-to-queue-mapping.xml $OODT_HOME/cas-resource/policy/node-to-queue-mapping.xml
+
 COPY conf/supervisord.conf /etc/supervisor/supervisord-workflow-resource.conf
 
 # install scripts
