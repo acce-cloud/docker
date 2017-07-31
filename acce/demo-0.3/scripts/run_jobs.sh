@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NJOBS=1
-SLEEP_SECS=10000
+NJOBS=10000
+SLEEP_SECS=10
 WORKFLOW_URL=http://internal-EcostressLoadBalancer-1621470833.us-west-2.elb.amazonaws.com:9001
 echo "Running $NJOBS jobs"
 
