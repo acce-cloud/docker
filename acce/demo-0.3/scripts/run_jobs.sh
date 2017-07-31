@@ -1,18 +1,14 @@
 #!/bin/bash
 
-NJOBS=10000
-SLEEP_SECS=10
-WORKFLOW_URL=http://internal-EsgfClassicLoadBalancer-153467213.us-west-2.elb.amazonaws.com:9001
+NJOBS=1
+SLEEP_SECS=10000
+WORKFLOW_URL=http://internal-EcostressLoadBalancer-1621470833.us-west-2.elb.amazonaws.com:9001
 echo "Running $NJOBS jobs"
 
-# identify first worker container
-wrkr_ids=`docker ps | grep Oodt03DemoWorker | awk '{print $1}' | awk '{print $1}'`
+# identify first container with workflow manager client installed
+wrkr_ids=`docker ps | grep Oodt03Demo | awk '{print $1}' | awk '{print $1}'`
 wrkr_id=`echo $wrkr_ids | awk '{print $1;}'`
 echo "Submitting to container: $wrkr_id"
-
-# clean up shared directories
-docker exec -it $wrkr_id sh -c "rm -rf /usr/local/oodt/pges/test-workflow/jobs/*"
-docker exec -it $wrkr_id sh -c "rm -rf /usr/local/oodt/archive/test-workflow/*"
 
 # run jobs
 for ((i=1;i<=NJOBS;i++)); do
