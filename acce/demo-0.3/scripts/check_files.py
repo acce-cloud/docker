@@ -9,7 +9,7 @@ root_dir = '/ecostress_data/oodt03-demo/archive/test-workflow'
 # loop over jobs, tasks
 for i in range(1,njobs+1):
   for j in range(1,ntasks+1):
-    files = glob.glob('%s/output_Run_%s_Task_%s_Node_*.out' % (root_dir, i, j))
+    files = glob.glob('%s/output_Run_%s_Task_%s_*.out' % (root_dir, i, j))
     if files:
       #print files
       pass
