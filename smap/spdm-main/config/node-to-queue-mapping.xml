@@ -1,5 +1,5 @@
 <cas:node-to-queue-mapping xmlns:cas="http://oodt.jpl.nasa.gov/1.0/cas">
-	<node id="spdmnode">
+	<node id="spdmnode.1">
 		<queues>
 			<queue name="CommonQueue"/>
 			<queue name="PPQueue"/>

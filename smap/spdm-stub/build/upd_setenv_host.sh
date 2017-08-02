@@ -11,6 +11,7 @@ fi
 echo "Updating ${ORIGFILE} with SPDM_HOST"
 NEWFILE=./setenv.sh.new
 # update with SPDM_HOST=spdmserver
-sed 's/SPDM_HOST=localhost/SPDM_HOST=spdmserver/' ${ORIGFILE} > ${NEWFILE}
+#sed 's/SPDM_HOST=localhost/SPDM_HOST=spdmserver/' ${ORIGFILE} > ${NEWFILE}
+sed 's/localhost/spdmserver/g' ${ORIGFILE} > ${NEWFILE}
 mv ${NEWFILE} ${ORIGFILE}
 grep SPDM_HOST ${ORIGFILE}
