@@ -1,0 +1,4 @@
+#!sh
+cd /usr/local/oodt/pges/test-workflow/jobs/c9669f70-6b9e-11e7-89d0-eb8031ea7da2
+python /usr/local/oodt/pges/test-workflow/multi_pges.py --run 1 --task 2 --pges 2
+
