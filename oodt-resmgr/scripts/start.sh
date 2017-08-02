@@ -5,6 +5,7 @@ cd $OODT_HOME/cas-resource/bin
 ./resmgr start
 
 # OODT Batch Stub
+export PATH=$PATH:${JAVA_HOME}/bin
 java -Djava.ext.dirs=../lib org.apache.oodt.cas.resource.system.extern.XmlRpcBatchStub --portNum 2001
 
 # keep script running
