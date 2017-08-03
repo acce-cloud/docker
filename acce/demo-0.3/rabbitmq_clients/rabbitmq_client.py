@@ -180,30 +180,25 @@ if __name__ == '__main__':
     
     # parse command line argument
     if len(sys.argv) < 4:
-        raise Exception("Usage: python rabbitmq_client.py <push/pull> <workflow_event> <number_of_clients>")
+        raise Exception("Usage: python rabbitmq_client.py <push/pull> <workflow_event> <max_num_running_workflow_instances>")
     else:
         push_or_pull = sys.argv[1]
         workflow_event = sys.argv[2]
-        num_clients = int(sys.argv[3])
+        max_num_running_workflow_instances = int(sys.argv[3])
       
-    # instantiate N RabbitMQ clients
-    for i in range(num_clients):
+    # instantiate RabbitMQ client
+    wmgrClient = WorkflowManagerClient(workflow_event, max_num_running_workflow_instances=max_num_running_workflow_instances)
         
-        # instantiate Workflow Manager client
-        # IMPORTANT: xmlrpclib is NOT thread safe in Python 2.7
-        # so must create one WorkflowManagerClient to be used in each thread
-        wmgrClient = WorkflowManagerClient(workflow_event)
-        
-        # instantiate pull/push RabbitMQ client
-        if push_or_pull == 'push':
-            rmqClient = RabbitmqPushClient(workflow_event, wmgrClient)
-        elif push_or_pull == 'pull':
-            rmqClient = RabbitmqPullClient(workflow_event, wmgrClient)
-        else:
-            raise Exception("Unrecognized push/pull argument: %s" % push_or_pull)
+    # instantiate pull/push RabbitMQ client
+    if push_or_pull == 'push':
+       rmqClient = RabbitmqPushClient(workflow_event, wmgrClient)
+    elif push_or_pull == 'pull':
+       rmqClient = RabbitmqPullClient(workflow_event, wmgrClient)
+    else:
+       raise Exception("Unrecognized push/pull argument: %s" % push_or_pull)
     
-        # start listening for workflow events
-        rmqClient.start()
+    # start listening for workflow events
+    rmqClient.start()
     
     logging.info('Waiting for workflow events. To exit press CTRL+Z')
     

@@ -1,4 +1,4 @@
-# OODT Workflow Manager container that includes RabbitMQ clients
+# OODT Workflow Manager container that includes the RabbitMQ client
 FROM oodthub/oodt-wmgr:0.3
 
 RUN yum -y update && \
@@ -27,7 +27,10 @@ RUN pip install argparse
 RUN pip install pika
 RUN pip install requests
 
-# install rabbitmq clients
+# install rabbitmq client module
 COPY rabbitmq_clients/ $OODT_HOME/rabbitmq/
+
+# install supervisord configuration to start the rabbitmq client
+COPY conf/supervisord-workflow.conf /etc/supervisor/supervisord-workflow.conf
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord-workflow.conf"]

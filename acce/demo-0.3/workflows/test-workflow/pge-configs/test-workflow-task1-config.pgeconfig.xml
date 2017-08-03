@@ -4,7 +4,8 @@
 	<!-- PGE commands -->
 	<exe dir="[JobDir]" shell="/bin/bash">
 		<cmd>cd [JobDir]</cmd>
-                <cmd>hostip=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)</cmd>
+                <!-- <cmd>hostip=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)</cmd> -->
+                <cmd>hostip=$(hostname)</cmd>
                 <cmd>python [PGE_ROOT]/test-workflow/pge.py --size 1 --heap 1 --time 10 --out output_Run_[Run]_Task_1_Host_${hostip}_Node_[ProcessingNode].out</cmd>
 	</exe>
 
