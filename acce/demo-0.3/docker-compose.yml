@@ -18,10 +18,10 @@ services:
     volumes:
       - ./workflows/test-workflow/policy:/usr/local/oodt/workflows/policy
     volumes_from:
-      - oodt-resmgr
+      - oodt-wmgr
 
   oodt-wmgr:
-    image: oodthub/oodt-wmgr:0.3
+    image: oodthub/oodt-wmgr-rmq:0.3
     expose:
       - "9001"
     ports:
@@ -30,34 +30,20 @@ services:
       - ./workflows/test-workflow/policy:/usr/local/oodt/workflows/policy
       - ./workflows/test-workflow/pge-configs:/usr/local/oodt/workflows/test-workflow/pge-configs
       - ./pges/test-workflow:/usr/local/oodt/pges/test-workflow
-      - ./conf/workflow.properties:/usr/local/oodt/cas-workflow/etc/workflow.properties
     environment:
       - FILEMGR_URL=http://oodt-filemgr:9000
-      - RESMGR_URL=http://oodt-resmgr:9002
+      - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f"
+      - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672"
+    depends_on:
+      - rabbitmq
 
-  oodt-fmprod:
-    image: oodthub/oodt-fmprod:0.3
+  # RabbitMQ server
+  rabbitmq:
+    image: oodthub/oodt-rabbitmq
+    container_name: rabbitmq
     expose:
-      - "8080"
+      - "5672"
+      - "15672"
     ports:
-      - "8080:8080"
-    volumes_from:
-      - oodt-resmgr
-    environment:
-      - FILEMGR_URL=http://oodt-filemgr:9000
-
-  oodt-resmgr:
-    image: oodthub/oodt-resmgr:0.3
-    expose:
-      - "9002"
-      - "2001"
-    ports:
-      - "9002:9002"
-      - "2001:2001"
-    volumes:
-      - ./workflows/test-workflow/policy:/usr/local/oodt/workflows/policy
-      - ./workflows/test-workflow/pge-configs:/usr/local/oodt/workflows/test-workflow/pge-configs
-      - ./pges/test-workflow:/usr/local/oodt/pges/test-workflow
-    environment:
-      - WORKFLOW_URL=http://oodt-wmgr:9001
-      - RESMGR_HOME=/usr/local/oodt/cas-resource
+      - "5672:5672"
+      - "15672:15672"
