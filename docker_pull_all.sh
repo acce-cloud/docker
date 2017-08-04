@@ -1,7 +1,7 @@
 #!/bin/sh
 # script to build (and optionally push) all OODT Docker images
 # Usage:
-# ./docker_build_all.sh [--push] 
+# ./docker_pull_all.sh [version] 
 
 function pull() {
 
