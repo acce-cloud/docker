@@ -133,24 +133,16 @@ export RESOURCE_VENUE=dev
 #======================================================
 
 #--- Server URL ---
-if [[ ! -z "${FILEMGR_URL}" ]] || [[ -z "${FILEMGR_URL=x}" ]] ; then
-#   echo "Use FILEMGR_URL=$FILEMGR_URL"
-else
+if [[ -z "${FILEMGR_URL}" ]] && [[ ! -z "${FILEMGR_URL=x}" ]] ; then
    export FILEMGR_URL=http://${SPDM_HOST}:${FILEMGR_PORT}
 fi
-if [[ ! -z "${WORKFLOWMGR_URL}" ]] || [[ -z "${WORKFLOWMGR_URL=x}" ]] ; then
-#   echo "Use WORKFLOWMGR_URL=$WORKFLOWMGR_URL"
-else
+if [[ -z "${WORKFLOWMGR_URL}" ]] && [[ ! -z "${WORKFLOWMGR_URL=x}" ]] ; then
    export WORKFLOWMGR_URL=http://${SPDM_HOST}:${WORKFLOWMGR_PORT}
 fi
-if [[ ! -z "${PGE_WORKFLOWMGR_URL}" ]] || [[ -z "${PGE_WORKFLOWMGR_URL=x}" ]] ; then
-#   echo "Use PGE_WORKFLOWMGR_URL=$PGE_WORKFLOWMGR_URL"
-else
+if [[ -z "${PGE_WORKFLOWMGR_URL}" ]] && [[ ! -z "${PGE_WORKFLOWMGR_URL=x}" ]] ; then
    export PGE_WORKFLOWMGR_URL=http://${SPDM_HOST}:${WORKFLOWMGR_PORT}
 fi
-if [[ ! -z "${RESOURCEMGR_URL}" ]] || [[ -z "${RESOURCEMGR_URL=x}" ]] ; then
-#   echo "Use RESOURCEMGR_URL=$RESOURCEMGR_URL"
-else
+if [[ -z "${RESOURCEMGR_URL}" ]] && [[ ! -z "${RESOURCEMGR_URL=x}" ]] ; then
    export RESOURCEMGR_URL=http://${SPDM_HOST}:${RESOURCEMGR_PORT}
 fi
 
