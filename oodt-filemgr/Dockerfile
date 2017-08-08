@@ -24,18 +24,12 @@ RUN mkdir -p ${OODT_HOME}/cas-filemgr/logs
 # customize properties
 COPY conf/filemgr.properties $OODT_HOME/cas-filemgr/etc/filemgr.properties
 COPY conf/logging.properties $OODT_HOME/cas-filemgr/etc/logging.properties
-COPY conf/supervisord.conf /etc/supervisor/supervisord-filemgr.conf
+COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
 
 # expose port to other containers
 EXPOSE 9000
 
-# install start/stop scripts
-COPY scripts/start.sh /usr/local/bin/start-filemgr.sh
-COPY scripts/stop.sh /usr/local/bin/stop-filemgr.sh
-COPY scripts/test.sh /usr/local/bin/test.sh
-
 # share archive directory
 VOLUME $OODT_ARCHIVE
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord-filemgr.conf"]
-#ENTRYPOINT ["/usr/local/bin/start-filemgr.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
