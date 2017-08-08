@@ -134,22 +134,22 @@ export RESOURCE_VENUE=dev
 
 #--- Server URL ---
 if [[ ! -z "${FILEMGR_URL}" ]] || [[ -z "${FILEMGR_URL=x}" ]] ; then
-   echo "Use FILEMGR_URL=$FILEMGR_URL"
+#   echo "Use FILEMGR_URL=$FILEMGR_URL"
 else
    export FILEMGR_URL=http://${SPDM_HOST}:${FILEMGR_PORT}
 fi
 if [[ ! -z "${WORKFLOWMGR_URL}" ]] || [[ -z "${WORKFLOWMGR_URL=x}" ]] ; then
-   echo "Use WORKFLOWMGR_URL=$WORKFLOWMGR_URL"
+#   echo "Use WORKFLOWMGR_URL=$WORKFLOWMGR_URL"
 else
    export WORKFLOWMGR_URL=http://${SPDM_HOST}:${WORKFLOWMGR_PORT}
 fi
 if [[ ! -z "${PGE_WORKFLOWMGR_URL}" ]] || [[ -z "${PGE_WORKFLOWMGR_URL=x}" ]] ; then
-   echo "Use PGE_WORKFLOWMGR_URL=$PGE_WORKFLOWMGR_URL"
+#   echo "Use PGE_WORKFLOWMGR_URL=$PGE_WORKFLOWMGR_URL"
 else
    export PGE_WORKFLOWMGR_URL=http://${SPDM_HOST}:${WORKFLOWMGR_PORT}
 fi
 if [[ ! -z "${RESOURCEMGR_URL}" ]] || [[ -z "${RESOURCEMGR_URL=x}" ]] ; then
-   echo "Use RESOURCEMGR_URL=$RESOURCEMGR_URL"
+#   echo "Use RESOURCEMGR_URL=$RESOURCEMGR_URL"
 else
    export RESOURCEMGR_URL=http://${SPDM_HOST}:${RESOURCEMGR_PORT}
 fi
@@ -168,6 +168,9 @@ export PGECONFIG_HOME=${SPDM_HOME}/spdm-pge
 
 #--- File Manager Required Parameters ---
 export SPDM_LOG_HOME=/project/spdm/workspace/1.4.2/logs/`hostname`
+if [ ! -d "$SPDM_LOG_HOME" ] ; then
+   mkdir -p $SPDM_LOG_HOME
+fi
 export HOST=${HOSTNAME}
 
 #-- DAAC/L4 Subsystem crawler sub-directories to include during crawling ---
