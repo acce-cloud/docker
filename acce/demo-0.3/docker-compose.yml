@@ -34,6 +34,8 @@ services:
       - FILEMGR_URL=http://oodt-filemgr:9000
       - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f"
       - "RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@rabbitmq:15672"
+      - "WORKFLOW_QUEUE=test-workflow"
+      - "MAX_WORKFLOWS=3"
     depends_on:
       - rabbitmq
 
