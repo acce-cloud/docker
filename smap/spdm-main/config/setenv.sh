@@ -167,7 +167,7 @@ export SPDM_SCRIPTS_HOME=${SPDM_HOME}/spdm-main
 export PGECONFIG_HOME=${SPDM_HOME}/spdm-pge
 
 #--- File Manager Required Parameters ---
-export SPDM_LOG_HOME=/project/spdm/workspace/1.4.2/logs
+export SPDM_LOG_HOME=/project/spdm/workspace/1.4.2/logs/`hostname`
 export HOST=${HOSTNAME}
 
 #-- DAAC/L4 Subsystem crawler sub-directories to include during crawling ---

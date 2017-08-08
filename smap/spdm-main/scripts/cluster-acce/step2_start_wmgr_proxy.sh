@@ -16,7 +16,7 @@ docker node update --label-add acce_stub=false ${MANAGER}
 docker node update --label-add acce_stub=true ${NODE1}
 docker node update --label-add acce_stub=true ${NODE2}
 
-docker service create --replicas 1 --name orcldb -p 8080:8080 -p 1521:1521 \
+docker service create --replicas 1 --name orcldb -p 1521:1521 \
                 --network ${SWARM_NETWORK} --constraint 'node.labels.acce_type==spdm-services'\
                 sath89/oracle-xe-11g
 
