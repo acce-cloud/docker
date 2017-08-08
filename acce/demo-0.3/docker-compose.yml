@@ -1,11 +1,11 @@
 # Docker compose file for running (and scaling) a set of OODT services on a single Docker host
+#
 # Example usage:
 # docker-compose up -d
-# docker-compose scale oodt_wmgr=4
 # 
 # NOTE: this compose file is NOT suitable for running multiple OODT containers on a Docker swarm
 
-version: '2'
+version: '3.1'
 
 services:
 
@@ -17,11 +17,12 @@ services:
       - "9000:9000"
     volumes:
       - ./workflows/test-workflow/policy:/usr/local/oodt/workflows/policy
-    volumes_from:
-      - oodt-wmgr
+      # shared data volumes
+      - jobs:/usr/local/oodt/jobs
+      - archive:/usr/local/oodt/archive
 
   oodt-wmgr:
-    image: oodthub/oodt-wmgr-rmq:0.3
+    image: oodthub/oodt-wmgr:0.3
     expose:
       - "9001"
     ports:
@@ -30,6 +31,13 @@ services:
       - ./workflows/test-workflow/policy:/usr/local/oodt/workflows/policy
       - ./workflows/test-workflow/pge-configs:/usr/local/oodt/workflows/test-workflow/pge-configs
       - ./pges/test-workflow:/usr/local/oodt/pges/test-workflow
+      # custom supervisor configuration which starts the RMQ client
+      - ./conf/supervisord.conf:/etc/supervisor/supervisord.conf
+      # driver program to submit workflows
+      - ./rabbitmq_clients/test_workflow_driver.py:/usr/local/oodt/rabbitmq/test_workflow_driver.py
+      # shared data volumes
+      - jobs:/usr/local/oodt/jobs
+      - archive:/usr/local/oodt/archive
     environment:
       - FILEMGR_URL=http://oodt-filemgr:9000
       - "RABBITMQ_USER_URL=amqp://oodt-user:changeit@rabbitmq/%2f"
@@ -49,3 +57,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+
+# shared data volumes
+volumes:
+  jobs:
+  archive:

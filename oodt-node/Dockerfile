@@ -13,7 +13,7 @@ RUN yum -y update; yum clean all
 
 # install system utilities
 RUN yum -y update && \
-    yum -y install git lsof unzip python-argparse python-setuptools tar wget zip && \
+    yum -y install gcc git lsof openssl openssl-devel python-argparse python-setuptools unzip tar wget zip zlib-devel && \
     yum clean all
 
 # Java 8
