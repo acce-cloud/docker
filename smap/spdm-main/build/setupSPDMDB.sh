@@ -28,5 +28,8 @@ sqlplus ${FILEMGR_DB_USER}/${FILEMGR_DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_INSTANT
 @createOrbitsTable.sql
 @createProcessStatusTable.sql
 @createTimersTable.sql
+alter table spiceantennaazimuth_metadata modify (algorithmversionid NULL);
+alter table spiceantennaazimuth_metadata modify (parameterversionid NULL);
+alter table spiceantennaazimuth_metadata modify (swversionid NULL);
 /
 EOF

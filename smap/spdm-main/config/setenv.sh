@@ -133,9 +133,26 @@ export RESOURCE_VENUE=dev
 #======================================================
 
 #--- Server URL ---
-export FILEMGR_URL=http://${SPDM_HOST}:${FILEMGR_PORT}
-export WORKFLOWMGR_URL=http://${SPDM_HOST}:${WORKFLOWMGR_PORT}
-export RESOURCEMGR_URL=http://${SPDM_HOST}:${RESOURCEMGR_PORT}
+if [[ ! -z "${FILEMGR_URL}" ]] || [[ -z "${FILEMGR_URL=x}" ]] ; then
+   echo "Use FILEMGR_URL=$FILEMGR_URL"
+else
+   export FILEMGR_URL=http://${SPDM_HOST}:${FILEMGR_PORT}
+fi
+if [[ ! -z "${WORKFLOWMGR_URL}" ]] || [[ -z "${WORKFLOWMGR_URL=x}" ]] ; then
+   echo "Use WORKFLOWMGR_URL=$WORKFLOWMGR_URL"
+else
+   export WORKFLOWMGR_URL=http://${SPDM_HOST}:${WORKFLOWMGR_PORT}
+fi
+if [[ ! -z "${PGE_WORKFLOWMGR_URL}" ]] || [[ -z "${PGE_WORKFLOWMGR_URL=x}" ]] ; then
+   echo "Use PGE_WORKFLOWMGR_URL=$PGE_WORKFLOWMGR_URL"
+else
+   export PGE_WORKFLOWMGR_URL=http://${SPDM_HOST}:${WORKFLOWMGR_PORT}
+fi
+if [[ ! -z "${RESOURCEMGR_URL}" ]] || [[ -z "${RESOURCEMGR_URL=x}" ]] ; then
+   echo "Use RESOURCEMGR_URL=$RESOURCEMGR_URL"
+else
+   export RESOURCEMGR_URL=http://${SPDM_HOST}:${RESOURCEMGR_PORT}
+fi
 
 #--- JDBC Parameters ---
 export FILEMGR_DB_DRIVER=oracle.jdbc.driver.OracleDriver
