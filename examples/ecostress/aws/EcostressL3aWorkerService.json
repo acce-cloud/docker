@@ -1,10 +1,10 @@
 {
     "cluster": "EcostressCluster", 
-    "serviceName": "EcostressL3bWorkerService", 
-    "taskDefinition": "EcostressL3bWorkerTask", 
+    "serviceName": "EcostressL3aWorkerService", 
+    "taskDefinition": "EcostressL3aWorkerTask", 
     "loadBalancers": [
     ], 
-    "desiredCount": 20, 
+    "desiredCount": 4, 
     "clientToken": "", 
     "role": "", 
     "deploymentConfiguration": {
@@ -14,7 +14,7 @@
     "placementConstraints": [
         {
             "type": "memberOf", 
-            "expression": "attribute:ecostress_type==compute_node"
+            "expression": "attribute:ecostress_type==head_node"
         }
     ], 
     "placementStrategy": [
