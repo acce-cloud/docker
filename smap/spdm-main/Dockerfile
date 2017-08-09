@@ -81,6 +81,7 @@ COPY config/test/regression_testSetup.sh ${SPDM_HOME}/spdm-main/bin/test/regress
 COPY config/nodes.xml ${SPDM_HOME}/spdm-resource/policy/dev/.
 COPY config/node-to-queue-mapping.xml ${SPDM_HOME}/spdm-resource/policy/dev/.
 COPY config/distribution.properties ${SPDM_HOME}/spdm-sips/etc/.
+COPY config/spdm_startup.sh {SPDM_BIN}/.
 #
 # Retart services automatically
 #
