@@ -23,11 +23,17 @@ export FAILED_TASK_HOME=/project/spdm/workspace/1.4.2/failed_tasks
 export REPORT_HOME=/project/spdm/workspace/1.4.2/reports/${COMPOSITE_RELEASE_ID}
 
 #-- PID Storage Dir ---
-export PID_HOME=/project/spdm/workspace/pid
+export PID_HOME=/project/spdm/workspace/pid/`hostname`
+if [ ! -d $PID_HOME ] ; then
+   mkdir -p $PID_HOME
+fi
 export SQL_REPO=/project/spdm/workspace/sql-repo
 
 #--- Workflow Lucene Repository ---
-export WORKFLOW_LUCENE_HOME=/project/spdm/workspace/1.4.2/lucene
+export WORKFLOW_LUCENE_HOME=/project/spdm/workspace/1.4.2/lucene/`hostname`
+if [ ! -d $WORKFLOW_LUCENE_HOME ] ; then
+   mkdir -p $WORKFLOW_LUCENE_HOME
+fi
 
 #--- Crawler Configuration ---
 # Crawler post-ingestion areas
@@ -159,10 +165,7 @@ export SPDM_SCRIPTS_HOME=${SPDM_HOME}/spdm-main
 export PGECONFIG_HOME=${SPDM_HOME}/spdm-pge
 
 #--- File Manager Required Parameters ---
-export SPDM_LOG_HOME=/project/spdm/workspace/1.4.2/logs/`hostname`
-if [ ! -d "$SPDM_LOG_HOME" ] ; then
-   mkdir -p $SPDM_LOG_HOME
-fi
+export SPDM_LOG_HOME=/project/spdm/workspace/1.4.2/logs
 export HOST=${HOSTNAME}
 
 #-- DAAC/L4 Subsystem crawler sub-directories to include during crawling ---

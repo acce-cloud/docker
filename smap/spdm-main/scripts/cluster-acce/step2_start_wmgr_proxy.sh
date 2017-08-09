@@ -29,8 +29,8 @@ docker service create --replicas 1 --name spdmnode -p 9002:9002 \
                 --env DB_INSTANT=${DB_INSTANT} --env DB_DOMAIN=${DB_DOMAIN} \
                 --env DB_USER=${DB_USER} --env DB_PASS=${DB_PASS} \
                 --env FILEMGR_URL=http://${SPDM_HOST}:9000 \
-                --env WORKFLOW_URL=http://spdmnode:9001 \
-                --env PGE_WORKFLOW_URL=http://localhost:9001 \
+                --env WORKFLOWMGR_URL=http://spdmnode:9001 \
+                --env PGE_WORKFLOWMGR_URL=http://localhost:9001 \
                 --env RESOURCEMGR_URL= \
                 --env SPDM_COMPONENTS="workflow" \
                 oodthub/spdm-services:0.3
