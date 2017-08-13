@@ -52,11 +52,11 @@ ENV PATH=/usr/local/bin:$PATH
 ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python:$LD_LIBRARY_PATH
 
 # install additional core Python packages
-RUN cd /tmp
-RUN wget --no-check-certificate https://bootstrap.pypa.io/ez_setup.py
-RUN python ez_setup.py --insecure
-RUN rm -rf ez_setup.py
-RUN easy_install pip
+RUN cd /tmp && \
+    wget --no-check-certificate https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py
+
+# install additional core Python packages
 RUN pip install argparse
 RUN pip install pika
 RUN pip install requests
@@ -72,8 +72,9 @@ ENV MAVEN_HOME /usr/share/maven
 
 # install Supervisor
 # /usr/local/bin/python ==> installs executable under /usr/local/bin/supervisord
-RUN easy_install supervisor
+RUN pip install supervisor
 RUN mkdir -p /var/log/supervisor
+COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
 
 # default OODT environment (inherited by all child images)
 ENV OODT_VERSION 1.0

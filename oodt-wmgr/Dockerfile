@@ -16,14 +16,10 @@ RUN cd $OODT_HOME && \
 # customize properties
 COPY conf/workflow.properties $OODT_HOME/cas-workflow/etc/workflow.properties
 COPY conf/logging.properties $OODT_HOME/cas-workflow/etc/logging.properties
-COPY conf/supervisord.conf /etc/supervisor/supervisord-workflow.conf
-
-# install scripts
-COPY scripts/start.sh /usr/local/bin/start-wmgr.sh
-COPY scripts/stop.sh /usr/local/bin/stop-wmgr.sh
+COPY conf/supervisord-wmgr.conf /etc/supervisor/conf.d/supervisord-wmgr.conf
 
 EXPOSE 9001
 VOLUME $OODT_STAGING
 VOLUME $OODT_ARCHIVE
 
-CMD ["/usr/local/bin/supervisord", "-c", "/etc/supervisor/supervisord-workflow.conf"]
+CMD ["/usr/local/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
