@@ -18,7 +18,7 @@ target/lib/slf4j-simple-1.7.22.jar
 
 o Define an enviromental variable that contains the connection parameters to the RabbitMQ server, for example:
 
-export RABBITMQ_USER_URL=amqp://oodt-user:changeit@localhost/%2f
+export RABBITMQ_USER_URL=amqp://USERNAME:PASSWORD@localhost/%2f
 
 o Within your Java code, when it's time to start a workflow, do the following
 (see example in oodt.docker.rabbitmq.clients.RabbitmqProducer.main()) :

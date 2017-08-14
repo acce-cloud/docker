@@ -48,7 +48,7 @@ public class RabbitmqProducer {
 
  /**
     Initializes connection to RabbitMQ server from environmental variable RABBITMQ_USER_URL
-    Example: export RABBITMQ_USER_URL=amqp://oodt-user:changeit@localhost/%2f
+    Example: export RABBITMQ_USER_URL=amqp://USERNAME:PASSWORD@localhost/%2f
   */
   public RabbitmqProducer() throws Exception {
 
