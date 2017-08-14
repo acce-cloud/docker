@@ -139,17 +139,32 @@ export RESOURCE_VENUE=dev
 #======================================================
 
 #--- Server URL ---
-if [[ -z "${FILEMGR_URL}" ]] && [[ ! -z "${FILEMGR_URL=x}" ]] ; then
+if [[ ! -z "${SPDM_FILEMGR_URL}" ]] ; then
+   export FILEMGR_URL=${SPDM_FILEMGR_URL}
+elif [[ ! -z "${SPDM_FILEMGR_URL=x}" ]] ; then
    export FILEMGR_URL=http://${SPDM_HOST}:${FILEMGR_PORT}
+   unset SPDM_FILEMGR_URL
+else
+   export FILEMGR_URL=${SPDM_FILEMGR_URL}
 fi
-if [[ -z "${WORKFLOWMGR_URL}" ]] && [[ ! -z "${WORKFLOWMGR_URL=x}" ]] ; then
+if [[ ! -z "${SPDM_WORKFLOWMGR_URL}" ]] ; then
+   export WORKFLOWMGR_URL=${SPDM_WORKFLOWMGR_URL}
+elif [[ ! -z "${SPDM_WORKFLOWMGR_URL=x}" ]] ; then
    export WORKFLOWMGR_URL=http://${SPDM_HOST}:${WORKFLOWMGR_PORT}
+   unset SPDM_WORKFLOWMGR_URL
+else
+   export WORKFLOWMGR_URL=${SPDM_WORKFLOWMGR_URL}
 fi
-if [[ -z "${PGE_WORKFLOWMGR_URL}" ]] && [[ ! -z "${PGE_WORKFLOWMGR_URL=x}" ]] ; then
-   export PGE_WORKFLOWMGR_URL=http://${SPDM_HOST}:${WORKFLOWMGR_PORT}
-fi
-if [[ -z "${RESOURCEMGR_URL}" ]] && [[ ! -z "${RESOURCEMGR_URL=x}" ]] ; then
+if [[ ! -z "${SPDM_RESOURCEMGR_URL}" ]] ; then
+   export RESOURCEMGR_URL=${SPDM_RESOURCEMGR_URL}
+elif [[ ! -z "${SPDM_RESOURCEMGR_URL=x}" ]] ; then
    export RESOURCEMGR_URL=http://${SPDM_HOST}:${RESOURCEMGR_PORT}
+   unset SPDM_RESOURCEMGR_URL
+else
+   export RESOURCEMGR_URL=${SPDM_RESOURCEMGR_URL}
+fi
+if [[ "${PGE_WORKFLOWMGR_URL=x}" == "x" ]] ; then
+   export PGE_WORKFLOWMGR_URL=http://${SPDM_HOST}:${WORKFLOWMGR_PORT}
 fi
 
 #--- JDBC Parameters ---

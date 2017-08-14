@@ -158,7 +158,7 @@ case "$1" in
 #
 		ORIGFILE=${WORKFLOWMGR_HOME}/etc/logging.properties
 		NEWFILE=${WORKFLOWMGR_HOME}/etc/logging.properties.new
-		sed 's#'${SPDM_LOG_HOME}'#'${SPDM_LOG_HOME}'/'${HOSTNAME}'#' ${ORIGFILE} > ${NEWFILE}
+		sed 's#'${SPDM_LOG_HOME}'$#'${SPDM_LOG_HOME}'/'${HOSTNAME}'#' ${ORIGFILE} > ${NEWFILE}
                 mv ${ORIGFILE} ${ORIGFILE}.orig
                 mv ${NEWFILE} ${ORIGFILE}
 #<<<
