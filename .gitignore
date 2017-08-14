@@ -9,6 +9,7 @@
 **/*.out
 **/*.pyc
 **/*.log
+**/*.class
 .settings
 .project
 .pydevproject
