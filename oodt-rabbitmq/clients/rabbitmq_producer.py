@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
-# Adapted from: 
-# http://pika.readthedocs.io/en/0.10.0/examples/asynchronous_publisher_example.html
+# Adapted from: http://pika.readthedocs.io/en/0.10.0/examples/asynchronous_publisher_example.html
+#
 # Features:
 # o Requests delivery confirmation from RabbitMQ server 
 #   and keeps tracks of which messages have been acknowledged or not acknowledged
 # o Reconnects if connection to RabbitMQ servers goes down for any reason
 # o Shuts down if RabbitMQ server closes the channel
+# 
+# Connection parameters are specified through the environmental variables:
+# o RABBITMQ_USER_URL (to send messages)
+# o RABBITMQ_ADMIN_URL (to monitor message delivery)
 #
 # Usage: python rabbitmq_producer.py <workflow_event> <number_of_events> [<metadata_key=metadata_value> <metadata_key=metadata_value> ...]
 # To be used together with rabbitmq_consumer.py
@@ -420,13 +424,14 @@ def wait_for_queue(queue_name, delay_secs=0):
             break
         
 
-def wait_for_queues(delay_secs=0):
+def wait_for_queues(delay_secs=0, sleep_secs=1):
     '''
     Method that waits until the number of 'ready' messages and 'unacked' messages in all the queues is 0
     (signaling that all workflows have been completed).
     Use ^C to stop waiting before all messages have been processed.
     '''
     
+    start_time = datetime.datetime.now()
     LOGGER.critical("Waiting for all messages to be processed in all queues...")
     time.sleep(delay_secs) # wait for queue to be ready
             
@@ -438,10 +443,16 @@ def wait_for_queues(delay_secs=0):
     # RABBITMQ_ADMIN_URL=http://oodt-admin:changeit@localhost:15672
     url = os.environ.get('RABBITMQ_ADMIN_URL', 'http://guest:guest@localhost:15672') + "/api/queues"
     
-    while num_messages != 0:
+    # open log file (override existing)
+    with open(LOG_FILE, 'w') as log_file:
+      # header line
+      log_file.write('Elapsed time\tQueue\tNumReadyMessages\tNumUnackMessages\tNumMessages\n')
+
+      while num_messages != 0:
         try:
             resp = requests.get(url=url)
             all_data = json.loads(resp.text)
+            this_time = datetime.datetime.now()
             
             # loop over queues
             for queue_data in all_data:
@@ -450,13 +461,16 @@ def wait_for_queues(delay_secs=0):
                 num_ready_messages = queue_data['messages_ready']
                 num_unack_messages = queue_data['messages_unacknowledged']
                 
-                # wait for this queue
-                logging.critical("Queue=%s number of messages: ready=%s unacked= %s total=%s" % 
-                                 (queue_name, num_ready_messages, num_unack_messages, num_messages))
+                # write out to log file
+                elapsed_time = (this_time - start_time).total_seconds()
+                logging.critical("Elapsed time=%s queue=%s number of messages: ready=%s unacked= %s total=%s" %
+                                 (elapsed_time, queue_name, num_ready_messages, num_unack_messages, num_messages))
+                log_file.write("%s\t%s\t%s\t%s\t%s\n" % (elapsed_time, queue_name, num_ready_messages, num_unack_messages, num_messages))
+
+                # wait for this queue, skip reamining
                 if num_messages > 0:
-                    time.sleep(1)
-                    if num_messages > 0:
-                        break # skip remaining queues, query again all queues for updated status
+                   time.sleep(sleep_secs)
+                   break # skip remaining queues, query again all queues for updated status
                 
         except KeyboardInterrupt:
             LOGGER.info("Breaking out of wait mode...")
