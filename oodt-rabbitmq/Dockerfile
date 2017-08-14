@@ -43,7 +43,7 @@ EXPOSE 5672 15672
 COPY scripts/ /usr/local/bin/
 
 # make python clients available to other containers
-COPY clients/ /usr/local/oodt/rabbitmq/
+COPY clients/python/ /usr/local/oodt/rabbitmq/
 VOLUME /usr/local/oodt/rabbitmq
 
 # start the server
