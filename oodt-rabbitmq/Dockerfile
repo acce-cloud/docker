@@ -43,7 +43,11 @@ EXPOSE 5672 15672
 COPY scripts/ /usr/local/bin/
 
 # make python clients available to other containers
-COPY clients/python/ /usr/local/oodt/rabbitmq/
+RUN cd /tmp && \
+    git clone https://github.com/oodt-cloud/oodt-rabbitmq-clients.git && \
+    cd oodt-rabbitmq-clients && \
+    git checkout -b devel origin/devel && \
+    cp -R python /usr/local/oodt/rabbitmq
 VOLUME /usr/local/oodt/rabbitmq
 
 # start the server
