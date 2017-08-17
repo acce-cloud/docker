@@ -41,7 +41,12 @@ RUN pip install pika
 RUN pip install requests
 
 # install rabbitmq client module
-COPY rabbitmq_clients/ $OODT_HOME/rabbitmq/
+RUN cd /tmp && \
+    git clone https://github.com/oodt-cloud/oodt-rabbitmq-clients.git && \
+    cd oodt-rabbitmq-clients && \
+    git checkout -b devel origin/devel && \
+    cp -R python /usr/local/oodt/rabbitmq
+
 
 EXPOSE 9001
 VOLUME $OODT_STAGING
