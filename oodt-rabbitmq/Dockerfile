@@ -42,9 +42,12 @@ EXPOSE 5672 15672
 # copy all scripts to /usr/local/bin
 COPY scripts/ /usr/local/bin/
 
-# make python clients available to other containers
-COPY clients/python/ /usr/local/oodt/rabbitmq/
-VOLUME /usr/local/oodt/rabbitmq
+# install rabbitmq client module
+RUN cd /tmp && \
+    git clone https://github.com/oodt-cloud/oodt-rabbitmq-clients.git && \
+    cd oodt-rabbitmq-clients && \
+    cp -R python /usr/local/oodt/rabbitmq
+
 
 # start the server
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
