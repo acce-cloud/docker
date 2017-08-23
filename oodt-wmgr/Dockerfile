@@ -44,9 +44,7 @@ RUN pip install requests
 RUN cd /tmp && \
     git clone https://github.com/oodt-cloud/oodt-rabbitmq-clients.git && \
     cd oodt-rabbitmq-clients && \
-    git checkout -b devel origin/devel && \
     cp -R python /usr/local/oodt/rabbitmq
-
 
 EXPOSE 9001
 VOLUME $OODT_STAGING

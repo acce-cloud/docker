@@ -8,3 +8,6 @@
 **/.met
 **/.out
 **/jobs
+.project
+.pydevproject
+
