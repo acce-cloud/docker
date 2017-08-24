@@ -35,7 +35,9 @@ RUN rabbitmq-plugins --offline enable rabbitmq_management
 #COPY conf/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
 
 # customize configuration to keep connections to consumers alive
-COPY conf/rabbitmq.config /etc/rabbitmq/rabbitmq.config
+# and to use SSL with self-signed certificates (included)
+COPY conf/rabbitmq-ssl.config /etc/rabbitmq/rabbitmq.config
+COPY conf/certs/ /etc/rabbitmq/certs/
 
 EXPOSE 5672 15672
 
