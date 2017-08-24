@@ -35,20 +35,20 @@ RUN rabbitmq-plugins --offline enable rabbitmq_management
 #COPY conf/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
 
 # customize configuration to keep connections to consumers alive
-COPY conf/rabbitmq.config /etc/rabbitmq/rabbitmq.config
+# and to use SSL with self-signed certificates (included)
+COPY conf/rabbitmq-ssl.config /etc/rabbitmq/rabbitmq.config
+COPY conf/certs/ /etc/rabbitmq/certs/
 
 EXPOSE 5672 15672
 
 # copy all scripts to /usr/local/bin
 COPY scripts/ /usr/local/bin/
 
-# make python clients available to other containers
+# install rabbitmq client module
 RUN cd /tmp && \
     git clone https://github.com/oodt-cloud/oodt-rabbitmq-clients.git && \
     cd oodt-rabbitmq-clients && \
-    git checkout -b devel origin/devel && \
     cp -R python /usr/local/oodt/rabbitmq
-VOLUME /usr/local/oodt/rabbitmq
 
 # start the server
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
