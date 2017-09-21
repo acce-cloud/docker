@@ -42,7 +42,7 @@ export CRAWLER_FAILURE_DIR=/project/spdm/staging/failureDir
 #
 # Crawler master wait time in seconds
 #
-export CRAWLER_MASTER_WAIT=120
+export CRAWLER_MASTER_WAIT=20
 export PAN_PDRD_CRAWLER_WAIT=600
 export GDS_CRAWLER_WAIT=${CRAWLER_MASTER_WAIT}
 export L1_EXT_CRAWLER_WAIT=${CRAWLER_MASTER_WAIT}

@@ -7,6 +7,18 @@ if [ -r ./setenv.sh ]; then
 fi
 popd
 
+username=${FILEMGR_DB_USER}
+password=${FILEMGR_DB_PASS}
+if [ ! -z ${DB_DOMAIN} ] ; then
+  DB_INSTANT=${DB_INSTANT}${DB_DOMAIN}
+fi
+echo "$0: sqlplus $username/$password@${DB_HOST}:${DB_PORT}/${DB_INSTANT}"
+sqlplus $username/$password@${DB_HOST}:${DB_PORT}/${DB_INSTANT} << EOF
+SELECT * FROM V$VERSION
+/
+EOF
+sleep 5
+
 simulated_types=( \
    [0]=STUF \
    [1]=ICE_SCLK \
@@ -108,12 +120,6 @@ sh level2Pipeline_testSetup.sh
 sh level3Pipeline_testSetup.sh
 sh sentinelPipeline_testSetup.sh
 
-username=${FILEMGR_DB_USER}
-password=${FILEMGR_DB_PASS}
-if [ ! -z ${DB_DOMAIN} ] ; then
-  DB_INSTANT=${DB_INSTANT}${DB_DOMAIN}
-fi
-echo "$0: $username/$password@${DB_HOST}:${DB_PORT}/${DB_INSTANT}"
 sqlplus $username/$password@${DB_HOST}:${DB_PORT}/${DB_INSTANT} << EOF
 delete from ORBITS;
 truncate table LUT_HISTORY;
