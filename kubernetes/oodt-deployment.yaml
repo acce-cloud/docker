@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: oodt
+  labels:
+    stack: oodt
+spec:
+  type: NodePort
+  ports:
+  - port: 8983 # host port
+    targetPort: 8983 # container port
+    protocol: TCP
+    name: solr-port
+  - port: 9000
+    targetPort: 9000
+    protocol: TCP
+    name: fmgr-port
+  - port: 9001
+    targetPort: 9001
+    protocol: TCP
+    name: wmgr-port
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: tomcat-port
+  - port: 5672
+    targetPort: 5672
+    protocol: TCP
+    name: rmq-client-port
+  - port: 15672
+    targetPort: 15672
+    protocol: TCP
+    name: rmq-admin-port
+  # the selector identifies the set of pods to load-balance against
+  selector:
+    stack: oodt
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: oodt-rmq
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        stack: oodt
+        app: rmq
+    spec:
+      containers:
+      - name: oodt-rmq
+        image: oodthub/oodt-rabbitmq
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: oodt-core
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        stack: oodt
+        app: services
+    spec:
+      containers:
+      - name: oodt-filemgr
+        image: oodthub/oodt-filemgr
+        ports:
+        - containerPort: 9000
+        - containerPort: 8983
+        volumeMounts:
+        - name: oodt-archive
+          mountPath: /usr/local/oodt/archive/
+        - name: oodt-jobs
+          mountPath: /usr/local/oodt/jobs/
+        - name: oodt-config
+          mountPath: /usr/local/oodt/workflows/
+      - name: oodt-wmgr
+        image: oodthub/oodt-wmgr
+        ports:
+        - containerPort: 9001
+        volumeMounts:
+        - name: oodt-archive
+          mountPath: /usr/local/oodt/archive/
+        - name: oodt-jobs
+          mountPath: /usr/local/oodt/jobs/
+        - name: oodt-config
+          mountPath: /usr/local/oodt/workflows/
+        - name: oodt-pges
+          mountPath: /usr/local/oodt/pges/
+      - name: oodt-fmprod
+        image: oodthub/oodt-fmprod
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: oodt-archive
+          mountPath: /usr/local/oodt/archive/
+      volumes:
+      - name: oodt-archive
+        emptyDir: {}
+      - name: oodt-jobs
+        emptyDir: {}
+      # FIXME
+      - name: oodt-config
+        hostPath:
+          path: /Users/cinquini/Documents/workspace/hello-oodt/config
+      # FIXME
+      - name: oodt-pges
+        hostPath:
+          path: /Users/cinquini/Documents/workspace/hello-oodt/pges
