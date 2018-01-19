@@ -18,6 +18,15 @@ COPY conf/workflow.properties $OODT_HOME/cas-workflow/etc/workflow.properties
 COPY conf/logging.properties $OODT_HOME/cas-workflow/etc/logging.properties
 COPY conf/supervisord-wmgr.conf /etc/supervisor/conf.d/supervisord-wmgr.conf
 
+# install rabbitmq client module
+RUN cd /tmp && \
+    git clone https://github.com/acce-cloud/oodt-rabbitmq-clients.git && \
+    cd oodt-rabbitmq-clients && \
+    cp -R python /usr/local/oodt/rabbitmq
+
+# additional supervisor configuration to start rabbitmq client
+#COPY conf/supervisord-rmqclient.conf /etc/supervisor/conf.d/supervisord-rmq-client.conf
+
 EXPOSE 9001
 VOLUME $OODT_STAGING
 VOLUME $OODT_ARCHIVE
