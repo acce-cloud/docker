@@ -54,6 +54,7 @@ spec:
         - containerPort: 5672
         - containerPort: 15672
         env:
+        # example connection URL for rabbitmq message producers - override as needed
         - name: RABBITMQ_USER_URL
           value: "amqp://oodt-user:changeit@localhost/%2f"
 ---
@@ -96,6 +97,7 @@ spec:
         - name: oodt-pges
           mountPath: /usr/local/oodt/pges/
         env:
+        # example connection URL for rabbitmq message consumers - override as needed
         - name: RABBITMQ_USER_URL
           value: "amqp://oodt-user:changeit@oodthost/%2f"
       - name: oodt-fmprod
