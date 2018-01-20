@@ -53,6 +53,11 @@ spec:
         ports:
         - containerPort: 5672
         - containerPort: 15672
+        env:
+        - name: RABBITMQ_USER_URL
+          value: "amqp://oodt-user:changeit@localhost/%2f"
+        - name: WORKFLOW_QUEUE
+          value: "test-workflow"
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
@@ -92,6 +97,13 @@ spec:
           mountPath: /usr/local/oodt/workflows/
         - name: oodt-pges
           mountPath: /usr/local/oodt/pges/
+        env:
+        - name: RABBITMQ_USER_URL
+          value: "amqp://oodt-user:changeit@oodthost/%2f"
+        - name: WORKFLOW_QUEUE
+          value: "test-workflow"
+        - name: MAX_WORKFLOWS
+          value: "3"
       - name: oodt-fmprod
         image: oodthub/oodt-fmprod
         ports:
