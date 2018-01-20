@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: oodt
+  name: oodthost
   labels:
     stack: oodt
 spec:
@@ -56,8 +56,6 @@ spec:
         env:
         - name: RABBITMQ_USER_URL
           value: "amqp://oodt-user:changeit@localhost/%2f"
-        - name: WORKFLOW_QUEUE
-          value: "test-workflow"
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
@@ -100,10 +98,6 @@ spec:
         env:
         - name: RABBITMQ_USER_URL
           value: "amqp://oodt-user:changeit@oodthost/%2f"
-        - name: WORKFLOW_QUEUE
-          value: "test-workflow"
-        - name: MAX_WORKFLOWS
-          value: "3"
       - name: oodt-fmprod
         image: oodthub/oodt-fmprod
         ports:
