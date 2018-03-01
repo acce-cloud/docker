@@ -1,77 +1,47 @@
-# Docker image for OODT installation server. Includes:
-# -) some system utilities
-# -) Java 8
+# Docker image for OODT services. Includes:
+#
+# -) Some utilities: Git, tar, wget, curl
+# -) Java
 # -) Maven
+# -) Python
 # -) Supervisor
 
-FROM centos:6
+FROM ubuntu
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
-# Update to last version
-RUN yum -y update; yum clean all
+RUN apt-get update
 
-# install system utilities
-RUN yum -y update && \
-    yum -y install gcc \
-                   git \
-                   lsof \
-                   openssl \
-                   openssl-devel \
-                   tar \
-                   unzip \
-                   wget \
-                   zip \
-    yum clean all
+# install Git
+RUN apt-get install -y git tar curl wget unzip
 
-# Java 8
-ENV JAVA_VERSION 8u131
-ENV JAVA_BUILD_VERSION b11
-RUN wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" \
-    -O /tmp/jdk-8-linux-x64.rpm \
-    "http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}-${JAVA_BUILD_VERSION}/d54c1d3a095b4ff2b6607d096fa80163/jdk-${JAVA_VERSION}-linux-x64.rpm"
-RUN yum -y install /tmp/jdk-8-linux-x64.rpm && \
-    rm /tmp/jdk-8-linux-x64.rpm
-RUN alternatives --install /usr/bin/java jar /usr/java/latest/bin/java 200000
-RUN alternatives --install /usr/bin/javaws javaws /usr/java/latest/bin/javaws 200000
-RUN alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 200000
-ENV JAVA_HOME /usr/java/latest
+# install JRE
+RUN apt-get install -y default-jre
+ENV JAVA_HOME=/usr/lib/jvm/default-java
 
-# install Python 2.7
-# note: option "--enable-shared" is needed by mod_wsgi, will generate /usr/local/lib/libpython2.7.so.1.0
-ENV PYTHON_VERSION 2.7.13
-RUN cd /tmp && \
-    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
-    tar xvfz Python-${PYTHON_VERSION}.tgz && \
-    cd Python-${PYTHON_VERSION} && \
-    ./configure --prefix=/usr/local --enable-shared && \
-    make && \
-    make altinstall
-RUN ln -s /usr/local/bin/python2.7 /usr/local/bin/python
-ENV PATH=/usr/local/bin:$PATH
-ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/bin/python:$LD_LIBRARY_PATH
-
-# install additional core Python packages
-RUN cd /tmp && \
-    wget --no-check-certificate https://bootstrap.pypa.io/get-pip.py && \
-    python get-pip.py
-
-# install additional core Python packages
-RUN pip install argparse
-RUN pip install pika
-RUN pip install requests
-
-# Maven
-ENV MAVEN_VERSION 3.3.9
-RUN mkdir -p /usr/share/maven \
-    && curl -fsSL http://mirrors.sonic.net/apache/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
-       | tar -xzC /usr/share/maven --strip-components=1 \
-    && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+# install Maven
+# Apache Maven 3.3.9
+# Maven home: /usr/share/maven
+RUN apt-get install -y maven
 ENV MAVEN_HOME /usr/share/maven
 #VOLUME /root/.m2
 
-# install Supervisor
-# /usr/local/bin/python ==> installs executable under /usr/local/bin/supervisord
+# install Python and basic modules
+RUN apt-get install -y python2.7
+RUN apt-get install -y python-pip python-dev build-essential 
+RUN pip install --upgrade pip
+RUN pip install --upgrade virtualenv
+
+# create Python virtual environment to install OODT dependencies
+RUN cd /usr/local && \
+    virtualenv oodt_venv
+ENV OODT_VENV /usr/local/oodt_venv
+
+# install other Python modules needed by OODT
+RUN . ${OODT_VENV}/bin/activate && \
+    pip install argparse pika requests
+
+# install Supervisor into system Python 
 RUN pip install supervisor
 RUN mkdir -p /var/log/supervisor
 COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
@@ -96,3 +66,8 @@ RUN mkdir -p $PGE_ROOT
 RUN mkdir -p $OODT_ARCHIVE
 RUN mkdir -p $OODT_STAGING
 RUN mkdir -p $OODT_HOME/run
+
+# cleanup
+RUN apt-get clean && \
+    apt-get autoclean && \
+    apt-get autoremove

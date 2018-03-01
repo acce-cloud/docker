@@ -1,7 +1,7 @@
 # Docker image for OODT File Manager configured with Solr back-end
 
-FROM oodthub/oodt-node
-
+ARG ACCE_VERSION=latest
+FROM acce/oodt-node:${ACCE_VERSION}
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
 # Solr env
@@ -30,15 +30,20 @@ COPY conf/supervisord-filemgr.conf /etc/supervisor/conf.d/supervisord-filemgr.co
 EXPOSE 9000
 
 # Solr
+#RUN apt-get install -y wget
 RUN wget -O /tmp/solr-${SOLR_VERSION}.tgz http://archive.apache.org/dist/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz
 #COPY solr-${SOLR_VERSION}.tgz /tmp/solr-${SOLR_VERSION}.tgz
 RUN cd ${OODT_HOME} && \
     tar xzf /tmp/solr-${SOLR_VERSION}.tgz && \
-    rm /tmp/solr-${SOLR_VERSION}.tgz && \
     ln -s ./solr-${SOLR_VERSION} ./solr
 RUN mkdir -p $SOLR_DATA_DIR
 # copy solr-home directory tree (recursively)
 COPY solr-home/ $SOLR_HOME/
+
+# cleanup
+RUN rm -rf /tmp/*
+RUN rm -rf ~/.m2
+
 # expose port to other containers
 EXPOSE 8983
 
