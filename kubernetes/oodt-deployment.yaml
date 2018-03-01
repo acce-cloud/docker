@@ -115,8 +115,8 @@ spec:
       # FIXME
       - name: oodt-config
         hostPath:
-          path: /Users/cinquini/Documents/workspace/hello-oodt/config
+          path: /Users/cinquini/eclipse-workspace/hello-oodt/config
       # FIXME
       - name: oodt-pges
         hostPath:
-          path: /Users/cinquini/Documents/workspace/hello-oodt/pges
+          path: /Users/cinquini/eclipse-workspace/hello-oodt/pges
