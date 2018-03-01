@@ -1,8 +1,21 @@
 # Docker image for RabbitMQ server
 
-FROM oodthub/oodt-node
+FROM centos:6
 
 MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
+
+# install system utilities
+RUN yum -y update && \
+    yum -y install gcc \
+                   git \
+                   lsof \
+                   openssl \
+                   openssl-devel \
+                   tar \
+                   unzip \
+                   wget \
+                   zip \
+    && yum clean all
 
 # install dependencies
 RUN yum -y update && \
@@ -10,9 +23,39 @@ RUN yum -y update && \
     yum -y install logrotate socat && \
     yum clean all
 
+# install Python 2.7
+ENV PYTHON_VERSION 2.7.13
+RUN cd /tmp && \
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
+    tar xvfz Python-${PYTHON_VERSION}.tgz && \
+    cd Python-${PYTHON_VERSION} && \
+    ./configure --prefix=/usr/local && \
+    make && \
+    make altinstall
+RUN ln -s /usr/local/bin/python2.7 /usr/local/bin/python
+ENV PATH=/usr/local/bin:$PATH
+
+# install additional core Python packages
+RUN cd /tmp && \
+    wget --no-check-certificate https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py
+
+# install additional core Python packages
+RUN pip install argparse
+RUN pip install pika
+RUN pip install requests
+
+# install rabbitmq client module and dependencies
+RUN cd /tmp && \
+    git clone https://github.com/oodt-cloud/oodt-rabbitmq-clients.git && \
+    cd oodt-rabbitmq-clients && \
+    mkdir -p /usr/local/oodt/rabbitmq && \
+    cp -R python/* /usr/local/oodt/rabbitmq/.
+
 # install zero-dependency Erlang from RabbitMQ
 WORKDIR /tmp
 ADD https://github.com/rabbitmq/erlang-rpm/releases/download/v1.5.0/erlang-19.2.0-1.el6.x86_64.rpm .
+RUN yum install -y initscripts
 RUN rpm -ivh erlang-19.2.0-1.el6.x86_64.rpm
 
 # install RabbitMQ server
@@ -46,12 +89,6 @@ EXPOSE 5672 15672
 
 # copy all scripts to /usr/local/bin
 COPY scripts/ /usr/local/bin/
-
-# install rabbitmq client module
-RUN cd /tmp && \
-    git clone https://github.com/oodt-cloud/oodt-rabbitmq-clients.git && \
-    cd oodt-rabbitmq-clients && \
-    cp -R python /usr/local/oodt/rabbitmq
 
 # start the server
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
