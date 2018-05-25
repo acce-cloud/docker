@@ -29,10 +29,7 @@ COPY conf/logging.properties $OODT_HOME/cas-filemgr/etc/logging.properties
 # expose port to other containers
 EXPOSE 9000
 
-# expose port to other containers
-EXPOSE 8983
-
-# share archive directory
+# shared directories
 VOLUME $OODT_ARCHIVE
 
 WORKDIR ${OODT_HOME}/cas-filemgr/bin

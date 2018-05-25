@@ -1,12 +1,19 @@
 # Docker image for OODT Workflow Manager and Crawler
 
 ARG ACCE_VERSION=latest
-FROM acce/oodt-node:${ACCE_VERSION}
-MAINTAINER Luca Cinquini <luca.cinquini@jpl.nasa.gov>
 
-# install OODT Workflow Manager service and Crawler executable
+FROM maven:3.5.3-jdk-9 as oodt-build
+
+# install OODT Workflow Manager and Crawler executable
+ENV OODT_VERSION=1.0
+ENV OODT_HOME=/usr/local/oodt
 COPY pom.xml /tmp/pom.xml
 RUN cd /tmp && mvn install
+
+FROM acce/oodt-node:${ACCE_VERSION}
+RUN apt-get update
+
+COPY --from=oodt-build ${OODT_HOME} ${OODT_HOME}
 
 # create symbolic links
 RUN cd $OODT_HOME && \
@@ -16,23 +23,15 @@ RUN cd $OODT_HOME && \
 # customize properties
 COPY conf/workflow.properties $OODT_HOME/cas-workflow/etc/workflow.properties
 COPY conf/logging.properties $OODT_HOME/cas-workflow/etc/logging.properties
-COPY conf/supervisord-wmgr.conf /etc/supervisor/conf.d/supervisord-wmgr.conf
 
-# install rabbitmq client module
-RUN cd /tmp && \
-    git clone https://github.com/acce-cloud/oodt-rabbitmq-clients.git && \
-    cd oodt-rabbitmq-clients && \
-    cp -R python /usr/local/oodt/rabbitmq
+COPY conf/wmgr $OODT_HOME/cas-workflow/bin/wmgr
 
-# additional supervisor configuration to start rabbitmq client
-#COPY conf/supervisord-rmqclient.conf /etc/supervisor/conf.d/supervisord-rmq-client.conf
-
-# cleanup
-RUN rm -rf /tmp/*
-RUN rm -rf ~/.m2
-
+# expose port to other containers
 EXPOSE 9001
+
+# shared volumes
 VOLUME $OODT_STAGING
 VOLUME $OODT_ARCHIVE
 
-CMD ["/usr/local/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+WORKDIR ${OODT_HOME}/cas-workflow/bin
+CMD ./wmgr start && tail -f ${OODT_HOME}/cas-workflow/logs/cas_workflow.log
