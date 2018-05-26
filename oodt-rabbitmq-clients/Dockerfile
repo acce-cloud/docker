@@ -19,4 +19,8 @@ RUN cd /tmp && \
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/local/oodt/rabbitmq
 
-# TODO: start rmq consumer
+# start RabbitMQ consumer daemon listening to the specific queue
+ENTRYPOINT ["python", "/usr/local/oodt/rabbitmq/rabbitmq_consumer.py"]
+# startup script arguments: queue_name, max_concurrent_workflows
+# will submit workflow requests to $WORKFLOW_URL=http://localhost:9001/
+CMD ["test-workflow", "1"]
