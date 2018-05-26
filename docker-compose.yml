@@ -28,12 +28,3 @@ services:
       - "9001"
     ports:
       - "9001"
-
-  oodt_fmprod_app:
-    image: oodthub/oodt-fmprod
-    expose:
-      - "8080"
-    ports:
-      - "8080:8080"
-    volumes_from:
-      - oodt_wmgr_app
